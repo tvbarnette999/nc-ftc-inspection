@@ -46,7 +46,7 @@ public class Web {
 	public static final String event="BCRI2017";
 	
 	private static ExecutorService threadPool;
-	public static String aString="";
+	
 	
 	public static HashMap<Integer,String> teamData=new HashMap<Integer,String>();
 
