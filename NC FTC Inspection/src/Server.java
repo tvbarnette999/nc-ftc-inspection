@@ -21,34 +21,34 @@ public class Server {
 	public static final String GREEN="\"#00FF00\"";
 	public static final String CYAN="\"#00FFFF\"";
 	public static final String WHITE="\"#FFFFFF\"";
-	
+
 	public static final int NO_DATA=0;
 	public static final int PASS=3;
 	public static final int FAIL=1;
 	public static final int PROGRESS=2;
-	
+
 	public static final int CHECKIN=0;
 	public static final int CUBE=1;
 	public static final int HARDWARE=2;
 	public static final int SOFTWARE=3;
 	public static final int FIELD=4;
 
-	
+
 	public static final String password="hello123";//"NCftc2016";
-	
+
 	public static final String event="BCRI2017";
-	
+
 	private static ExecutorService threadPool;
-	
-	
+
+
 	public static HashMap<Integer,String> teamData=new HashMap<Integer,String>();
 
 	Vector<Team> teams=new Vector<Team>();
 	static Vector<String> statusLog=new Vector<String>();
-	
+
 	public static String cookie="";//Each time run, generate a new cookie. That secure enough?
-	
-	
+
+
 	//TODO Monitoring GUI- allow editing what teams are there
 	/*
 	 * TODO Decide how events are structured:
@@ -69,11 +69,11 @@ public class Server {
 			Scanner scan=new Scanner(new File("Resources/teamdata.dat"));
 			while(scan.hasNextLine()){
 				try{
-				String line=scan.nextLine();
-				System.out.println(line);
-				int num=Integer.parseInt(line.substring(0, line.indexOf(":")));
-				String name=line.substring(line.indexOf(":")+1);
-				teamData.put(num, name);
+					String line=scan.nextLine();
+					System.out.println(line);
+					int num=Integer.parseInt(line.substring(0, line.indexOf(":")));
+					String name=line.substring(line.indexOf(":")+1);
+					teamData.put(num, name);
 				}catch(Exception e){
 					e.printStackTrace();
 				}
@@ -109,7 +109,7 @@ public class Server {
 			number=n;
 			name=teamData.get(number);
 		}
-		
+
 		/**
 		 * Returns the Team's status for the given level of Inspection
 		 * @param i
@@ -117,15 +117,15 @@ public class Server {
 		 */
 		public int get(int i){
 			switch(i){
-			case CHECKIN:return checkedIn?PASS:0;
-			case CUBE:return cube;
-			case HARDWARE:return hardware;
-			case SOFTWARE:return software;
-			case FIELD:return field;
+				case CHECKIN:return checkedIn?PASS:0;
+				case CUBE:return cube;
+				case HARDWARE:return hardware;
+				case SOFTWARE:return software;
+				case FIELD:return field;
 			}
 			return 0;
 		}
-		
+
 		/**Sets the Team's status for the given level of Inspection
 		 * 
 		 * @param type
@@ -158,17 +158,16 @@ public class Server {
 			pw.println("HTTP/1.1 200 OK");
 			pw.println("Content-Type: image/x-icon");
 			//FIXME Sending favicon doesnt work- but problem probably isnt here.
-//			return;
+			//			return;
 		}
 		else if(i>90){
 			//\nContent-Transfer-Encoding: binary
 			pw.println("HTTP/1.1 200 OK");
 			pw.println("Content-Type: application/pdf");
 			pw.println("Content-Disposition: inline; filename=manual1.pdf");
-			
+
 		}
 		else pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\n\n");
-	
 		//TODO make constants for this, or an enum? Also replace all instances of the hardcoded #s with whichever we go with
 		switch(i){
 			case 0:sendStatusPage(pw);break;
@@ -181,6 +180,9 @@ public class Server {
 			case 98:sendDocument(pw,out,"Resources/manual1.pdf");break;
 			case 99:sendDocument(pw,out,"Resources/manual2.pdf");break;
 			case 100:sendDocument(pw,out,"Resources/firstfavicon.ico");break;
+			case -1:
+				sendDocument(pw, out, "Resources/firstfavicon.png");
+				break;
 			default://404
 		}
 		pw.println("\n");// <html>Hello, <br>Chrome!<a href=\"/p2html\">Visit W3Schools.com!</a></html>\n");
@@ -188,7 +190,7 @@ public class Server {
 		pw.close();
 		//TODO send 404
 	}
-	
+
 	/**
 	 * This method handles GET requests. Any pages that require passwords are NOT requested by GETs, so if they are, direct them to password page.
 	 * @param req
@@ -196,7 +198,7 @@ public class Server {
 	 * @throws IOException
 	 */
 	public void get(String req,Socket sock) throws IOException{
-	
+
 		req=req.substring(1,req.indexOf(" "));
 		System.out.println(req);
 		int pageID=0;
@@ -204,16 +206,17 @@ public class Server {
 		if(req.equals("inspector"))pageID=1;	
 		if(req.equals("software"))pageID=1;
 		if(req.equals("field"))pageID=1;
-		
+
 		//these do not require login
 		if(req.equals("favicon.ico"))pageID=100;
 		if(req.equals("manual1"))pageID=98;
 		if(req.equals("manual2"))pageID=99;
-		
+
+		if (req.equals("firstfavicon.png")) pageID = -1;
 		sendPage(sock,pageID);
-		
+
 	}
-	
+
 	/**
 	 * This method handles POST requests. It should be passes the request, the data line, and the Socket.
 	 * Any pages requiring passwords are requested through POST, so are handles here.
@@ -239,7 +242,7 @@ public class Server {
 				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
 				if(req.equals("inspector"))pageID=2;
 				if(req.equals("field"))pageID=4;
-				
+
 			}
 			//else, no password, pageID stays 0 (the status page)
 			//TODO incorrect password page?
@@ -268,7 +271,7 @@ public class Server {
 			}
 			pageID=1;
 		}
-			
+
 		sendPage(sock,pageID);	
 	}
 
@@ -283,7 +286,7 @@ public class Server {
 		while(s.hasNextLine())pw.println(s.nextLine());
 		s.close();
 	}
-	
+
 	/**
 	 * This is for sending more complex pages that are contained within a file. These are pdfs,images,etc.
 	 * 
@@ -303,9 +306,11 @@ public class Server {
 				bout.write(q);
 			}
 			fin.close();
-			pw.println("Content-Length:"+bout.size());
-			pw.println("\n");;
-			pw.flush();
+			if (f.endsWith(".pdf")) {
+				pw.println("Content-Length:"+bout.size());
+				pw.println("\n");;
+				pw.flush();
+			}
 			bout.writeTo(out);
 			bout.flush();
 			bout.close();
@@ -313,14 +318,14 @@ public class Server {
 			e.printStackTrace();
 		}
 		//}
-		
+
 	}
 	public String getColor(int i){
 		switch(i){
-		case 0:return WHITE;
-		case 1:return RED;
-		case 2:return CYAN;
-		case 3:return GREEN;
+			case 0:return WHITE;
+			case 1:return RED;
+			case 2:return CYAN;
+			case 3:return GREEN;
 		}
 		return "black";
 	}
@@ -340,7 +345,7 @@ public class Server {
 					"<td bgcolor="+getColor(t.ready)+">"+t.name+"</td>");
 			pw.println("</tr>");
 		}
-		pw.println("</html>");
+//		pw.println("<img src=\"firstfavicon.png\"></html>");
 	}
 	public void sendInspectionEditPage(PrintWriter pw, int i) throws IOException{
 		System.out.println("ITS ME");
@@ -364,24 +369,24 @@ public class Server {
 		pw.println("</table><script>");
 		try {
 			switch(i){
-			case 0:type="_CI";break;
-			case 1:type="_SC";break;
-			case 2:sendPage(pw,"Resources/inspectionUpdate.js");;break;
-			case 3:type="_SW";break;
-			case 4:sendPage(pw,"Resources/fieldUpdate.js");break;
+				case 0:type="_CI";break;
+				case 1:type="_SC";break;
+				case 2:sendPage(pw,"Resources/inspectionUpdate.js");;break;
+				case 3:type="_SW";break;
+				case 4:sendPage(pw,"Resources/fieldUpdate.js");break;
 			}
-			
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		pw.println("</script></body></html>");
 	}
-	
-	
+
+
 	public void startServer() throws FileNotFoundException{
-		
+
 		Scanner scan=new Scanner(new File("Resources/"+event));
 		String[] nums=scan.nextLine().split(",");
 		scan.close();
@@ -400,7 +405,7 @@ public class Server {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		threadPool.shutdown();
 		try {
 			threadPool.awaitTermination(5, TimeUnit.SECONDS);
@@ -409,8 +414,8 @@ public class Server {
 		}
 		threadPool.shutdownNow();
 	}
-	
-	
+
+
 	/**
 	 * Handles the HTTP requests and directs them to appropriate methods.
 	 * 
@@ -427,11 +432,11 @@ public class Server {
 				sock.getInputStream().read(b);
 				String req=new String(b);
 				//System.out.println(req);
-				
-//				req=req.substring(0,req.indexOf("\n"));
-				
+
+				//				req=req.substring(0,req.indexOf("\n"));
+
 				if(req.startsWith("GET")){
-				//	System.out.println(req);
+					//	System.out.println(req);
 					get(req.substring(4,req.indexOf("\n")),sock);
 				}
 				if(req.startsWith("POST")){					
