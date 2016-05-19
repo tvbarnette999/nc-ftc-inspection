@@ -167,11 +167,13 @@ public class Server {
 			pw.println("Content-Disposition: inline; filename=manual1.pdf");
 
 		}
-		else pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\n\n");
+		else if (i > 1 && i < 5) {
+			pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: COOKIE1=FTC_VERIFIED\n\n");
+		} else pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\n\n");
 		//TODO make constants for this, or an enum? Also replace all instances of the hardcoded #s with whichever we go with
 		switch(i){
 			case 0:sendStatusPage(pw);break;
-			case 1:sendPage(pw,"Resources/inspectorLogin.html");break;
+			case 1:sendPage(pw,"Resources/inspectorLogin.php");break;
 			case 2:sendInspectionEditPage(pw,HARDWARE);break;
 			case 3:sendInspectionEditPage(pw,SOFTWARE);break;
 			case 4:sendInspectionEditPage(pw,FIELD);break;
@@ -195,18 +197,20 @@ public class Server {
 	 * This method handles GET requests. Any pages that require passwords are NOT requested by GETs, so if they are, direct them to password page.
 	 * @param req
 	 * @param sock
+	 * @param fullReq 
 	 * @throws IOException
 	 */
-	public void get(String req,Socket sock) throws IOException{
-
+	public void get(String req,Socket sock, String fullReq) throws IOException{
+		boolean verified = fullReq.contains("FTC_VERIFIED");
+		System.err.println("VERIFIED" + verified);
 		req=req.substring(1,req.indexOf(" "));
 		System.out.println(req);
 		int pageID=0;
 		//These all require login, so send to login page
-		if(req.equals("inspector"))pageID=1;	
-		if(req.equals("software"))pageID=1;
-		if(req.equals("field"))pageID=1;
-
+		if(req.equals("inspector"))pageID=verified?2:1;	
+		if(req.equals("software"))pageID=verified?3:1;
+		if(req.equals("field"))pageID=verified?4:1;
+		
 		//these do not require login
 		if(req.equals("favicon.ico"))pageID=100;
 		if(req.equals("manual1"))pageID=98;
@@ -240,6 +244,7 @@ public class Server {
 				valid=true;
 				System.out.println("VERIFIED");
 				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
+				System.out.println("REQ:"+req);
 				if(req.equals("inspector"))pageID=2;
 				if(req.equals("field"))pageID=4;
 
@@ -271,7 +276,7 @@ public class Server {
 			}
 			pageID=1;
 		}
-
+		System.out.println(pageID);
 		sendPage(sock,pageID);	
 	}
 
@@ -434,10 +439,10 @@ public class Server {
 				//System.out.println(req);
 
 				//				req=req.substring(0,req.indexOf("\n"));
-
+				System.err.println(req);
 				if(req.startsWith("GET")){
 					//	System.out.println(req);
-					get(req.substring(4,req.indexOf("\n")),sock);
+					get(req.substring(4,req.indexOf("\n")),sock, req);
 				}
 				if(req.startsWith("POST")){					
 					String[] datarray=req.split("\n");
