@@ -1,0 +1,39 @@
+Robot is presented at inspection with all mechanisms (including all components of each mechanism), configurations, and decorations that will be used on the Robot during the competition.:<I7>
+The sum of all electronics used in the construction of all mechanisms do not exceed constraints specified in the Robot construction rules.:<I7>c
+Robot fits within the Sizing Box without exerting force on box sides or top:<RG03>
+Robot does NOT contain any components that could damage the Playing Field or other Robots:<RG02>a&b
+Robot does NOT contain hazardous, liquids, or materials that could delay the game:<RG02>c
+Robot poses NO obvious unnecessary risk of entanglement:<RG02>d
+Robot does NOT contain any sharp edges or corners :<RG02>e
+Robot does NOT contain animal-based, liquid, or gel materials:<RG02>f&g
+Robot does NOT contain materials that would cause a delay of game if released :<RG02>h
+Robot does NOT contain elements that are designed to electrically ground the Robot frame to the Playing Field.:<RG02>i
+Robot Motion Warning Label is attached if servo motors move during the Robot initialization routine:<RG03>b
+Main Power Switch OR Core Power Distribution Module (if used as main power switch) is installed properly, labeled, and readily accessible and visible to competition personnel:<RG04>
+All batteries are securely attached to the Robot:<RG05>
+Robot Controller is accessible and visible by competition personnel:<RG06>
+Electrical components are mounted such that they are protected from Robot-to-Robot contact:<RG06>
+Robot Flag Holder is present and adequately holds the flag during normal Robot operation:<RG08>
+Team number is visible from at least 2 sides (180 deg. Apart). Numerals must be at least 7.62cm high (3.0 inches), at least in 1.27cm (0.5 inches) stroke width:<RG09>
+Energy used by the Robot, (i.e., stored at the start of a MATCH), shall come only from approved sources:<RG10>
+Game Elements launched by the Robot do not exceed height and range constraints:<RG11>
+All components on the Robot are from allowable raw materials and COTS:<RM01>
+Robot has exactly one (1) Android device (Android ZTE Speed or Motorola Moto G (2nd generation) as the Robot Controller:<RE01>a.i.
+The Robot Controller Android device USB interface may only connect to the Core Power Distribution Module.:<RE01>b
+The Driver Station Android device USB interface only connects to a Mini USB to OTG (OnThe-Go) Cable to an unpowered USB Hub (if Team is only using one joystick, this rule does not apply):<RE01>c
+No more than one (1) Core Power Distribution Modules is allowed.:<RE01>d
+No more than two (2) Device Interface Modules are allowed.:<RE01>e
+No more than two (2) Core Legacy Modules are allowed.:<RE01>f
+Either a combination of Modern Robotics and Legacy HiTechnic motor and servo controllers (any combination) OR Legacy MATRIX motor and servo controllers (no more than two):
+Robot contains only specifically allowed electrical components and the electrical components have NOT been modified from their original state except as permitted by the rules:<RE02>
+Robot Controller is powered by its internal battery only, not by external power:<RE03>a
+Robot has exactly one (1) official TETRIX OR one (1) MATRIX main battery pack:<RE03>b.i.
+All powered modules are connected to a power output port of a Core Power Distribution Module:<RE03>d
+Fuses are not replaced with fuses of a higher rating than originally installed or according to the manufacturer’s specifications. Fuses must not be shorted or exceed the rating of those closest to the battery:<RE03>e
+Light sources (e.g. LED’s) may not be focused or directed in any way and powered using appropriate methods.:<RE03>g
+Maximum of eight (8) motors (in any combination) and twelve (12) servos, all controlled by HiTechnic or MATRIX controllers:<RE04>
+Allowed electronics are only powered by ports on the Core Power Distribution Module except for approved light sources and allowed sensors connected to the Core Device Interface Module or the Core Legacy Module:<RE05>e.i&ii
+Power, motor control, servo and encoder wires are the correct size:<RE05>g
+Power and motor control wires must use consistent color coding with different colors used for the Positive (red, white, brown, or black with a stripe) and Negative/Common (black or blue) wires.:<RE05>h
+Any additional electronics comply with the rules:<RE06>
+Video recording devices, if used, do not have the wireless communication capability turned on:

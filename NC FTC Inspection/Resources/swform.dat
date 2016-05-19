@@ -1,0 +1,7 @@
+The FTC controller app is the default application, the application launches, and no other messages pop up:<RS07>
+Robot Controller’s operating system is either version 4.2.x or 4.4.x (ZTE Speed) OR 4.2.x,4.4.x, or 5.0.2 (Motorola Moto G 2nd Generation):<RS04>
+The Robot Controller is set to airplane mode, and Bluetooth is turned off:<RS08>
+Robot Controller Android device is named with the official Team number followed by -RC:<RS02>
+Robot Controller Wi-Fi Direct device name does not include a newline character in the name:
+Robot is not connected to any local networks:
+The FTC Wi-Fi Direct Channel Changing App is installed on the Robot Controller (for ZTE Speed devices only):

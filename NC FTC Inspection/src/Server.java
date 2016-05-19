@@ -44,11 +44,9 @@ public class Server {
 	public static boolean trackField=true;
 	public static boolean fullField=true;
 	
-	//# of checkboxes on inspection sheet
-	public static int HW_SIZE=0;
-	public static int SW_SIZE=0;
-	public static int FD_SIZE=0;
-
+	public static Vector<String> HWForm=new Vector<String>();
+	public static Vector<String> SWForm=new Vector<String>();
+	public static Vector<String> FDForm=new Vector<String>();
 	
 
 	public static final String password="hello123";//"NCftc2016";

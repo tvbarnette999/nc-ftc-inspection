@@ -22,6 +22,11 @@ public class Main {
 		 * Also, lets avoid any items above java 1.6 incase this ends up running on linux (a Pi for example)
 		 * 
 		 * May want to rename class to make it more legit.
+		 * 
+		 *TODO Handle Sizing Cube tracking done by index 3 on team.hw;
+		 *TODO Handle Signatures.
+		 *
+		 *TODO could have rules column of forms direct you to that rule in the manual? (Super Long-term goal) but itd be really cool
 		 */
 		
 	public static void main(String[] args) {
@@ -40,8 +45,43 @@ public class Main {
 					e.printStackTrace();
 				}
 			}	
-
 			scan.close();
+			
+			scan=new Scanner(new File("Resources/hwform.dat"));
+			while(scan.hasNextLine()){
+				try{
+					String line=scan.nextLine();
+					line=line.replaceAll(":", "</td><td>");
+					Server.HWForm.add(line);
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			scan.close();
+			
+			scan=new Scanner(new File("Resources/swform.dat"));
+			while(scan.hasNextLine()){
+				try{
+					String line=scan.nextLine();
+					line=line.replaceAll(":", "</td><td>");
+					Server.SWForm.add(line);
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			scan.close();
+			
+			scan=new Scanner(new File("Resources/fdform.dat"));
+			while(scan.hasNextLine()){
+				try{
+					String line=scan.nextLine();
+					line=line.replaceAll(":", "</td><td>");
+					Server.FDForm.add(line);
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			
 			Server.theServer.startServer(80);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

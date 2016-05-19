@@ -27,9 +27,9 @@ public class Team implements Comparable{
 		public Team(int n){
 			number=n;
 			name=Main.teamData.get(number);
-			hw=new boolean[Server.HW_SIZE];
-			sw=new boolean[Server.SW_SIZE];
-			fd=new boolean[Server.FD_SIZE];
+			hw=new boolean[Server.HWForm.size()];
+			sw=new boolean[Server.SWForm.size()];
+			fd=new boolean[Server.FDForm.size()];
 		
 		}
 

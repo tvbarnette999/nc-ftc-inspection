@@ -1,0 +1,19 @@
+Coach present :<T7>
+Driver 1 present:<T7>
+Driver 2 present(optional) :<T7>
+Driver’s Station consists only of one Android device, one OTG cable, no more than one non-powered USB hub, and no more than two gamepads:<RS07>a i-iv.
+The touch display screen of the Driver Station must be accessible and visible to field personnel:<RG07>b
+Team provides their own gamepads and non-powered USB hubs as part of their Driver Station :<RG07>c
+The FTC controller app is the default application, the application launches, and no other messages pop up :<RS07>
+Driver Station operating system is either version 4.2.x or 4.4.x (ZTE Speed) OR 4.2.x, 4.4.x, or 5.0.2 (Motorola Moto G 2nd Generation) :<RS04>
+The Driver Station is set to airplane mode, and Bluetooth is turned off <RS08> Drivers Station Android device is named with the official Team number followed by -DS:<RS02>
+Driver Station Wi-Fi Direct device name does not include a newline character in the name:
+Robot is not connected to any local networks:
+Robot Controller connects with the Drivers Station:
+Robot initializes properly:<RS05>
+Robot switches between Autonomous and Driver-Controlled operation correctly :<RS06>
+Robot starts and stops when commanded by the Drivers Station.:
+E-stop, when pressed on the Drivers Station, functions and stops the Robot.:
+Team understands that software changes are not allowed in the Queue Area:
+Team understands that the Match schedule is only an estimate. Matches may start prior to or after the scheduled time and it is the Teams’ responsibility to monitor schedule changes and show up when required:
+Team knows where to receive alliance flags and where to return them after the Match:
