@@ -25,14 +25,31 @@ public class Server {
 	public static final int NO_DATA=0;
 	public static final int PASS=3;
 	public static final int FAIL=1;
-	public static final int PROGRESS=2;
-
-	public static final int CHECKIN=0;
-	public static final int CUBE=1;
+	public static final int PROGRESS=2;	
+	
 	public static final int HARDWARE=2;
 	public static final int SOFTWARE=3;
 	public static final int FIELD=4;
+	public static final int CUBE=5;
+	public static final int CHECKIN=6;
+	public static final int HOME=7;
+	
+	//These parameters are set to determine whther a given event will show status for that stage and do paperless inspection.
+	public static boolean trackCheckin=true;
+	public static boolean trackCube=true;
+	public static boolean trackHardware=true;
+	public static boolean fullHardware=true;
+	public static boolean trackSoftware=true;
+	public static boolean fullSoftware=true;
+	public static boolean trackField=true;
+	public static boolean fullField=true;
+	
+	//# of checkboxes on inspection sheet
+	public static int HW_SIZE=0;
+	public static int SW_SIZE=0;
+	public static int FD_SIZE=0;
 
+	
 
 	public static final String password="hello123";//"NCftc2016";
 
@@ -40,117 +57,17 @@ public class Server {
 
 	private static ExecutorService threadPool;
 
-
-	public static HashMap<Integer,String> teamData=new HashMap<Integer,String>();
-
 	Vector<Team> teams=new Vector<Team>();
+	
 	static Vector<String> statusLog=new Vector<String>();
 
-	public static String cookie="";//Each time run, generate a new cookie. That secure enough?
+	public static String cookie="";//TODO Wanna use this for cookie?
 
-
-	//TODO Monitoring GUI- allow editing what teams are there
-	/*
-	 * TODO Decide how events are structured:
-	 * 
-	 * Premake team list for each event 
-	 * or select teams during setup?
-	 * 
-	 * teamdata.dat will have team # and name for each NC team (can make from data on FIRST's website)
-	 * add team location?
-	 * 
-	 * 
-	 * Also, lets avoid any items above java 1.6 incase this ends up running on linux (a Pi for example)
-	 */
-	public static void main(String[] args) throws MalformedURLException, IOException {
-
-		Server w=new Server();
-		try {
-			Scanner scan=new Scanner(new File("Resources/teamdata.dat"));
-			while(scan.hasNextLine()){
-				try{
-					String line=scan.nextLine();
-					System.out.println(line);
-					int num=Integer.parseInt(line.substring(0, line.indexOf(":")));
-					String name=line.substring(line.indexOf(":")+1);
-					teamData.put(num, name);
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-			}	
-
-			scan.close();
-			w.startServer();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+	public static Server theServer=new Server();
+	
+	private Server(){		//Singleton
 	}
-	public static class Team implements Comparable{
-		int number;
-		String name;
-		/*
-		 * TODO make it so that each event can configure which stages are tracked
-		 * If an event doesnt track Check-in with this system.
-		 * Or if Cube and HW are combined.
-		 * etc.
-		 * 
-		 * NOT HW and SW. If they are combined, this program can determine based off electronic inspection
-		 *  form if they fail both or just one.(OR inspector can just switch betwee the 2)
-		 * 
-		 * Then, decide whether we want to just issue a PASS to all teams in that category, or not display it (PASS is easier)
-		 */
-		boolean checkedIn=true;
-		int hardware;
-		int software=PASS;
-		int cube=PASS;
-		int field;
-		boolean ready;
-		public Team(int n){
-			number=n;
-			name=teamData.get(number);
-		}
-
-		/**
-		 * Returns the Team's status for the given level of Inspection
-		 * @param i
-		 * @return
-		 */
-		public int get(int i){
-			switch(i){
-				case CHECKIN:return checkedIn?PASS:0;
-				case CUBE:return cube;
-				case HARDWARE:return hardware;
-				case SOFTWARE:return software;
-				case FIELD:return field;
-			}
-			return 0;
-		}
-
-		/**Sets the Team's status for the given level of Inspection
-		 * 
-		 * @param type
-		 * @param i
-		 */
-		public void set(String type, int i) {
-			if(type.equals("CI"))this.checkedIn=i==3?true:false;
-			if(type.equals("SC"))this.cube=i;
-			if(type.equals("HW"))this.hardware=i;
-			if(type.equals("SW"))this.software=i;
-			if(type.equals("FD"))this.field=i;
-			System.out.println("set "+this.number+" "+type+":"+i);			
-			statusLog.add("[TIME]: "+this.number+" "+type+" set to "+i);//TODO make this useful ie 1533 has PASSED hardware
-			if(this.checkedIn&&this.cube==PASS&&this.hardware==PASS&&this.software==PASS&&this.field==PASS){
-				ready=true;
-			}
-		}
-		@Override
-		public int compareTo(Object o) {
-			if(o instanceof Team){
-				return number-((Team)o).number;
-			}
-			return 0;
-		}
-	}
+	
 	public void sendPage(Socket sock,int i) throws IOException{
 		OutputStream out=sock.getOutputStream();
 		PrintWriter pw=new PrintWriter(out);
@@ -174,10 +91,14 @@ public class Server {
 		switch(i){
 			case 0:sendStatusPage(pw);break;
 			case 1:sendPage(pw,"Resources/inspectorLogin.php");break;
-			case 2:sendInspectionEditPage(pw,HARDWARE);break;
-			case 3:sendInspectionEditPage(pw,SOFTWARE);break;
-			case 4:sendInspectionEditPage(pw,FIELD);break;
-			case 5:sendInspectionEditPage(pw,CUBE);break;
+			case HARDWARE:
+			case SOFTWARE:
+			case FIELD:
+			case CUBE:
+			case CHECKIN:sendInspectionEditPage(pw,i);break;
+			case HOME://TODO send home page (page with links to each inspection type being tracked)
+				break;
+			
 			//TODO add forums. add truncated manual sections? ie Robot Rules section, etc?
 			case 98:sendDocument(pw,out,"Resources/manual1.pdf");break;
 			case 99:sendDocument(pw,out,"Resources/manual2.pdf");break;
@@ -207,9 +128,11 @@ public class Server {
 		System.out.println(req);
 		int pageID=0;
 		//These all require login, so send to login page
-		if(req.equals("inspector"))pageID=verified?2:1;	
-		if(req.equals("software"))pageID=verified?3:1;
-		if(req.equals("field"))pageID=verified?4:1;
+		if(req.equals("hardware"))pageID=verified?HARDWARE:1;	
+		if(req.equals("software"))pageID=verified?SOFTWARE:1;
+		if(req.equals("field"))pageID=verified?FIELD:1;
+		if(req.equals("cube"))pageID=verified?CUBE:1;
+		if(req.equals("checkin"))pageID=verified?CHECKIN:1;
 		
 		//these do not require login
 		if(req.equals("favicon.ico"))pageID=100;
@@ -245,7 +168,7 @@ public class Server {
 				System.out.println("VERIFIED");
 				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
 				System.out.println("REQ:"+req);
-				if(req.equals("inspector"))pageID=2;
+				if(req.equals("hardware"))pageID=2;
 				if(req.equals("field"))pageID=4;
 
 			}
@@ -353,7 +276,17 @@ public class Server {
 //		pw.println("<img src=\"firstfavicon.png\"></html>");
 	}
 	public void sendInspectionEditPage(PrintWriter pw, int i) throws IOException{
-		System.out.println("ITS ME");
+		
+		/*
+		 * TODO Check if doing a full inspection for that type
+		 * 				-if so, send list of teams and button to inspect them, which loads /hardware/#####
+		 *              -if not, check if tracking
+		 *              		-if so, send old page
+		 *              		-if not, return to home?
+		 *              
+		 *              
+		 */
+		
 		String type="";
 		switch(i){
 			case 0:type="_CI";break;
@@ -390,7 +323,7 @@ public class Server {
 	}
 
 
-	public void startServer() throws FileNotFoundException{
+	public void startServer(final int port) throws FileNotFoundException{
 
 		Scanner scan=new Scanner(new File("Resources/"+event));
 		String[] nums=scan.nextLine().split(",");
@@ -401,7 +334,7 @@ public class Server {
 		Collections.sort(teams);
 		threadPool=Executors.newCachedThreadPool();
 		try {
-			ServerSocket server=new ServerSocket(80);
+			ServerSocket server=new ServerSocket(port);
 			//TODO once we have a GUI, closing that will shutdown server and break this while loop.
 			while(true){
 				threadPool.execute(new Handler(server.accept()));
