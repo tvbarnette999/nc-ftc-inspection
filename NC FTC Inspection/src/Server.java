@@ -5,9 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -49,6 +53,7 @@ public class Server {
 	public static Vector<String> FDForm=new Vector<String>();
 	
 
+	public static final long SEED = System.currentTimeMillis();
 	public static final String password="hello123";//"NCftc2016";
 
 	public static final String event="BCRI2017";
@@ -59,14 +64,54 @@ public class Server {
 	
 	static Vector<String> statusLog=new Vector<String>();
 
-	public static String cookie="";//TODO Wanna use this for cookie?
+	public static String cookieHeader="FTC_COOKIE=\"";
 
 	public static Server theServer=new Server();
 	
 	private Server(){		//Singleton
 	}
 	
-	public void sendPage(Socket sock,int i) throws IOException{
+	private byte[] hashedPass;
+	private String hashedPassString;
+	
+	public void setPassword(String password) {
+		SecureRandom rand = new SecureRandom();
+		ByteBuffer buff = ByteBuffer.allocate(Long.BYTES + password.getBytes().length);
+		buff.putLong(SEED);
+		buff.put(password.getBytes());
+		rand.setSeed(buff.array());
+		hashedPass = new byte[32];
+		rand.nextBytes(hashedPass);
+		hashedPassString = "";
+		for (Byte b : hashedPass)
+			hashedPassString += (char) (((int)'a') + Math.abs(b) / 12);
+	}
+	public boolean checkPassword(String password) {
+		System.out.println("Check Password: " + password);
+		SecureRandom rand = new SecureRandom();
+		ByteBuffer buff = ByteBuffer.allocate(Long.BYTES + password.getBytes().length);
+		buff.putLong(SEED);
+		buff.put(password.getBytes());
+		rand.setSeed(buff.array());
+		byte[] checkPass = new byte[hashedPass.length];
+		rand.nextBytes(checkPass);
+		System.out.println(Arrays.toString(hashedPass));
+		System.out.println(Arrays.toString(checkPass));
+		System.out.println(Arrays.toString(hashedPass));
+		System.out.println(Arrays.toString(checkPass));
+		for (int i = 0; i < checkPass.length; i++)
+			if (checkPass[i] != hashedPass[i])
+				return false;
+		return true;
+	}
+	
+	public boolean checkHash(String checkPass) {
+		System.out.println(checkPass);
+		System.out.println(hashedPassString);
+		return hashedPassString.equals(checkPass);
+	}
+	
+	public void sendPage(Socket sock,int i, String extras) throws IOException{
 		OutputStream out=sock.getOutputStream();
 		PrintWriter pw=new PrintWriter(out);
 		if(i>=100){
@@ -82,9 +127,10 @@ public class Server {
 			pw.println("Content-Disposition: inline; filename=manual1.pdf");
 
 		}
-		else if (i > 1 && i < 5) {
-			pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: COOKIE1=FTC_VERIFIED\n\n");
-		} else pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\n\n");
+		else pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\n");
+		if (extras == null) 
+			extras = "";
+		pw.println(extras);
 		//TODO make constants for this, or an enum? Also replace all instances of the hardcoded #s with whichever we go with
 		switch(i){
 			case 0:sendStatusPage(pw);break;
@@ -120,7 +166,17 @@ public class Server {
 	 * @throws IOException
 	 */
 	public void get(String req,Socket sock, String fullReq) throws IOException{
-		boolean verified = fullReq.contains("FTC_VERIFIED");
+		String check = fullReq;
+		boolean verified = false;
+		try {
+			check = check.substring(check.indexOf(cookieHeader) + cookieHeader.length());
+			check = check.substring(0, check.indexOf('\"')); // also take off [ ]
+			verified = checkHash(check);
+		} catch (Exception e) {
+			verified = false;
+			e.printStackTrace();
+			//we dont have the password
+		}
 		System.err.println("VERIFIED" + verified);
 		req=req.substring(1,req.indexOf(" "));
 		System.out.println(req);
@@ -141,7 +197,9 @@ public class Server {
 		sendPage(sock,pageID);
 
 	}
-
+	private void sendPage(Socket sock, int pageID) throws IOException {
+		sendPage(sock, pageID, null);
+	}
 	/**
 	 * This method handles POST requests. It should be passes the request, the data line, and the Socket.
 	 * Any pages requiring passwords are requested through POST, so are handles here.
@@ -153,6 +211,7 @@ public class Server {
 	public void post(String req, String data,Socket sock) throws IOException{
 		int pageID=0;
 		boolean valid=false;
+		String extras = "";
 		System.out.println("POST: \n"+req+"\nData:\n"+data);
 		/*
 		 * if the data contains a password, its from the login page.
@@ -161,9 +220,14 @@ public class Server {
 		if(data.contains("password")){
 			String pass=data.substring(data.indexOf("password")+9);
 			pass=pass.substring(0, pass.indexOf("&"));
-			if(pass.equals(password)){
+			if(checkPassword(pass)){
+//				OutputStream out=sock.getOutputStream();
+//				PrintWriter pw=new PrintWriter(out);
+				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
+//				pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: " + cookieHeader + hashedPassString + "\"\n\n    \n");
+//				pw.flush();
 				valid=true;
-				System.out.println("VERIFIED");
+				System.out.println("VERIFIED PASSWORD");
 				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
 				System.out.println("REQ:"+req);
 				if(req.equals("hardware"))pageID=2;
@@ -198,7 +262,7 @@ public class Server {
 			pageID=1;
 		}
 		System.out.println(pageID);
-		sendPage(sock,pageID);	
+		sendPage(sock,pageID, extras);	
 	}
 
 	/**
@@ -322,7 +386,7 @@ public class Server {
 
 
 	public void startServer(final int port) throws FileNotFoundException{
-
+		this.setPassword(password); //TODO GUI for prompt
 		Scanner scan=new Scanner(new File("Resources/"+event));
 		String[] nums=scan.nextLine().split(",");
 		scan.close();
