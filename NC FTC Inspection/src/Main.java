@@ -27,6 +27,8 @@ public class Main {
 		 *TODO Handle Signatures.
 		 *
 		 *TODO could have rules column of forms direct you to that rule in the manual? (Super Long-term goal) but itd be really cool
+		 *
+		 *TODO help pages are probably an important thing
 		 */
 		
 	public static void main(String[] args) {

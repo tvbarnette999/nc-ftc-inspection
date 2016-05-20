@@ -117,8 +117,6 @@ public class Server {
 		if(i>=100){
 			pw.println("HTTP/1.1 200 OK");
 			pw.println("Content-Type: image/x-icon");
-			//FIXME Sending favicon doesnt work- but problem probably isnt here.
-			//			return;
 		}
 		else if(i>90){
 			//\nContent-Transfer-Encoding: binary
@@ -141,7 +139,9 @@ public class Server {
 			case CUBE:
 			case CHECKIN:sendInspectionEditPage(pw,i);break;
 			case HOME://TODO send home page (page with links to each inspection type being tracked)
+				sendHomePage(pw);
 				break;
+				
 			
 			//TODO add forums. add truncated manual sections? ie Robot Rules section, etc?
 			case 98:sendDocument(pw,out,"Resources/manual1.pdf");break;
@@ -155,7 +155,7 @@ public class Server {
 		pw.println("\n");// <html>Hello, <br>Chrome!<a href=\"/p2html\">Visit W3Schools.com!</a></html>\n");
 		pw.flush();
 		pw.close();
-		//TODO send 404
+		//TODO send 404 (or redirect to status)
 	}
 
 	/**
@@ -187,6 +187,7 @@ public class Server {
 		if(req.equals("field"))pageID=verified?FIELD:1;
 		if(req.equals("cube"))pageID=verified?CUBE:1;
 		if(req.equals("checkin"))pageID=verified?CHECKIN:1;
+		if(req.equals("home"))pageID=verified?HOME:1;
 		
 		//these do not require login
 		if(req.equals("favicon.ico"))pageID=100;
@@ -230,9 +231,13 @@ public class Server {
 				System.out.println("VERIFIED PASSWORD");
 				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
 				System.out.println("REQ:"+req);
-				if(req.equals("hardware"))pageID=2;
-				if(req.equals("field"))pageID=4;
-
+				if(req.equals("hardware"))pageID=HARDWARE;
+				if(req.equals("field"))pageID=FIELD;
+				if(req.equals("home"))pageID=HOME;
+				if(req.equals("software"))pageID=SOFTWARE;
+				if(req.equals("cube"))pageID=CUBE;
+				if(req.equals("checkin"))pageID=CHECKIN;
+				
 			}
 			//else, no password, pageID stays 0 (the status page)
 			//TODO incorrect password page?
@@ -384,6 +389,22 @@ public class Server {
 		pw.println("</script></body></html>");
 	}
 
+	public void sendHomePage(PrintWriter pw){
+		//TODO make this page better
+		pw.println("<html>\n<body>");
+		if(trackCheckin)pw.println("<a href=\"/checkin\">Checkin</a>");
+		/*TODO if cube separate, do this, or if tracking cube and !fullhardware
+		 * Also, if cube separate, dont update from hardware POST
+		 * TODO move or copy this todo where relevant
+		 */
+		if(trackCube)pw.println("<a href=\"/cube\">Sizing Cube</a>");
+		if(trackHardware || fullHardware)pw.println("<a href=\"/hardware\">Hardware</a>");
+		if(trackSoftware || fullSoftware)pw.println("<a href=\"/software\">Software</a>");
+		if(trackField || fullField)pw.println("<a href=\"/field\">Field</a>");
+		pw.println("<a href=\"/\">Status</a>");//TODO do we want to have a /status page that has the links at the top? (diff from /)
+		pw.println("</body></html>");
+		pw.flush();
+	}
 
 	public void startServer(final int port) throws FileNotFoundException{
 		this.setPassword(password); //TODO GUI for prompt
