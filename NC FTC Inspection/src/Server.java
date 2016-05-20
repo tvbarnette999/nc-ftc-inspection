@@ -247,9 +247,10 @@ public class Server {
 		 */
 		else{
 			//HANDLE POST FROM VERIFIED INSPECTOR
+			//TODO check cookie here ?
 			req=req.substring(1);
 			System.out.println("VERIFIED "+req);
-			if(req.startsWith("inspection?")||req.startsWith("field?")){//These are requests that contain a state change for a team for a level of inspection. rn only these 2.
+			if(req.startsWith("update?")){//"inspection?")){//||req.startsWith("field?")){//These are requests that contain a state change for a team for a level of inspection. rn only these 2.
 				String s=req.substring(req.indexOf("=")+1);
 				System.out.println(s);
 				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
@@ -260,7 +261,6 @@ public class Server {
 				for(int i=0;i<teams.size();i++){
 					if(teams.get(i).number==t){
 						teams.get(i).set(type,Integer.parseInt(v));
-						System.out.println(teams.get(i).number+","+teams.get(i).hardware);
 					}
 				}
 			}
@@ -356,11 +356,11 @@ public class Server {
 		
 		String type="";
 		switch(i){
-			case 0:type="_CI";break;
-			case 1:type="_SC";break;
-			case 2:type="_HW";break;
-			case 3:type="_SW";break;
-			case 4:type="_FD";break;
+			case CHECKIN:type="_CI";break;
+			case CUBE:type="_SC";break;
+			case HARDWARE:type="_HW";break;
+			case SOFTWARE:type="_SW";break;
+			case FIELD:type="_FD";break;
 		}
 		pw.println("<html><body><table>");
 		for(Team t:teams){
@@ -373,14 +373,14 @@ public class Server {
 		}
 		pw.println("</table><script>");
 		try {
-			switch(i){
-				case 0:type="_CI";break;
-				case 1:type="_SC";break;
-				case 2:sendPage(pw,"Resources/inspectionUpdate.js");;break;
-				case 3:type="_SW";break;
-				case 4:sendPage(pw,"Resources/fieldUpdate.js");break;
-			}
-
+//			switch(i){
+//				case 0:type="_CI";break;
+//				case 1:type="_SC";break;
+//				case 2:sendPage(pw,"Resources/inspectionUpdate.js");;break;
+//				case 3:type="_SW";break;
+//				case 4:sendPage(pw,"Resources/fieldUpdate.js");break;
+//			}
+			sendPage(pw,"Resources/update.js");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
