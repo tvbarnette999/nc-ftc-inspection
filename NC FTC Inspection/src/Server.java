@@ -110,8 +110,15 @@ public class Server {
 		System.out.println(hashedPassString);
 		return hashedPassString.equals(checkPass);
 	}
-	
-	public void sendPage(Socket sock,int i, String extras) throws IOException{
+	/**
+	 * 
+	 * @param sock
+	 * @param i
+	 * @param extras
+	 * @param verified Boolean for if the request is from a logged in user
+	 * @throws IOException
+	 */
+	public void sendPage(Socket sock,int i, String extras, boolean verified) throws IOException{
 		OutputStream out=sock.getOutputStream();
 		PrintWriter pw=new PrintWriter(out);
 		if(i>=100){
@@ -150,7 +157,14 @@ public class Server {
 			case -1:
 				sendDocument(pw, out, "Resources/firstfavicon.png");
 				break;
-			default://404
+			default:
+				//404
+				pw.write("Error 404: Showing default<br><br>\n\n");
+				if (verified) {
+					sendHomePage(pw);
+				} else {
+					sendStatusPage(pw);
+				}
 		}
 		pw.println("\n");// <html>Hello, <br>Chrome!<a href=\"/p2html\">Visit W3Schools.com!</a></html>\n");
 		pw.flush();
@@ -180,8 +194,9 @@ public class Server {
 		System.err.println("VERIFIED" + verified);
 		req=req.substring(1,req.indexOf(" "));
 		System.out.println(req);
-		int pageID=0;
+		int pageID=Integer.MIN_VALUE; //default case
 		//These all require login, so send to login page
+		if(req.length() == 0)pageID = 0;
 		if(req.equals("hardware"))pageID=verified?HARDWARE:1;	
 		if(req.equals("software"))pageID=verified?SOFTWARE:1;
 		if(req.equals("field"))pageID=verified?FIELD:1;
@@ -195,11 +210,8 @@ public class Server {
 		if(req.equals("manual2"))pageID=99;
 
 		if (req.equals("firstfavicon.png")) pageID = -1;
-		sendPage(sock,pageID);
+		sendPage(sock,pageID,null,verified);
 
-	}
-	private void sendPage(Socket sock, int pageID) throws IOException {
-		sendPage(sock, pageID, null);
 	}
 	/**
 	 * This method handles POST requests. It should be passes the request, the data line, and the Socket.
@@ -267,7 +279,7 @@ public class Server {
 			pageID=1;
 		}
 		System.out.println(pageID);
-		sendPage(sock,pageID, extras);	
+		sendPage(sock,pageID, extras, valid);	
 	}
 
 	/**
