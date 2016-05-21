@@ -31,6 +31,7 @@ public class Server {
 	public static final int FAIL=1;
 	public static final int PROGRESS=2;	
 	
+	public static final int LOGIN = 1;
 	public static final int HARDWARE=2;
 	public static final int SOFTWARE=3;
 	public static final int FIELD=4;
@@ -74,6 +75,9 @@ public class Server {
 	private byte[] hashedPass;
 	private String hashedPassString;
 	
+	private int cookieCount;
+	private int traffic;
+	
 	public void setPassword(String password) {
 		SecureRandom rand = new SecureRandom();
 		ByteBuffer buff = ByteBuffer.allocate(Long.BYTES + password.getBytes().length);
@@ -104,7 +108,14 @@ public class Server {
 				return false;
 		return true;
 	}
-	
+	public int getTraffic() {
+		int temp = traffic;
+		traffic = 0;
+		return temp;
+	}
+	public int getCookieCount() {
+		return cookieCount;
+	}
 	public boolean checkHash(String checkPass) {
 		System.out.println(checkPass);
 		System.out.println(hashedPassString);
@@ -169,6 +180,7 @@ public class Server {
 		pw.println("\n");// <html>Hello, <br>Chrome!<a href=\"/p2html\">Visit W3Schools.com!</a></html>\n");
 		pw.flush();
 		pw.close();
+		traffic++;
 	}
 
 	/**
@@ -194,14 +206,13 @@ public class Server {
 		req=req.substring(1,req.indexOf(" "));
 		System.out.println(req);
 		int pageID=Integer.MIN_VALUE; //default case
-		//These all require login, so send to login page
-		if(req.length() == 0)pageID = 0;
-		if(req.equals("hardware"))pageID=verified?HARDWARE:1;	
-		if(req.equals("software"))pageID=verified?SOFTWARE:1;
-		if(req.equals("field"))pageID=verified?FIELD:1;
-		if(req.equals("cube"))pageID=verified?CUBE:1;
-		if(req.equals("checkin"))pageID=verified?CHECKIN:1;
-		if(req.equals("home"))pageID=verified?HOME:1;
+		if(req.length() == 0)pageID = 0; //just localhost, show status page
+		if(req.equals("hardware"))pageID=verified?HARDWARE:LOGIN;	
+		if(req.equals("software"))pageID=verified?SOFTWARE:LOGIN;
+		if(req.equals("field"))pageID=verified?FIELD:LOGIN;
+		if(req.equals("cube"))pageID=verified?CUBE:LOGIN;
+		if(req.equals("checkin"))pageID=verified?CHECKIN:LOGIN;
+		if(req.equals("home"))pageID=verified?HOME:LOGIN;
 		
 		//these do not require login
 		if(req.equals("favicon.ico"))pageID=100;
@@ -236,6 +247,7 @@ public class Server {
 //				OutputStream out=sock.getOutputStream();
 //				PrintWriter pw=new PrintWriter(out);
 				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
+				cookieCount++;
 //				pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: " + cookieHeader + hashedPassString + "\"\n\n    \n");
 //				pw.flush();
 				valid=true;
