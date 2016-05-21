@@ -11,7 +11,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -48,6 +51,8 @@ public class Server {
 	public static boolean fullSoftware=true;
 	public static boolean trackField=true;
 	public static boolean fullField=true;
+	
+	private boolean done=false;
 	
 	public static Vector<String> HWForm=new Vector<String>();
 	public static Vector<String> SWForm=new Vector<String>();
@@ -151,7 +156,7 @@ public class Server {
 		switch(i){
 			case 0:sendStatusPage(pw);break;
 			case 1:sendPage(pw,"Resources/inspectorLogin.php");break;
-			case HARDWARE:sendFullInspectionPage(pw,i,1);break;
+			case HARDWARE:sendFullInspectionPage(pw,i,5064);break;
 			case SOFTWARE:
 			case FIELD:
 			case CUBE:
@@ -282,11 +287,22 @@ public class Server {
 				String v=s.substring(s.indexOf("=")+1);
 				v=v.substring(0, v.indexOf(" "));
 				System.out.println(t+":"+type+":"+v);
-				for(int i=0;i<teams.size();i++){
-					if(teams.get(i).number==t){
-						teams.get(i).set(type,Integer.parseInt(v));
-					}
-				}
+				getTeam(t).set(type,Integer.parseInt(v));
+				
+			}
+			///fullupdate?team=5064_HW1&value=true HTTP/1.1
+			else if(req.startsWith("fullupdate?")){//full inspection state change
+				String s=req.substring(req.indexOf("=")+1);
+				System.out.println(s);
+				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
+				String type=s.substring(s.indexOf("_")+1,s.indexOf("&"));
+				int index=Integer.parseInt(type.substring(2));//type is 2 characters
+				type=type.substring(0, 2);
+				String v=s.substring(s.indexOf("=")+1);
+				v=v.substring(0, v.indexOf(" "));
+				System.out.println(t+":"+type+":"+v);
+				getTeam(t).set(type,index,Boolean.parseBoolean(v));
+				
 			}
 			pageID=1;
 		}
@@ -360,6 +376,7 @@ public class Server {
 		return getColor(b?3:0);
 	}
 	public void sendStatusPage(PrintWriter pw){
+		//TODO do we want to have an overall inspection progress bar across the top? like its 100% when every team is fully through, etc..
 		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\"><table border=\"3\"><tr>");
 		pw.println("<th>CI</th><th>SC</th><th>HW</th><th>SW</th><th>FD</th><th>Team #</th><th>Team name</th></tr>");
 		for(Team t:teams){
@@ -420,21 +437,44 @@ public class Server {
 
 		pw.println("</script></body></html>");
 	}
-
+	public Team getTeam(int num){
+		for(int i=0;i<teams.size();i++){
+			if(teams.get(i).number==num)return teams.get(i);
+		}
+		return null;
+	}
 	public void sendFullInspectionPage(PrintWriter pw, int i, int team){
+		//TODO have notes page at bottom, and submit button
+		//when submit button clicked, send note and thats how you know IP->fail (or pass)
+		//note beng reason for failure as prescribed 
+		//TODO do we want to be able to print an inspection sheet for a team if they ask? IE print job? -Nah scoring pc can just connect and print webpage
+		Team t=getTeam(team);
+		if(t==null)throw new IllegalArgumentException(team +" is not a valid team #");
 		Vector<String> form;
 		System.out.println("full: "+i);
+		String type="";
 		switch(i){
-			case HARDWARE: form=HWForm;break;
-			case SOFTWARE: form=SWForm;break;
-			case FIELD: form=FDForm;break;
+			case HARDWARE: form=HWForm; type="_HW";break;
+			case SOFTWARE: form=SWForm; type="_SW";break;
+			case FIELD: form=FDForm; type="_FD";break;
 			default: throw new IllegalArgumentException("Full inspection not supported");
 		}
 		pw.println("<html><head>Team: "+team+"</head><body><table><tr><th>Inspector</th><th>Inspection Rule</th><th>Rule #</th></tr>");
+		
+		int j=0;
 		for(String s:form){
-			pw.print("<tr><td><input type=\"checkbox\"/></td><td>"+s+"</td></tr>");
+			pw.print("<tr><td><label>");
+			pw.println("<input type=\"checkbox\" name=\""+team+type+j+"\" "+(t.get(i,j)?"checked=\"checked\"":"")+" onclick=\"update()\"/>");
+			pw.println("</label></td><td>"+s+"</td></tr>");
+			j++;
 		}
-		pw.println("</table></body></html>");
+		pw.println("</table><script>");
+		try {
+			sendPage(pw,"Resources/fullUpdate.js");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		pw.println("</script></body></html>");
 		pw.flush();
 	}
 	
@@ -469,9 +509,10 @@ public class Server {
 		try {
 			ServerSocket server=new ServerSocket(port);
 			//TODO once we have a GUI, closing that will shutdown server and break this while loop.
-			while(true){
+			while(!done){
 				threadPool.execute(new Handler(server.accept()));
 			}
+			server.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -523,5 +564,14 @@ public class Server {
 			}
 		}
 	}
-
+	
+	public static void addLogEntry(String s){
+		String time=new SimpleDateFormat ("[hh:mm:ss] ").format(Calendar.getInstance().getTime());
+		statusLog.add(time+s);
+		//TODO fire event to update GUI
+		System.out.println(time+s);
+	}
+	public static void stopServer(){
+		theServer.done=true;
+	}
 }

@@ -46,6 +46,10 @@ public class Main extends JFrame {
 	 *TODO could have rules column of forms direct you to that rule in the manual? (Super Long-term goal) but itd be really cool
 	 *
 	 *TODO help pages are probably an important thing
+	 *
+	 *TODO if web page cant send POST due to disconnect, have a button at bottom of page to send all data from page for reconnect?
+	 *
+	 *TODO save status data
 	 */
 
 	public Main() {
@@ -77,7 +81,13 @@ public class Main extends JFrame {
 	private JLabel cookieCount = new JLabel("0");
 	private String trafficString = "Traffic (15s bin): ";
 	private JLabel trafficLabel = new JLabel(trafficString);
+	//TODO can i get a y-axis label plz?
 	private JPanel trafficPanel = new JPanel();
+	/*
+	 * TODO add a scrollpane to show the elements of Server.statusLog
+	 * Make Server.addLogEntry fire ChangeEvent or something to trigger update for it 
+	 */
+	
 	private Thread graphics;
 	private int[] traffic = new int[50];
 	private void initGUI() {

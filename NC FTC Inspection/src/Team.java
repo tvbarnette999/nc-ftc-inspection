@@ -48,6 +48,21 @@ public class Team implements Comparable{
 			}
 			return 0;
 		}
+		
+		/**
+		 * Returns the Team's status for the inspection element at the specified index for the specified type.
+		 * @param type
+		 * @param index
+		 * @return
+		 */
+		public boolean get(int type, int index){
+			switch(type){
+				case Server.HARDWARE:return hw[index];
+				case Server.SOFTWARE:return sw[index];
+				case Server.FIELD:return fd[index];
+				default: throw new IllegalArgumentException("Invalid inspection type");
+			}
+		}
 
 		/**Sets the Team's status for the given level of Inspection
 		 * 
@@ -61,11 +76,61 @@ public class Team implements Comparable{
 			if(type.equals("SW"))this.software=i;
 			if(type.equals("FD"))this.field=i;
 			System.out.println("set "+this.number+" "+type+":"+i);			
-			Server.statusLog.add("[TIME]: "+this.number+" "+type+" set to "+i);//TODO make this useful ie 1533 has PASSED hardware
+//			Server.statusLog.add("[TIME]: "+this.number+" "+type+" set to "+i);//TODO make this useful ie 1533 has PASSED hardware
+	
+			if(i==Server.NO_DATA){
+				Server.addLogEntry(this.number+" "+type+" set to Uninspected"); 
+			}
+			else if(i==Server.PROGRESS){
+				Server.addLogEntry(this.number+" "+type+" in progress");
+			}
+			else Server.addLogEntry(this.number+" has "+(i==Server.PASS?"passed ":"failed ")+type);
 			if(this.checkedIn&&this.cube==Server.PASS&&this.hardware==Server.PASS&&this.software==Server.PASS&&this.field==Server.PASS){
 				ready=true;
 			}
 		}
+		
+		/**Checks whether a fully tracked inspection type is complete
+		 * 
+		 * @param type
+		 * @return
+		 */
+		private boolean checkFullInspection(int type){
+			
+			boolean[] data;
+			switch(type){
+				case Server.HARDWARE:data=hw;break;
+				case Server.SOFTWARE:data=sw;break;
+				case Server.FIELD:data= fd;break;
+				default: throw new IllegalArgumentException("Invalid inspection type");
+			}
+			
+			for(boolean b:data){
+				if(!b)return false;
+			}
+			return true;
+		
+		}
+		public void set(String type, int index, boolean status) {
+			if(type.equals("HW")){
+				//TODO deal with cube
+				hw[index]=status;				
+				//if all true, set hardware to pass
+				if(checkFullInspection(Server.HARDWARE))this.set(type,Server.PASS);
+				else if(this.get(Server.HARDWARE)!=Server.PROGRESS)this.set(type, Server.PROGRESS);//dont set if we dont have to cuz status log
+			}
+			if(type.equals("SW")){
+				sw[index]=status;			
+				if(checkFullInspection(Server.SOFTWARE))this.set(type,Server.PASS);
+				else if(this.get(Server.SOFTWARE)!=Server.PROGRESS)this.set(type, Server.PROGRESS);
+			}
+			if(type.equals("FD")){
+				fd[index]=status;			
+				if(checkFullInspection(Server.FIELD))this.set(type,Server.PASS);
+				else if(this.get(Server.FIELD)!=Server.PROGRESS)this.set(type, Server.PROGRESS);
+			}
+		}
+		
 		@Override
 		public int compareTo(Object o) {
 			if(o instanceof Team){
@@ -73,4 +138,6 @@ public class Team implements Comparable{
 			}
 			return 0;
 		}
+
+		
 }
