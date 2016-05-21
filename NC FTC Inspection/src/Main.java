@@ -18,6 +18,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -82,12 +85,19 @@ public class Main extends JFrame {
 	private JLabel cookieCount = new JLabel("0");
 	private String trafficString = "Traffic (15s bin): ";
 	private JLabel trafficLabel = new JLabel(trafficString);
-	//TODO can i get a y-axis label plz?
 	private JPanel trafficPanel = new JPanel();
 	/*
 	 * TODO add a scrollpane to show the elements of Server.statusLog
 	 * Make Server.addLogEntry fire ChangeEvent or something to trigger update for it 
 	 */
+	
+	private JPanel consolePanel = new JPanel();
+	private JTextArea consoleTextArea = new JTextArea();
+	private JScrollPane consoleScrollPane = new JScrollPane(consoleTextArea);
+	private JTextField consoleField = new JTextField();
+	private JPanel consoleInputPanel = new JPanel();
+	private JLabel consoleInputLabel = new JLabel("Console: ");
+	
 	
 	private Thread graphics;
 	private int[] traffic = new int[50];
@@ -200,8 +210,10 @@ public class Main extends JFrame {
 		
 		c.gridx = 0;
 		c.gridy = 0;
+		c.gridheight = 2;
 		this.getContentPane().add(pwPanel, c);
 		
+		c.gridheight = 1;
 		statusPanel.setLayout(new GridBagLayout());
 		statusPanel.setBorder(new TitledBorder("Server Status"));
 		statusPanel.add(trafficLabel, c);
@@ -217,12 +229,42 @@ public class Main extends JFrame {
 		trafficPanel.setPreferredSize(new Dimension(300, 100));
 		statusPanel.add(trafficPanel, c);
 		
+		consolePanel.setBorder(new TitledBorder("Server Console"));
+		consolePanel.setLayout(new GridBagLayout());
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridheight = 8;
+		c.gridwidth = 2;
+		consolePanel.add(consoleScrollPane, c);
+		
+		consolePanel.setPreferredSize(getPreferredSize());
+		
+		consoleInputPanel.setLayout(new GridBagLayout());
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = 1;
+		consoleInputPanel.add(consoleInputLabel, c);
+		c.gridx = 1;
+		c.gridwidth = 5;
+		consoleInputPanel.add(consoleField, c);
+		
 		c.gridheight = 1;
+		c.gridy = 8;
+		consolePanel.add(consoleInputPanel, c);
+		c.gridx = 1;
+		c.gridy = 0;
+		c.gridheight = 4;
+		this.getContentPane().add(consolePanel, c);
+		
+		c.gridx = 0;
+		c.gridy = 2;
+		c.gridheight = 2;
 		c.gridwidth = 1;
 		this.getContentPane().add(statusPanel, c);
 		this.pack();
 		this.setVisible(true);
 		this.setLocationRelativeTo(null);
+//		consoleField.setPreferredSize(new Dimension((int) getPreferredSize().getWidth(), 25));
 //		trafficPanel.setPreferredSize(getPreferredSize());
 		
 		trafficPanel.setOpaque(true);
