@@ -251,7 +251,7 @@ public class Server {
 				
 			} else {
 				pageID = 1;
-				extras = "\n\n<script> window.alert(\"Incorrect Password\") </script>";
+				extras = generateExtrasPopup("Incorrect Password");
 			}
 			//else, no password, pageID stays 0 (the status page)
 		}
@@ -281,7 +281,15 @@ public class Server {
 		System.out.println(pageID);
 		sendPage(sock,pageID, extras, valid);	
 	}
-
+	/**
+	 * Use extras = generateExtrasPopup(popup) to render a java script pop up on the page
+	 * @param popup The string to render
+	 * @return The extra to show the pop up
+	 */
+	public String generateExtrasPopup(String popup) {
+		return "\n\n<script> window.alert(\"" + popup + "\") </script>";
+	}
+	
 	/**
 	 * This is for sending an html webpage that is completely contained within the file. (No real-time generation by this server)
 	 * @param pw
