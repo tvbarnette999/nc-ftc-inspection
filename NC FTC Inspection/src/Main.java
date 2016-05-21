@@ -5,6 +5,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
@@ -194,7 +196,9 @@ public class Main extends JFrame {
 		this.setVisible(true);
 		this.setLocationRelativeTo(null);
 //		trafficPanel.setPreferredSize(getPreferredSize());
+		
 		trafficPanel.setOpaque(true);
+		boolean running=true;
 		graphics = new Thread() {
 			@Override
 			public void run() {
@@ -236,6 +240,13 @@ public class Main extends JFrame {
 		};
 		graphics.start();
 //		this.pack();
+		this.addWindowListener(new WindowAdapter(){
+			@Override
+			public void windowClosing(WindowEvent e){
+				Server.stopServer();
+				//TODO a thread keeps running. we need to find it and make it interruptible or daemon
+			}
+		});
 	}
 
 

@@ -9,6 +9,7 @@ import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.text.DateFormat;
@@ -44,6 +45,10 @@ public class Server {
 	
 	//These parameters are set to determine whther a given event will show status for that stage and do paperless inspection.
 	public static boolean trackCheckin=true;
+	/**Cube is still shown in status if HW is Full
+	 * Set this to true only if cube is separate?
+	 * */
+	//TODO change name to separateCube?
 	public static boolean trackCube=true;
 	public static boolean trackHardware=true;
 	public static boolean fullHardware=true;
@@ -288,7 +293,7 @@ public class Server {
 				v=v.substring(0, v.indexOf(" "));
 				System.out.println(t+":"+type+":"+v);
 				getTeam(t).set(type,Integer.parseInt(v));
-				
+				//TODO send http status 204
 			}
 			///fullupdate?team=5064_HW1&value=true HTTP/1.1
 			else if(req.startsWith("fullupdate?")){//full inspection state change
@@ -302,7 +307,7 @@ public class Server {
 				v=v.substring(0, v.indexOf(" "));
 				System.out.println(t+":"+type+":"+v);
 				getTeam(t).set(type,index,Boolean.parseBoolean(v));
-				
+				//TODO send http status 204
 			}
 			pageID=1;
 		}
@@ -377,6 +382,7 @@ public class Server {
 	}
 	public void sendStatusPage(PrintWriter pw){
 		//TODO do we want to have an overall inspection progress bar across the top? like its 100% when every team is fully through, etc..
+		//TODO only show tracked ones (only hide cube if cube is untracked and hw is not full)
 		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\"><table border=\"3\"><tr>");
 		pw.println("<th>CI</th><th>SC</th><th>HW</th><th>SW</th><th>FD</th><th>Team #</th><th>Team name</th></tr>");
 		for(Team t:teams){
@@ -496,28 +502,37 @@ public class Server {
 		pw.flush();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void startServer(final int port) throws FileNotFoundException{
-		this.setPassword(password); //TODO GUI for prompt
+		this.setPassword(password); 
 		Scanner scan=new Scanner(new File("Resources/"+event));
 		String[] nums=scan.nextLine().split(",");
 		scan.close();
 		for(String s:nums){
 			teams.add(new Team(Integer.parseInt(s)));
 		}
+		addLogEntry("Loaded team data");
 		Collections.sort(teams);
 		threadPool=Executors.newCachedThreadPool();
 		try {
 			ServerSocket server=new ServerSocket(port);
 			//TODO once we have a GUI, closing that will shutdown server and break this while loop.
+			server.setSoTimeout(1000);
+			addLogEntry("Starting server...");
 			while(!done){
-				threadPool.execute(new Handler(server.accept()));
+				try{
+					threadPool.execute(new Handler(server.accept()));
+				}catch(SocketTimeoutException e){
+					//this is so we can safely shutdown}
+				}
 			}
 			server.close();
+			addLogEntry("ServerSocket closed");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		addLogEntry("Attempting to shutdown client threads...");
 		threadPool.shutdown();
 		try {
 			threadPool.awaitTermination(5, TimeUnit.SECONDS);
@@ -525,6 +540,7 @@ public class Server {
 			e.printStackTrace();
 		}
 		threadPool.shutdownNow();
+		
 	}
 
 
@@ -571,7 +587,13 @@ public class Server {
 		//TODO fire event to update GUI
 		System.out.println(time+s);
 	}
+	
+	/**
+	 * Stops the server
+	 */
 	public static void stopServer(){
+		//TODO save things!
+		addLogEntry("Stopping server!");
 		theServer.done=true;
 	}
 }
