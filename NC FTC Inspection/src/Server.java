@@ -145,7 +145,7 @@ public class Server {
 			case FIELD:
 			case CUBE:
 			case CHECKIN:sendInspectionEditPage(pw,i);break;
-			case HOME://TODO send home page (page with links to each inspection type being tracked)
+			case HOME:
 				sendHomePage(pw);
 				break;
 				
@@ -169,7 +169,6 @@ public class Server {
 		pw.println("\n");// <html>Hello, <br>Chrome!<a href=\"/p2html\">Visit W3Schools.com!</a></html>\n");
 		pw.flush();
 		pw.close();
-		//TODO send 404 (or redirect to status)
 	}
 
 	/**
@@ -250,16 +249,17 @@ public class Server {
 				if(req.equals("cube"))pageID=CUBE;
 				if(req.equals("checkin"))pageID=CHECKIN;
 				
+			} else {
+				pageID = 1;
+				extras = "\n\n<script> window.alert(\"Incorrect Password\") </script>";
 			}
 			//else, no password, pageID stays 0 (the status page)
-			//TODO incorrect password page?
 		}
 		/*If there is no password, then the POST's source is a page that already required authentication,
 		 * therefore, we can handle it appropriately
 		 */
 		else{
 			//HANDLE POST FROM VERIFIED INSPECTOR
-			//TODO check cookie here ?
 			req=req.substring(1);
 			System.out.println("VERIFIED "+req);
 			if(req.startsWith("update?")){//"inspection?")){//||req.startsWith("field?")){//These are requests that contain a state change for a team for a level of inspection. rn only these 2.
