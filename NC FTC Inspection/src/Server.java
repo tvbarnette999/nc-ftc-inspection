@@ -89,6 +89,7 @@ public class Server {
 	private int traffic;
 	
 	public void setPassword(String password) {
+		cookieCount = 0;
 		SecureRandom rand = new SecureRandom();
 		ByteBuffer buff = ByteBuffer.allocate(Long.BYTES + password.getBytes().length);
 		buff.putLong(SEED);
@@ -516,7 +517,6 @@ public class Server {
 		threadPool=Executors.newCachedThreadPool();
 		try {
 			ServerSocket server=new ServerSocket(port);
-			//TODO once we have a GUI, closing that will shutdown server and break this while loop.
 			server.setSoTimeout(1000);
 			addLogEntry("Starting server...");
 			while(!done){
@@ -529,7 +529,6 @@ public class Server {
 			server.close();
 			addLogEntry("ServerSocket closed");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		addLogEntry("Attempting to shutdown client threads...");
