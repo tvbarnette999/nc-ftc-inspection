@@ -133,7 +133,7 @@ public class Server {
 		switch(i){
 			case 0:sendStatusPage(pw);break;
 			case 1:sendPage(pw,"Resources/inspectorLogin.php");break;
-			case HARDWARE:
+			case HARDWARE:sendFullInspectionPage(pw,i,1);break;
 			case SOFTWARE:
 			case FIELD:
 			case CUBE:
@@ -389,6 +389,24 @@ public class Server {
 		pw.println("</script></body></html>");
 	}
 
+	public void sendFullInspectionPage(PrintWriter pw, int i, int team){
+		Vector<String> form;
+		System.out.println("full: "+i);
+		switch(i){
+			case HARDWARE: form=HWForm;break;
+			case SOFTWARE: form=SWForm;break;
+			case FIELD: form=FDForm;break;
+			default: throw new IllegalArgumentException("Full inspection not supported");
+		}
+		pw.println("<html><head>Team: "+team+"</head><body><table><tr><th>Inspector</th><th>Inspection Rule</th><th>Rule #</th></tr>");
+		for(String s:form){
+			pw.print("<tr><td><input type=\"checkbox\"/></td><td>"+s+"</td></tr>");
+		}
+		pw.println("</table></body></html>");
+		pw.flush();
+	}
+	
+	
 	public void sendHomePage(PrintWriter pw){
 		//TODO make this page better
 		pw.println("<html>\n<body>");

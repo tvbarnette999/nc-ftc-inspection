@@ -53,7 +53,10 @@ public class Main {
 			while(scan.hasNextLine()){
 				try{
 					String line=scan.nextLine();
+					line=line.replaceAll("<","&lt;");
+					line=line.replaceAll(">","&gt;");
 					line=line.replaceAll(":", "</td><td>");
+					System.out.println(line);
 					Server.HWForm.add(line);
 				}catch(Exception e){
 					e.printStackTrace();
