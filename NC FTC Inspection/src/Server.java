@@ -140,7 +140,7 @@ public class Server {
 	 * @param verified Boolean for if the request is from a logged in user
 	 * @throws IOException
 	 */
-	public void sendPage(Socket sock,int i, String extras, boolean verified) throws IOException{
+	public void sendPage(Socket sock,int i, String extras, boolean verified, Object ... other) throws IOException{
 		OutputStream out=sock.getOutputStream();
 		PrintWriter pw=new PrintWriter(out);
 		if(i>=100){
@@ -155,16 +155,30 @@ public class Server {
 
 		}
 		else pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\n");
-		if (extras == null) 
+		
+		if (extras == null){ 
 			extras = "";
+		}
 		pw.println(extras);
 		//TODO make constants for this, or an enum? Also replace all instances of the hardcoded #s with whichever we go with
 		switch(i){
 			case 0:sendStatusPage(pw);break;
 			case 1:sendPage(pw,"Resources/inspectorLogin.php");break;
-			case HARDWARE:sendFullInspectionPage(pw,i,5064);break;
+			case HARDWARE: 
+				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
+				else if(fullHardware)sendInspectionTeamSelect(pw,i);
+				else sendInspectionEditPage(pw,i);
+				break;
 			case SOFTWARE:
+				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
+				else if(fullSoftware)sendInspectionTeamSelect(pw,i);
+				else sendInspectionEditPage(pw,i);
+				break;
 			case FIELD:
+				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
+				else if(fullField)sendInspectionTeamSelect(pw,i);
+				else sendInspectionEditPage(pw,i);
+				break;
 			case CUBE:
 			case CHECKIN:sendInspectionEditPage(pw,i);break;
 			case HOME:
@@ -202,6 +216,7 @@ public class Server {
 	 * @throws IOException
 	 */
 	public void get(String req,Socket sock, String fullReq) throws IOException{
+		String other=null;
 		String check = fullReq;
 		boolean verified = false;
 		try {
@@ -218,20 +233,33 @@ public class Server {
 		System.out.println(req);
 		int pageID=Integer.MIN_VALUE; //default case
 		if(req.length() == 0)pageID = 0; //just localhost, show status page
-		if(req.equals("hardware"))pageID=verified?HARDWARE:LOGIN;	
+		if(req.equals("hardware"))pageID=verified?HARDWARE:LOGIN;
 		if(req.equals("software"))pageID=verified?SOFTWARE:LOGIN;
 		if(req.equals("field"))pageID=verified?FIELD:LOGIN;
 		if(req.equals("cube"))pageID=verified?CUBE:LOGIN;
 		if(req.equals("checkin"))pageID=verified?CHECKIN:LOGIN;
 		if(req.equals("home"))pageID=verified?HOME:LOGIN;
 		
+		if(req.startsWith("hardware/") && fullHardware){
+			pageID=verified?HARDWARE:LOGIN;
+			other=req.substring(req.indexOf("/")+1);			
+		}
+		if(req.startsWith("software/") && fullSoftware){
+			pageID=verified?SOFTWARE:LOGIN;
+			other=req.substring(req.indexOf("/")+1);			
+		}
+		if(req.startsWith("field/") && fullField){
+			pageID=verified?FIELD:LOGIN;
+			other=req.substring(req.indexOf("/")+1);			
+		}
 		//these do not require login
 		if(req.equals("favicon.ico"))pageID=100;
 		if(req.equals("manual1"))pageID=98;
 		if(req.equals("manual2"))pageID=99;
 
 		if (req.equals("firstfavicon.png")) pageID = -1;
-		sendPage(sock,pageID,null,verified);
+		if(other!=null)sendPage(sock,pageID,null,verified,other);
+		else sendPage(sock,pageID,null,verified);
 
 	}
 	/**
@@ -297,7 +325,7 @@ public class Server {
 				//TODO send http status 204
 			}
 			///fullupdate?team=5064_HW1&value=true HTTP/1.1
-			else if(req.startsWith("fullupdate?")){//full inspection state change
+			else if(req.contains("fullupdate?")){//full inspection state change
 				String s=req.substring(req.indexOf("=")+1);
 				System.out.println(s);
 				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
@@ -450,13 +478,37 @@ public class Server {
 		}
 		return null;
 	}
-	public void sendFullInspectionPage(PrintWriter pw, int i, int team){
+	
+	public void sendInspectionTeamSelect(PrintWriter pw, int i){
+		String type="";
+		switch(i){
+			case HARDWARE:type="hardware";break;
+			case SOFTWARE:type="software";break;
+			case FIELD: type="field";break;
+			default:return;//TODO something else here?
+		}
+		pw.println("<html><body><table><tr><th>Team #</th><th>Link</th></tr>");
+		for(Team t:teams){
+			pw.println("<tr><td bgcolor="+getColor(t.get(i))+">"+t.number+"</td><td><a href=\"/"+type+"/"+t.number+"\">Inspect</a></td></tr>");
+		}
+		pw.println("</table></body></html>");
+		pw.flush();
+	}
+	
+	public void sendFullInspectionPage(PrintWriter pw, int i, String extras){
 		//TODO have notes page at bottom, and submit button
 		//when submit button clicked, send note and thats how you know IP->fail (or pass)
 		//note beng reason for failure as prescribed 
 		//TODO do we want to be able to print an inspection sheet for a team if they ask? IE print job? -Nah scoring pc can just connect and print webpage
-		Team t=getTeam(team);
-		if(t==null)throw new IllegalArgumentException(team +" is not a valid team #");
+		Team team=null;
+		try{
+			team=getTeam(Integer.parseInt(extras));
+			if(team==null) throw new IllegalArgumentException("Invalid team #: "+extras);
+		}catch(Exception e){
+			//TODO send error page. 404? some better way to do this?
+			return;
+		}
+		
 		Vector<String> form;
 		System.out.println("full: "+i);
 		String type="";
@@ -466,12 +518,12 @@ public class Server {
 			case FIELD: form=FDForm; type="_FD";break;
 			default: throw new IllegalArgumentException("Full inspection not supported");
 		}
-		pw.println("<html><head>Team: "+team+"</head><body><table><tr><th>Inspector</th><th>Inspection Rule</th><th>Rule #</th></tr>");
+		pw.println("<html><head>Team: "+extras+"</head><body><table><tr><th>Inspector</th><th>Inspection Rule</th><th>Rule #</th></tr>");
 		
 		int j=0;
 		for(String s:form){
 			pw.print("<tr><td><label>");
-			pw.println("<input type=\"checkbox\" name=\""+team+type+j+"\" "+(t.get(i,j)?"checked=\"checked\"":"")+" onclick=\"update()\"/>");
+			pw.println("<input type=\"checkbox\" name=\""+extras+type+j+"\" "+(team.get(i,j)?"checked=\"checked\"":"")+" onclick=\"update()\"/>");
 			pw.println("</label></td><td>"+s+"</td></tr>");
 			j++;
 		}
@@ -503,6 +555,14 @@ public class Server {
 		pw.flush();
 	}
 
+	public void sendLogPage(PrintWriter pw){
+		pw.println("<html><body>");
+		for(String s:statusLog){
+			pw.println(s+"<br>");
+		}
+		pw.println("</body></html>");
+		pw.flush();
+	}
 	@SuppressWarnings("unchecked")
 	public void startServer(final int port) throws FileNotFoundException{
 		this.setPassword(password); 
@@ -583,6 +643,7 @@ public class Server {
 	public static void addLogEntry(String s){
 		String time=new SimpleDateFormat ("[hh:mm:ss] ").format(Calendar.getInstance().getTime());
 		statusLog.add(time+s);
+		Main.me.consoleTextArea.append("\n"+time+s);
 		//TODO fire event to update GUI
 		System.out.println(time+s);
 	}

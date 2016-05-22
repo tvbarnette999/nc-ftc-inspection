@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
@@ -92,7 +93,7 @@ public class Main extends JFrame {
 	 */
 	
 	private JPanel consolePanel = new JPanel();
-	private JTextArea consoleTextArea = new JTextArea();
+	JTextArea consoleTextArea = new JTextArea();
 	private JScrollPane consoleScrollPane = new JScrollPane(consoleTextArea);
 	private JTextField consoleField = new JTextField();
 	private JPanel consoleInputPanel = new JPanel();
@@ -103,16 +104,8 @@ public class Main extends JFrame {
 	private int[] traffic = new int[50];
 	private void initGUI() {
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		this.addWindowListener(new WindowListener() {
-			@Override
-			public void windowOpened(WindowEvent arg0) {}
-			@Override
-			public void windowIconified(WindowEvent arg0) {}
-			@Override
-			public void windowDeiconified(WindowEvent arg0) {}
-			@Override
-			public void windowDeactivated(WindowEvent arg0) {}
-			@Override
+		this.addWindowListener(new WindowAdapter() {
+			
 			public void windowClosing(WindowEvent arg0) {
 				int answer = JOptionPane.showConfirmDialog(null, "This will close the server, are you sure?");
 //				System.out.println("ANSWER: " + answer);
@@ -126,10 +119,6 @@ public class Main extends JFrame {
 					System.err.println("Opening");
 				}
 			}
-			@Override
-			public void windowClosed(WindowEvent arg0) {}
-			@Override
-			public void windowActivated(WindowEvent arg0) {}
 		});
 		GridBagConstraints c = new GridBagConstraints();
 		this.getContentPane().setLayout(new GridBagLayout());
@@ -315,6 +304,8 @@ public class Main extends JFrame {
 		};
 		graphics.start();
 //		this.pack();
+
+
 	}
 
 

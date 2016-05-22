@@ -112,6 +112,7 @@ public class Team implements Comparable{
 		
 		}
 		public void set(String type, int index, boolean status) {
+			System.out.println("TEAM SET:"+hw+" "+index+" "+status);
 			if(type.equals("HW")){
 				//TODO deal with cube
 				hw[index]=status;				
