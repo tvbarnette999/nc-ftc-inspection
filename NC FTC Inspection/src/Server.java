@@ -659,11 +659,14 @@ public class Server {
 					//	System.out.println(req);
 					get(req.substring(4,req.indexOf("\n")),sock, req);
 				}
-				if(req.startsWith("POST")){					
+				if(req.startsWith("POST")){			
+					System.err.println("******** RENDERING POST **********");
 					String[] datarray=req.split("\n");
+					System.err.println(Arrays.toString(datarray));
 					String data=datarray[datarray.length-1];
-					data=data.substring(data.indexOf("\n")+3);					
-					System.out.println(data);
+					System.err.println(data); // this is correct
+					data=data.substring(data.indexOf("\n")+3);
+					System.err.println(data);
 					post(req.substring(5,req.indexOf("\n")),data,sock);
 				}
 				sock.close();
