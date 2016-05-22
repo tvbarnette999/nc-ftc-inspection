@@ -375,6 +375,7 @@ public class Server {
 	public void sendDocument(PrintWriter pw,OutputStream out,String f) throws IOException{
 		//if(f.substring(f.lastIndexOf(".")+1).equals("pdf")){
 		try{
+			//FIXME if 2 clients request manual within ~sec of each other is problem! might want to buffer into ram once. also syncrhonize
 			System.out.println("Sending: "+f);
 			FileInputStream fin=new FileInputStream(f);
 			int q=0;
@@ -512,22 +513,44 @@ public class Server {
 		Vector<String> form;
 		System.out.println("full: "+i);
 		String type="";
+		String note="";
+		String head="Appendix ";
 		switch(i){
-			case HARDWARE: form=HWForm; type="_HW";break;
-			case SOFTWARE: form=SWForm; type="_SW";break;
-			case FIELD: form=FDForm; type="_FD";break;
+			case HARDWARE: form=HWForm; type="_HW"; note=team.hwNote;break;
+			case SOFTWARE: form=SWForm; type="_SW"; note= team.swNote;break;
+			case FIELD: form=FDForm; type="_FD";note=team.fdNote;break;
 			default: throw new IllegalArgumentException("Full inspection not supported");
 		}
-		pw.println("<html><head>Team: "+extras+"</head><body><table><tr><th>Inspector</th><th>Inspection Rule</th><th>Rule #</th></tr>");
+		if(type.contains("W")) head+="A: Robot Inspection Checklist";
+		else head+="B: Field Inspection Checklist";
+		pw.println("<html><head><h2>"+head+"</h2><hr style=\"border: 3px solid #943634\" /><h3>Team Number: "+extras+"</h3></head>");
+		pw.println("<body><table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;\">");
+		pw.println("<tr bgcolor=\"#E6B222\" ><th>Insp.</th><th>Inspection Rule</th><th>Rule #</th></tr>");
 		
 		int j=0;
+		/*
+		 * TODO add js for pass and fail buttons:
+		 * 
+		 * pass: check all boxes are checked.
+		 *       popup for "signature"? like NobleHour did?
+		 * fail: dont need to check (could fail for safety)
+		 * both: send comments 
+		 *       send status update (pass only when signed)
+		 *       
+		 * remove auto check for pass when all checked? (forces signature)
+		 * 
+		 * TODO: signature: add username to login page so it autofills inspector's signature?
+		 */
 		for(String s:form){
 			pw.print("<tr><td><label>");
 			pw.println("<input type=\"checkbox\" name=\""+extras+type+j+"\" "+(team.get(i,j)?"checked=\"checked\"":"")+" onclick=\"update()\"/>");
 			pw.println("</label></td><td>"+s+"</td></tr>");
 			j++;
 		}
-		pw.println("</table><script>");
+		pw.println("</table><br><b>General Comments or Reasons for Failure:</b><br><textarea name=notes"+type+" rows=\"4\" cols=\"100\">"+note+"</textarea>");
+		pw.println("<br><br><button type=\"botton\">Pass</button>&nbsp;&nbsp;&nbsp;<button type=\"button\">Fail</button>");
+		
+		pw.println("<script>");
 		try {
 			sendPage(pw,"Resources/fullUpdate.js");
 		} catch (IOException e) {

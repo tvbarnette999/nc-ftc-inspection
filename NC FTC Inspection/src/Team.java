@@ -14,12 +14,15 @@ public class Team implements Comparable{
 		 * 
 		 * Then, decide whether we want to just issue a PASS to all teams in that category, or not display it (PASS is easier)
 		 */
-		boolean checkedIn=true;
+		boolean checkedIn=false;
 		int hardware;
-		int software=Server.PASS;
-		int cube=Server.PASS;
+		int software;
+		int cube;
 		int field;
 		boolean ready;
+		String hwNote="";
+		String swNote="";
+		String fdNote="";
 		//arrays for inspection
 		boolean[] hw;
 		boolean[] sw;
