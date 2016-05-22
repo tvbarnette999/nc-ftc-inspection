@@ -21,4 +21,13 @@ function fullfail(){
 	xhttp.open("POST", "../update?team="+event.target.name+"&value=1", true);
 	xhttp.send();
 	document.cookie = "username=FTC_VERIFIED";
+	sendNote();
+}
+
+function sendNote(){
+	var n=document.getElementById("note");
+	var xhttp = new XMLHttpRequest();
+	xhttp.open("POST", "../note?team="+n.name, true);
+	xhttp.send(n.value.concat("&&&"));
+	document.cookie = "username=FTC_VERIFIED";
 }

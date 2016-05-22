@@ -79,7 +79,6 @@ public class Team implements Comparable{
 			if(type.equals("SW"))this.software=i;
 			if(type.equals("FD"))this.field=i;
 			System.out.println("set "+this.number+" "+type+":"+i);			
-//			Server.statusLog.add("[TIME]: "+this.number+" "+type+" set to "+i);//TODO make this useful ie 1533 has PASSED hardware
 	
 			if(i==Server.NO_DATA){
 				Server.addLogEntry(this.number+" "+type+" set to Uninspected"); 
@@ -91,6 +90,11 @@ public class Team implements Comparable{
 			if(this.checkedIn&&this.cube==Server.PASS&&this.hardware==Server.PASS&&this.software==Server.PASS&&this.field==Server.PASS){
 				ready=true;
 			}
+		}
+		public void setNote(String type, String note){
+			if(type.equals("HW"))this.hwNote=note;
+			if(type.equals("SW"))this.swNote=note;
+			if(type.equals("FD"))this.fdNote=note;
 		}
 		
 		/**Checks whether a fully tracked inspection type is complete

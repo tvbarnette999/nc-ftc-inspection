@@ -338,6 +338,15 @@ public class Server {
 				getTeam(t).set(type,index,Boolean.parseBoolean(v));
 				//TODO send http status 204
 			}
+			else if(req.startsWith("note?")){
+				String s=req.substring(req.indexOf("=")+1);
+				System.out.println(s);
+				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
+				String type=s.substring(s.indexOf("_")+1,s.indexOf(" "));
+				System.out.println(t+":"+type);
+				String note=data.substring(0, data.indexOf("&&&"));
+				getTeam(t).setNote(type,note);
+			}
 			pageID=1;
 		}
 		System.out.println(pageID);
@@ -547,8 +556,8 @@ public class Server {
 			pw.println("</label></td><td>"+s+"</td></tr>");
 			j++;
 		}
-		pw.println("</table><br><b>General Comments or Reasons for Failure:</b><br><textarea name=notes"+type+" rows=\"4\" cols=\"100\">"+note+"</textarea>");
-		pw.println("<br><br><button type=\"botton\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
+		pw.println("</table><br><b>General Comments or Reasons for Failure:</b><br><textarea name="+extras+type+" id=\"note\" rows=\"4\" cols=\"100\">"+note+"</textarea>");
+		pw.println("<br><br><button type=\"button\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
 		pw.println("<button type=\"button\" name=\""+extras+type+"\" onclick=\"fullfail()\">Fail</button>");
 		
 		pw.println("<script>");
