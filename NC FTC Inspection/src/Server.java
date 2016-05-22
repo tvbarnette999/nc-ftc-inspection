@@ -42,6 +42,7 @@ public class Server {
 	public static final int CUBE=5;
 	public static final int CHECKIN=6;
 	public static final int HOME=7;
+	public static final int LOG=11;
 	
 	//These parameters are set to determine whther a given event will show status for that stage and do paperless inspection.
 	public static boolean trackCheckin=true;
@@ -184,7 +185,7 @@ public class Server {
 			case HOME:
 				sendHomePage(pw);
 				break;
-				
+			case LOG:sendLogPage(pw);break;
 			
 			//TODO add forums. add truncated manual sections? ie Robot Rules section, etc?
 			case 98:sendDocument(pw,out,"Resources/manual1.pdf");break;
@@ -239,6 +240,7 @@ public class Server {
 		if(req.equals("cube"))pageID=verified?CUBE:LOGIN;
 		if(req.equals("checkin"))pageID=verified?CHECKIN:LOGIN;
 		if(req.equals("home"))pageID=verified?HOME:LOGIN;
+		if(req.equals("log"))pageID=verified?LOG:LOGIN;
 		
 		if(req.startsWith("hardware/") && fullHardware){
 			pageID=verified?HARDWARE:LOGIN;
