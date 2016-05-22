@@ -28,6 +28,7 @@ function sendNote(){
 	var n=document.getElementById("note");
 	var xhttp = new XMLHttpRequest();
 	xhttp.open("POST", "../note?team="+n.name, true);
-	xhttp.send(n.value.concat("&&&"));
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("XX".concat(n.value.concat("&&&")));
 	document.cookie = "username=FTC_VERIFIED";
 }
