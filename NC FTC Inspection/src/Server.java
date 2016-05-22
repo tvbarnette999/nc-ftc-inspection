@@ -325,7 +325,7 @@ public class Server {
 				//TODO send http status 204
 			}
 			///fullupdate?team=5064_HW1&value=true HTTP/1.1
-			else if(req.contains("fullupdate?")){//full inspection state change
+			else if(req.startsWith("fullupdate?")){//full inspection state change
 				String s=req.substring(req.indexOf("=")+1);
 				System.out.println(s);
 				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
@@ -529,15 +529,15 @@ public class Server {
 		
 		int j=0;
 		/*
-		 * TODO add js for pass and fail buttons:
+		 * TODO improve js for pass and fail buttons:
 		 * 
 		 * pass: check all boxes are checked.
 		 *       popup for "signature"? like NobleHour did?
 		 * fail: dont need to check (could fail for safety)
 		 * both: send comments 
-		 *       send status update (pass only when signed)
+		 *       send status update (pass only when signed)-DONE(no sign for pass yet)
 		 *       
-		 * remove auto check for pass when all checked? (forces signature)
+		 * remove auto check for pass when all checked? (forces signature) -DONE
 		 * 
 		 * TODO: signature: add username to login page so it autofills inspector's signature?
 		 */
@@ -548,7 +548,8 @@ public class Server {
 			j++;
 		}
 		pw.println("</table><br><b>General Comments or Reasons for Failure:</b><br><textarea name=notes"+type+" rows=\"4\" cols=\"100\">"+note+"</textarea>");
-		pw.println("<br><br><button type=\"botton\">Pass</button>&nbsp;&nbsp;&nbsp;<button type=\"button\">Fail</button>");
+		pw.println("<br><br><button type=\"botton\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
+		pw.println("<button type=\"button\" name=\""+extras+type+"\" onclick=\"fullfail()\">Fail</button>");
 		
 		pw.println("<script>");
 		try {

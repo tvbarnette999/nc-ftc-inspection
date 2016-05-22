@@ -120,18 +120,15 @@ public class Team implements Comparable{
 				//TODO deal with cube
 				hw[index]=status;				
 				//if all true, set hardware to pass
-				if(checkFullInspection(Server.HARDWARE))this.set(type,Server.PASS);
-				else if(this.get(Server.HARDWARE)!=Server.PROGRESS)this.set(type, Server.PROGRESS);//dont set if we dont have to cuz status log
+				if(this.get(Server.HARDWARE)!=Server.PROGRESS)this.set(type, Server.PROGRESS);//dont set if we dont have to cuz status log
 			}
 			if(type.equals("SW")){
 				sw[index]=status;			
-				if(checkFullInspection(Server.SOFTWARE))this.set(type,Server.PASS);
-				else if(this.get(Server.SOFTWARE)!=Server.PROGRESS)this.set(type, Server.PROGRESS);
+				if(this.get(Server.SOFTWARE)!=Server.PROGRESS)this.set(type, Server.PROGRESS);
 			}
 			if(type.equals("FD")){
 				fd[index]=status;			
-				if(checkFullInspection(Server.FIELD))this.set(type,Server.PASS);
-				else if(this.get(Server.FIELD)!=Server.PROGRESS)this.set(type, Server.PROGRESS);
+				if(this.get(Server.FIELD)!=Server.PROGRESS)this.set(type, Server.PROGRESS);
 			}
 		}
 		
