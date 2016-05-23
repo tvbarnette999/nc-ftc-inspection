@@ -19,6 +19,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -322,9 +323,10 @@ public class Main extends JFrame {
 
 
 	private static void loadFiles() {
+		//load team data- numbers and names for all teams in NC
 		Scanner scan = null;
 		try {
-			scan = new Scanner(new File("Resources/teamdata.dat"));
+			scan =Resources.getScanner("teamdata.dat");
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
@@ -341,61 +343,42 @@ public class Main extends JFrame {
 		}	
 		scan.close();
 
+		//TODO need to do something if any of these throw an exception?
 		try {
-			scan=new Scanner(new File("Resources/hwform.dat"));
+			loadInspectionForm("hwform.dat",Server.HWForm);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
-		while(scan.hasNextLine()){
-			try{
-				String line=scan.nextLine();
-				line=line.replaceAll("<","&lt;");
-				line=line.replaceAll(">","&gt;");
-				line=line.replaceAll(":", "</td><td>");
-				System.out.println(line);
-				Server.HWForm.add(line);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-		}
-		scan.close();
-
 		try {
-			scan=Resources.getScanner("swform.dat");
+			loadInspectionForm("swform.dat",Server.SWForm);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
-		while(scan.hasNextLine()){
-			try{
-				String line=scan.nextLine();
-				line=line.replaceAll("<","&lt;");
-				line=line.replaceAll(">","&gt;");
-				line=line.replaceAll(":", "</td><td>");
-				Server.SWForm.add(line);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-		}
-		scan.close();
-
+		
 		try {
-			scan=Resources.getScanner("fdform.dat");//new Scanner(new File("Resources/fdform.dat"));
+			loadInspectionForm("fdform.dat",Server.FDForm);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
-		}
-		while(scan.hasNextLine()){
-			try{
-				String line=scan.nextLine();
-				line=line.replaceAll("<","&lt;");
-				line=line.replaceAll(">","&gt;");
-				line=line.replaceAll(":", "</td><td>");
-				Server.FDForm.add(line);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
 		}
 
 	}
 	
+	
+	public static void loadInspectionForm(String srcFile, Vector<String> target) throws FileNotFoundException{
+		
+		Scanner scan=Resources.getScanner(srcFile);			
+		while(scan.hasNextLine()){
+			try{
+				String line=scan.nextLine();
+				line=line.replaceAll("<","&lt;");
+				line=line.replaceAll(">","&gt;");
+				line=line.replaceAll(":", "</td><td>");
+				target.add(line);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		
+	}
 
 }
