@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
@@ -165,7 +166,7 @@ public class Server {
 		//TODO make constants for this, or an enum? Also replace all instances of the hardcoded #s with whichever we go with
 		switch(i){
 			case 0:sendStatusPage(pw);break;
-			case 1:sendPage(pw,"Resources/inspectorLogin.php");break;
+			case 1:sendPage(pw,"inspectorLogin.php");break;
 			case HARDWARE: 
 				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
 				else if(fullHardware)sendInspectionTeamSelect(pw,i);
@@ -189,11 +190,11 @@ public class Server {
 			case LOG:sendLogPage(pw);break;
 			
 			//TODO add forums. add truncated manual sections? ie Robot Rules section, etc?
-			case 98:sendDocument(pw,out,"Resources/manual1.pdf");break;
-			case 99:sendDocument(pw,out,"Resources/manual2.pdf");break;
-			case 100:sendDocument(pw,out,"Resources/firstfavicon.ico");break;
+			case 98:sendDocument(pw,out,"manual1.pdf");break;
+			case 99:sendDocument(pw,out,"manual2.pdf");break;
+			case 100:sendDocument(pw,out,"firstfavicon.ico");break;
 			case -1:
-				sendDocument(pw, out, "Resources/firstfavicon.png");
+				sendDocument(pw, out, "firstfavicon.png");
 				break;
 			default:
 				//404
@@ -371,7 +372,7 @@ public class Server {
 	 * @throws IOException
 	 */
 	public void sendPage(PrintWriter pw,String f) throws IOException{
-		Scanner s=new Scanner(new File(f));
+		Scanner s=Resources.getScanner(f);
 		while(s.hasNextLine())pw.println(s.nextLine());
 		s.close();
 	}
@@ -389,7 +390,7 @@ public class Server {
 		try{
 			//FIXME if 2 clients request manual within ~sec of each other is problem! might want to buffer into ram once. also syncrhonize
 			System.out.println("Sending: "+f);
-			FileInputStream fin=new FileInputStream(f);
+			InputStream fin=Resources.getInputStream(f);//new InputStream(f);
 			int q=0;
 			ByteArrayOutputStream bout=new ByteArrayOutputStream();
 			while((q=fin.read())!=-1){
@@ -477,7 +478,7 @@ public class Server {
 //				case 3:type="_SW";break;
 //				case 4:sendPage(pw,"Resources/fieldUpdate.js");break;
 //			}
-			sendPage(pw,"Resources/update.js");
+			sendPage(pw,"update.js");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -565,7 +566,7 @@ public class Server {
 		
 		pw.println("<script>");
 		try {
-			sendPage(pw,"Resources/fullUpdate.js");
+			sendPage(pw,"fullUpdate.js");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -633,7 +634,7 @@ public class Server {
 
 	@SuppressWarnings("unchecked")
 	public void loadEvent() throws FileNotFoundException{
-		Scanner scan=new Scanner(new File("Resources/"+event));
+		Scanner scan=Resources.getScanner(event);//new Scanner(new File("Resources/"+event));
 		fullEventName=scan.nextLine();
 		String[] nums=scan.nextLine().split(",");
 		scan.close();

@@ -361,7 +361,7 @@ public class Main extends JFrame {
 		scan.close();
 
 		try {
-			scan=new Scanner(new File("Resources/swform.dat"));
+			scan=Resources.getScanner("swform.dat");
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
@@ -379,7 +379,7 @@ public class Main extends JFrame {
 		scan.close();
 
 		try {
-			scan=new Scanner(new File("Resources/fdform.dat"));
+			scan=Resources.getScanner("fdform.dat");//new Scanner(new File("Resources/fdform.dat"));
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
