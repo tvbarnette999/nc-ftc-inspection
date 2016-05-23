@@ -8,8 +8,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -55,13 +62,18 @@ public class Main extends JFrame {
 	 *TODO if web page cant send POST due to disconnect, have a button at bottom of page to send all data from page for reconnect?
 	 *
 	 *TODO save status data
+	 *
+	 *TODO capability to run headless. just in case
 	 */
 
 	public Main() {
 		super("NC FTC Inspection Server");
 	}
+	public static File rootSaveDir=new File("");//root dir for all saved data
 	public static Main me;
 	public static void main(String[] args) {
+		
+		
 		loadFiles();
 		me = new Main();
 		me.initGUI();
@@ -384,5 +396,6 @@ public class Main extends JFrame {
 		}
 
 	}
+	
 
 }

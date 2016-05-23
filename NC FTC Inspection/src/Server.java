@@ -68,7 +68,8 @@ public class Server {
 	public static final long SEED = System.currentTimeMillis();
 	public static final String password="hello123";//"NCftc2016";
 
-	public static final String event="BCRI2017";
+	public static String event="BCRI2017";
+	public static String fullEventName;
 
 	private static ExecutorService threadPool;
 
@@ -601,14 +602,7 @@ public class Server {
 	@SuppressWarnings("unchecked")
 	public void startServer(final int port) throws FileNotFoundException{
 		this.setPassword(password); 
-		Scanner scan=new Scanner(new File("Resources/"+event));
-		String[] nums=scan.nextLine().split(",");
-		scan.close();
-		for(String s:nums){
-			teams.add(new Team(Integer.parseInt(s)));
-		}
-		addLogEntry("Loaded team data");
-		Collections.sort(teams);
+		loadEvent();
 		threadPool=Executors.newCachedThreadPool();
 		try {
 			ServerSocket server=new ServerSocket(port);
@@ -637,6 +631,17 @@ public class Server {
 		
 	}
 
+	public void loadEvent() throws FileNotFoundException{
+		Scanner scan=new Scanner(new File("Resources/"+event));
+		fullEventName=scan.nextLine();
+		String[] nums=scan.nextLine().split(",");
+		scan.close();
+		for(String s:nums){
+			teams.add(new Team(Integer.parseInt(s)));
+		}
+		addLogEntry("Loaded team data");
+		Collections.sort(teams);
+	}
 
 	/**
 	 * Handles the HTTP requests and directs them to appropriate methods.
