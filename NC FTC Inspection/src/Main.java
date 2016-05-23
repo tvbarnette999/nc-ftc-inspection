@@ -5,6 +5,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -62,7 +64,7 @@ public class Main extends JFrame {
 	 *
 	 *TODO if web page cant send POST due to disconnect, have a button at bottom of page to send all data from page for reconnect?
 	 *
-	 *TODO save status data
+	 *TODO save status data every minute or so
 	 *
 	 *TODO capability to run headless. just in case
 	 */
@@ -72,6 +74,7 @@ public class Main extends JFrame {
 	}
 	public static File rootSaveDir=new File("");//root dir for all saved data
 	public static Main me;
+	public static Vector<String> events=new Vector<String>();
 	public static void main(String[] args) {
 		
 		
@@ -93,7 +96,6 @@ public class Main extends JFrame {
 	private JLabel pw2Label = new JLabel("Re-enter the password");
 	private JLabel pwStatus = new JLabel("");
 	private JButton pwEnter = new JButton("Set Password");
-	
 	private JPanel statusPanel = new JPanel();
 	private JLabel cookieLabel = new JLabel("Cookies Issued: ");
 	private JLabel cookieCount = new JLabel("0");
@@ -119,7 +121,7 @@ public class Main extends JFrame {
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 			
-			public void windowClosing(WindowEvent arg0) {
+			public void windowClosing(WindowEvent e) {
 				int answer = JOptionPane.showConfirmDialog(null, "This will close the server, are you sure?");
 //				System.out.println("ANSWER: " + answer);
 				if (answer == JOptionPane.YES_OPTION) {
@@ -189,6 +191,7 @@ public class Main extends JFrame {
 				Server.theServer.setPassword(new String(pw1.getPassword()));
 			}
 		});
+		
 		c.weightx = 1;
 		c.weighty = 1;
 		c.fill = GridBagConstraints.BOTH;
@@ -268,7 +271,14 @@ public class Main extends JFrame {
 		this.setLocationRelativeTo(null);
 //		consoleField.setPreferredSize(new Dimension((int) getPreferredSize().getWidth(), 25));
 //		trafficPanel.setPreferredSize(getPreferredSize());
-		
+		consoleField.addKeyListener(new KeyAdapter(){
+			public void keyReleased(KeyEvent e){
+				if(e.getKeyCode()==KeyEvent.VK_ENTER){
+					handleCommand(consoleField.getText());
+					consoleField.setText("");
+				}
+			}
+		});
 		trafficPanel.setOpaque(true);
 		boolean running=true;
 		graphics = new Thread() {
@@ -341,7 +351,7 @@ public class Main extends JFrame {
 				e.printStackTrace();
 			}
 		}	
-		scan.close();
+		if(scan!=null)scan.close();
 
 		//TODO need to do something if any of these throw an exception?
 		try {
@@ -360,6 +370,17 @@ public class Main extends JFrame {
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
+		
+		try {
+			scan=Resources.getScanner("events.dat");
+			while(scan.hasNextLine()){
+				events.add(scan.nextLine());
+			}
+			Server.event=events.get(0);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		if(scan!=null)scan.close();
 
 	}
 	
@@ -379,6 +400,56 @@ public class Main extends JFrame {
 			}
 		}
 		
+	}
+	
+	public void handleCommand(String command){
+		//TODO implement commands
+		
+		/*   this does not include arguments
+		 * 
+		 * LIST 	events
+		 * 		teams
+		 * 		ALL
+		 * 			teams
+		 *      STATUS (for a team)
+		 *
+		 *ADD    team
+		 *REMOVE team
+		 *CREATE event 
+		 *SET   status
+		 *      password
+		 *      
+		 *CHANGE event
+		 *   
+		 *SAVE
+		 * 
+		 * 
+		 */
+		consoleTextArea.append(command+"\n");
+		boolean success=false;
+		String[] args=command.split(" ");
+		if(args.length>0)args[0]=args[0].toUpperCase();
+		if(args[0].equals("LIST")){
+			if(args[1].toUpperCase().equals("EVENTS")){
+				for(String e:events){
+					consoleTextArea.append(e+"\n");
+					success=true;
+				}
+			}
+		}
+		if(args[0].equals("CHANGE")){
+			if(args[1].toUpperCase().equals("EVENT")){
+				//TODO check if valid event
+				if(events.contains(args[2])){
+					success=Server.changeEvent(args[2]);
+				}
+			}
+		}
+		
+		if(args[0].equals("SAVE")){
+			success=Server.save();
+		}
+		consoleTextArea.append((success?"SUCCESS":"FAILED")+"\n");
 	}
 
 }

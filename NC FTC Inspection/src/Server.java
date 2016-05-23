@@ -69,7 +69,7 @@ public class Server {
 	public static final long SEED = System.currentTimeMillis();
 	public static final String password="hello123";//"NCftc2016";
 
-	public static String event="BCRI2016";
+	public static String event="BCRI_16";
 	public static String fullEventName;
 
 	private static ExecutorService threadPool;
@@ -644,10 +644,18 @@ public class Server {
 	public void loadEvent() throws FileNotFoundException{
 		Scanner scan=Resources.getScanner(event);//new Scanner(new File("Resources/"+event));
 		fullEventName=scan.nextLine();
-		String[] nums=scan.nextLine().split(",");
+		Vector<Integer> nums=new Vector<Integer>();
+		scan.useDelimiter(",| |\\n");
+		while(scan.hasNext()){
+			try{
+				nums.add(scan.nextInt());
+			}catch(Exception e){}
+		}
+//		scan.useDelimiter(",");
+//		String[] nums=scan.nextLine().split(",");
 		scan.close();
-		for(String s:nums){
-			teams.add(new Team(Integer.parseInt(s)));
+		for(int i:nums){
+			teams.add(new Team(i));
 		}
 		addLogEntry("Loaded team data");
 		Collections.sort(teams);
@@ -698,7 +706,7 @@ public class Server {
 	public static void addLogEntry(String s){
 		String time=new SimpleDateFormat ("[hh:mm:ss] ").format(Calendar.getInstance().getTime());
 		statusLog.add(time+s);
-		Main.me.consoleTextArea.append("\n"+time+s);
+		Main.me.consoleTextArea.append(time+s+"\n");
 		//TODO fire event to update GUI
 		System.out.println(time+s);
 	}
@@ -710,5 +718,21 @@ public class Server {
 		//TODO save things!
 		addLogEntry("Stopping server!");
 		theServer.done=true;
+	}
+	public static boolean changeEvent(String name) {
+		event=name;
+		theServer.teams.clear();
+		//TODO SAVE!?
+		try {
+			theServer.loadEvent();
+			return true;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}		
+		return false;
+	}
+	public static boolean save(){
+		//TODO SAVE!
+		return true;
 	}
 }
