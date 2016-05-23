@@ -69,7 +69,7 @@ public class Server {
 	public static final long SEED = System.currentTimeMillis();
 	public static final String password="hello123";//"NCftc2016";
 
-	public static String event="BCRI2017";
+	public static String event="BCRI2016";
 	public static String fullEventName;
 
 	private static ExecutorService threadPool;
@@ -632,6 +632,14 @@ public class Server {
 		
 	}
 
+	/**
+	 * Loads event data
+	 * file name: EVENTCODE ex:BCRI2017, NCCMP2016, CGHS
+	 * Format:
+	 * line 1:Event Full name
+	 * line 2:Comma separated list of team #s
+	 * @throws FileNotFoundException
+	 */
 	@SuppressWarnings("unchecked")
 	public void loadEvent() throws FileNotFoundException{
 		Scanner scan=Resources.getScanner(event);//new Scanner(new File("Resources/"+event));
