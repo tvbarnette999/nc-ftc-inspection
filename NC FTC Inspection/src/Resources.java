@@ -1,10 +1,13 @@
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Resources {
-	public static String root;
+	public static String root="NC Inspection";
 	/**
 	 * Returns a Scanner object for the given resource.
 	 * @param name
@@ -34,6 +37,52 @@ public class Resources {
 			}
 		}
 		return in;
+	}
+
+	public static boolean createEventFile(String code, String name, String teams) {
+		File f=new File(root);
+		if(!f.exists() || ! f.isDirectory())f.mkdirs();
+		f=new File(root+"/"+code+".event");
+		try {
+			f.createNewFile();
+			PrintWriter pw=new PrintWriter(f);
+			pw.println(name);
+			pw.print(teams);
+			pw.flush();
+			pw.close();
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+	}
+
+	public static boolean saveEventsList() {
+		File f=new File(root);
+		if(!f.exists() || ! f.isDirectory())f.mkdirs();
+		f=new File(root+"/events.dat");
+		if(!f.exists()){
+			try {
+				f.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
+		}
+		try{
+			PrintWriter pw=new PrintWriter(f);
+			for(String e:Main.events){
+				pw.println(e);
+			}
+			pw.flush();
+			pw.close();
+		}catch(Exception e){
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 }

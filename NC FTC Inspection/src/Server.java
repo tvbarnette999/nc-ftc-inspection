@@ -642,14 +642,14 @@ public class Server {
 	 */
 	@SuppressWarnings("unchecked")
 	public void loadEvent() throws FileNotFoundException{
-		Scanner scan=Resources.getScanner(event);//new Scanner(new File("Resources/"+event));
+		Scanner scan=Resources.getScanner(event+".event");//new Scanner(new File("Resources/"+event));
 		fullEventName=scan.nextLine();
 		Vector<Integer> nums=new Vector<Integer>();
 		scan.useDelimiter(",| |\\n");
 		while(scan.hasNext()){
 			try{
 				nums.add(scan.nextInt());
-			}catch(Exception e){}
+			}catch(Exception e){e.printStackTrace();}
 		}
 //		scan.useDelimiter(",");
 //		String[] nums=scan.nextLine().split(",");
@@ -720,6 +720,7 @@ public class Server {
 		theServer.done=true;
 	}
 	public static boolean changeEvent(String name) {
+		System.out.println("New event:"+name);
 		event=name;
 		theServer.teams.clear();
 		//TODO SAVE!?
@@ -733,6 +734,14 @@ public class Server {
 	}
 	public static boolean save(){
 		//TODO SAVE!
+		
+		
+		
+		return true;
+	}
+	
+	public static boolean saveEventFile() {
+		// TODO SAVE
 		return true;
 	}
 }
