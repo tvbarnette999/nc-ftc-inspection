@@ -631,6 +631,7 @@ public class Server {
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	public void loadEvent() throws FileNotFoundException{
 		Scanner scan=new Scanner(new File("Resources/"+event));
 		fullEventName=scan.nextLine();
