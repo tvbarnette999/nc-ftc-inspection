@@ -45,7 +45,7 @@ public class Main extends JFrame {
 	public static HashMap<Integer,String> teamData=new HashMap<Integer,String>();
 
 
-	//TODO Monitoring GUI- allow editing what teams are there
+	
 	/*
 	 * TODO Decide how events are structured:
 	 * 

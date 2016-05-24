@@ -166,7 +166,7 @@ public class Server {
 			extras = "";
 		}
 		pw.println(extras);
-		//TODO make constants for this, or an enum? Also replace all instances of the hardcoded #s with whichever we go with
+		
 		switch(i){
 			case 0:sendStatusPage(pw);break;
 			case 1:sendPage(pw,"inspectorLogin.php");break;
@@ -514,7 +514,7 @@ public class Server {
 	}
 	
 	public void sendFullInspectionPage(PrintWriter pw, int i, String extras){
-		//TODO have notes page at bottom, and submit button
+		
 		//when submit button clicked, send note and thats how you know IP->fail (or pass)
 		//note beng reason for failure as prescribed 
 		//TODO do we want to be able to print an inspection sheet for a team if they ask? IE print job? -Nah scoring pc can just connect and print webpage
@@ -664,7 +664,7 @@ public class Server {
 		addLogEntry("Loaded event data");
 		Collections.sort(teams);
 		
-		//TODO load status data if exists
+		//load status data if exists
 		scan=Resources.getStatusScanner();
 		if(scan==null)return;//were done here- no data
 		String[] line;
@@ -763,23 +763,23 @@ public class Server {
 		String time=new SimpleDateFormat ("[hh:mm:ss] ").format(Calendar.getInstance().getTime());
 		statusLog.add(time+s);
 		Main.me.consoleTextArea.append(time+s+"\n");
-		//TODO fire event to update GUI
-//		System.out.println(time+s);
+		
 	}
 	
 	/**
 	 * Stops the server
 	 */
 	public static void stopServer(){
-		//TODO save things!
+		Server.save();
 		addLogEntry("Stopping server!");
 		theServer.done=true;
 	}
 	public static boolean changeEvent(String name) {
+		Server.save();
+		addLogEntry("Saved old event data");
 		System.out.println("New event:"+name);
 		event=name;
 		theServer.teams.clear();
-		//TODO SAVE!?
 		try {
 			theServer.loadEvent();
 			return true;
