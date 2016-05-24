@@ -291,7 +291,7 @@ public class Server {
 //				OutputStream out=sock.getOutputStream();
 //				PrintWriter pw=new PrintWriter(out);
 //				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
-				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + hashedPassString + "\\\"\";</script>";
+				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + hashedPassString + "\\\";path=/\";</script>";
 				cookieCount++;
 //				pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: " + cookieHeader + hashedPassString + "\"\n\n    \n");
 //				pw.flush();
