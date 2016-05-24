@@ -629,36 +629,41 @@ public class Server {
 		this.setPassword(password); 
 		loadEvent();
 		addLogEntry("Starting server...");
-		threadPool=Executors.newCachedThreadPool();
-		try {
-			ServerSocket server=new ServerSocket(port);
-			server.setSoTimeout(1000);
-			addLogEntry("Server ready.");
-			while(!done){
-				try{
-					threadPool.execute(new Handler(server.accept()));
-				}catch(SocketTimeoutException e){
-					//this is so we can safely shutdown}
+		Thread serverThread=new Thread("Server"){
+			public void run(){
+				threadPool=Executors.newCachedThreadPool();
+				try {
+					ServerSocket server=new ServerSocket(port);
+					server.setSoTimeout(1000);
+					addLogEntry("Server ready.");
+					while(!done){
+						try{
+							threadPool.execute(new Handler(server.accept()));
+						}catch(SocketTimeoutException e){
+							//this is so we can safely shutdown}
+						}
+					}
+					server.close();
+					addLogEntry("ServerSocket closed");
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
+				addLogEntry("Attempting to shutdown client threads...");
+				threadPool.shutdown();
+				try {
+					threadPool.awaitTermination(5, TimeUnit.SECONDS);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				if(threadPool.isShutdown()){
+					addLogEntry("Client threads terminated");
+				}else{
+					addLogEntry("Client threads failed to terminate!");
+				}
+				threadPool.shutdownNow();
 			}
-			server.close();
-			addLogEntry("ServerSocket closed");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		addLogEntry("Attempting to shutdown client threads...");
-		threadPool.shutdown();
-		try {
-			threadPool.awaitTermination(5, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		if(threadPool.isShutdown()){
-			addLogEntry("Client threads terminated");
-		}else{
-			addLogEntry("Client threads failed to terminate!");
-		}
-		threadPool.shutdownNow();
+		};
+		serverThread.start();
 		
 	}
 

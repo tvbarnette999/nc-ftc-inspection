@@ -24,7 +24,10 @@ import java.util.Collections;
 
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Timer;
 import java.util.Vector;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -80,15 +83,18 @@ public class Main extends JFrame {
 	public Main() {
 		super("NC FTC Inspection Server");
 	}
-	public static File rootSaveDir=new File("");//root dir for all saved data
+	//public static File rootSaveDir=new File("");//root dir for all saved data
+	public static long autoSave=60000;//default every minute
 	public static Main me;
 	public static Vector<String> events=new Vector<String>();
+	public static Thread autoSaveThread;
 	public static void main(String[] args) {
 		
 		
 		loadFiles();
 		me = new Main();
 		me.initGUI();
+		
 		try {
 			Server.theServer.startServer(80);
 		} catch (FileNotFoundException e) {
@@ -96,6 +102,26 @@ public class Main extends JFrame {
 			e.printStackTrace();
 			System.exit(0);
 		}
+		autoSaveThread=new Thread("AutoSave"){
+			public void run(){
+				System.out.println("Started Autosave thread.");
+				while(true){
+					try{
+						Thread.sleep(autoSave);
+						Server.save();
+						System.out.println("AutoSave");
+					}catch(InterruptedException e){
+						return;
+					}
+					catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		autoSaveThread.setDaemon(true);
+		autoSaveThread.start();
+		
 	}
 	private JPanel pwPanel = new JPanel();
 	private JPasswordField pw1 = new JPasswordField(15);
@@ -431,6 +457,7 @@ public class Main extends JFrame {
 		 *SET   status
 		 *      password
 		 *      root**
+		 *      autosave
 		 *      TEAM [#]* <name> (sets name- # would be add)
 		 *      EVENT
 		 *           NAME*
@@ -611,13 +638,13 @@ public class Main extends JFrame {
 						else{
 							append("USAGE: SET STATUS <number> <type> <status>");
 							append("<type= CI | SC | HW | SW | FD>");
-							append("<status= 0 | 1 | 2 | 3 | PASS | FAIL | NO_DATA | PROGRESS>");
+							append("<status= 0 | 1 | 2 | 3 | NO_DATA | FAIL | PROGRESS | PASS>");
 							return;
 						}
 					}
 				}
 				else{
-					append("USAGE: SET [STATUS | PASSWORD | ROOT | TEAM | EVENT [NAME | CODE] ] <value>");
+					append("USAGE: SET [STATUS | PASSWORD | ROOT | AUTOSAVE | TEAM | EVENT [NAME | CODE] ] <value>");
 					return;
 				}
 			}
