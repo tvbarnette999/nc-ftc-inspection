@@ -585,6 +585,40 @@ public class Main extends JFrame {
 				}
 				
 			}
+			else if(args[0].equals("SET")){
+				if(args.length>1){
+					args[1]=args[1].toUpperCase();
+					if(args[1].equals("STATUS")){
+						if(args.length>4){
+							int num=Integer.parseInt(args[2]);
+							String type=args[3];
+							try{
+								int stat=Integer.parseInt(args[4]);
+								Server.theServer.getTeam(num).set(type, stat);
+								success=true;
+							}catch(Exception e){
+								//not numbe status
+								try {
+									int stat=Server.class.getDeclaredField(args[4]).getInt(null);
+									Server.theServer.getTeam(num).set(type, stat);
+									success=true;
+								} catch (Exception e1) {
+									e1.printStackTrace();
+									success=false;
+								} 
+							}
+						}
+						else{
+							append("USAGE: SET STATUS <number> <type> <status>");
+							append("<type= CI | SC | HW | SW | FD>");
+							append("<status= 0 | 1 | 2 | 3 | PASS | FAIL | NO_DATA | PROGRESS>");
+						}
+					}
+				}
+				else{
+					append("USAGE: SET [STATUS | PASSWORD | ROOT | TEAM | EVENT [NAME | CODE] ] <value>");
+				}
+			}
 			else if(args[0].equals("CLEAR")){
 				//TODO warning
 				if(args.length>1){
