@@ -19,6 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
 import java.util.Collections;
 
 import java.util.HashMap;
@@ -355,7 +356,7 @@ public class Main extends JFrame {
 		while(scan.hasNextLine()){
 			try{
 				String line=scan.nextLine();
-				System.out.println(line);
+				//System.out.println(line);
 				int num=Integer.parseInt(line.substring(0, line.indexOf(":")));
 				String name=line.substring(line.indexOf(":")+1);
 				teamData.put(num, name);
@@ -424,98 +425,201 @@ public class Main extends JFrame {
 		 * 		teams (-a for all nc teams)
 		 *      STATUS (for a team)
 		 *
-		 *ADD    team
-		 *       event
-		 *REMOVE team
+		 *ADD    team*
+		 *       event*
+		 *REMOVE team*
 		 *SET   status
 		 *      password
-		 *      root
-		 *      TEAM [#] <name> (sets name- # would be add)
+		 *      root**
+		 *      TEAM [#]* <name> (sets name- # would be add)
 		 *      EVENT
-		 *           name
-		 *           code - nasty- gotta move files 
+		 *           NAME*
+		 *           CODE* - nasty- gotta move files 
 		 *      
 		 *CHANGE event
+		 *SELECT event-same
 		 *
-		 *RESET (warning?)
+		 *CLEAR DATA*
+		 *DLEAR ALL LOCAL DATA? (resets to factory settings and events -deletes save dir)
 		 * 
-		 *SAVE
+		 *SAVE*
 		 * 
 		 * 
 		 */
 		consoleTextArea.append(command+"\n");
 		boolean success=false;//return to not show success
 		String[] args=command.split(" ");
-		if(args.length>0)args[0]=args[0].toUpperCase();
-		if(args[0].equals("LIST")){
-			if(args.length>1){
-				if(args[1].toUpperCase().equals("EVENTS")){
-					for(String e:events){
-						consoleTextArea.append(e+"\n");
+		if(args.length>0){
+			args[0]=args[0].toUpperCase();
+		
+			if(args[0].equals("LIST")){
+				if(args.length>1){
+					args[1]=args[1].toUpperCase();
+					if(args[1].equals("EVENTS")){
+						for(String e:events){
+							consoleTextArea.append(e+"\n");
+						}
+						return;
 					}
+					else if(args[1].equals("TEAMS")){
+						if(args.length>2 && args[2].toUpperCase().equals("-A")){
+							//list all nc teams in order
+							Integer[] copy=teamData.keySet().toArray(new Integer[1]);
+							Arrays.sort(copy);
+							for(Integer num:copy){
+								append(num+": "+teamData.get(num));
+							}
+							return;
+						}
+						else{
+							for(Team t:Server.theServer.teams){
+								append(t.number+": "+t.name);
+							}
+							return;
+						}
+					}
+					else if(args[1].equals("STATUS")){						
+						
+						try{
+							int num=Integer.parseInt(args[2]);
+							Team t=Server.theServer.getTeam(num);
+							if(t==null){
+								if(teamData.containsKey(num))append(num+" "+teamData.get(num)+" is not in this event.");
+								else append("Unrecognized team #: "+num);
+								return;
+							}
+							append(t.number+": "+t.name);
+							append((t.checkedIn?"":"NOT ")+"Checked In");
+							append((t.cube==Server.PASS?"":"NOT")+"passed sizing cube");
+							append((t.hardware==Server.PASS?"":"NOT")+"passed hardware");
+							append((t.software==Server.PASS?"":"NOT")+"passed software");
+							append((t.field==Server.PASS?"":"NOT")+"passed field");
+							return;
+						}
+						catch(Exception e){
+							append("USAGE: LIST STATUS <number>");
+							return;
+						}
+					}
+					else{
+						append("USAGE: LIST [EVENTS | TEAMS | STATUS]");
+						return;
+					}
+				}else{
+					append("USAGE: LIST [EVENTS | TEAMS | STATUS] ");
 					return;
 				}
-			}else{
-				append("USAGE: LIST [EVENTS | TEAMS | STATUS] ");
 			}
-		}
-		if(args[0].equals("CHANGE")){
-			if(args.length>1){
-				if(args[1].toUpperCase().equals("EVENT")){
-					if(args.length>2){
-						if(events.contains(args[2])){
-							success=Server.changeEvent(args[2]);
+			else if(args[0].equals("CHANGE") || args[0].equals("SELECT")){
+				if(args.length>1){
+					if(args[1].toUpperCase().equals("EVENT")){
+						if(args.length>2){
+							if(events.contains(args[2])){
+								success=Server.changeEvent(args[2]);
+							}
+						}else{
+							append("USAGE: CHANGE [EVENT] <code>");
+							return;
 						}
-					}else{
-						append("USAGE: CHANGE [EVENT] <code>");
+					}
+				}
+				else{
+					append("USAGE: CHANGE [EVENT] <code>");
+					return;
+				}
+			}
+			else if(args[0].equals("ADD")){
+				if(args.length>1){
+					if(args[1].toUpperCase().equals("TEAM")){
+						try{
+							int num=Integer.parseInt(args[2]);
+							success=Server.theServer.teams.add(new Team(num));
+							Collections.sort(Server.theServer.teams);
+							success&=Resources.saveEventFile();
+						}catch(Exception e){
+							append("FAILED: USAGE: ADD TEAM <number>");
+							return;
+						}
+					}
+					if(args[1].toUpperCase().equals("EVENT")){ 
+						if(args.length>3){
+							String name="";
+							if(args.length>3)name=args[3];
+							for(int i=4;i<args.length;i++){
+								name+=" "+args[i];
+							}
+							if(Resources.createEventFile(args[2],name)){ 
+								events.add(args[2]);
+								success=Resources.saveEventsList();
+							}
+						}else{
+							append("USAGE: ADD [EVENT] <code> <name>");
+							return;
+						}
+					}
+				}else{
+					append("USAGE: ADD [TEAM | EVENT] <number | code> <name>");//also least team #s for event
+					return;
+				}
+			}
+			else if(args[0].equals("REMOVE")){
+				if(args.length>2 && args[1].toUpperCase().equals("TEAM")){
+					try{
+						Team t=Server.theServer.getTeam(Integer.parseInt(args[2]));
+						System.out.println(t);
+						if(t==null){
+							append("Team was not in event");
+							return;
+						}else{
+							success = Server.theServer.teams.remove(t);
+							success &= Resources.saveEventFile();//save removal
+						}
+					}catch(Exception e){
+						append("USAGE: REMOVE TEAM <number>");
 						return;
 					}
 				}
+				else{
+					append("USAGE: REMOVE TEAM <number>");
+					return;
+				}
+				
+			}
+			else if(args[0].equals("CLEAR")){
+				//TODO warning
+				if(args.length>1){
+					args[1]=args[1].toUpperCase();
+					if(args[1].equals("DATA")){
+						success=Server.clearData();
+					}
+					if(args[1].equals("CONSOLE")){
+						consoleTextArea.setText("");
+						return;
+					}
+					else{
+						append("USAGE: CLEAR [CONSOLE | DATA]");
+						return;
+					}
+				}else{
+					append("USAGE: CLEAR [CONSOLE | DATA]");
+					return;
+				}
+			}
+			else if(args[0].equals("SAVE")){
+				success=Server.save();
 			}
 			else{
-				append("USAGE: CHANGE [EVENT] <code>");
+				append("UNKNOW COMMAND:"+args[0]);
 				return;
 			}
+			consoleTextArea.append((success?"SUCCESS":"FAILED")+"\n");
 		}
-		if(args[0].equals("ADD")){
-			if(args.length>1){
-				if(args[1].toUpperCase().equals("TEAM")){
-					try{
-						int num=Integer.parseInt(args[2]);
-						success=Server.theServer.teams.add(new Team(num));
-						Collections.sort(Server.theServer.teams);
-						success&=Resources.saveEventFile();
-					}catch(Exception e){
-						append("FAILED: USAGE: ADD TEAM <number>");
-						return;
-					}
-				}
-				if(args[1].toUpperCase().equals("EVENT")){ 
-					if(args.length>3){
-						String teams="";
-						//TODO cmd support for events with spaces in name (could remove option to add team numbers.. -easiest)
-						if(args.length>3)teams=args[4];
-						for(int i=5;i<args.length;i++){
-							teams+=","+args[i];
-						}
-						if(Resources.createEventFile(args[2],args[3],teams)){ 
-							events.add(args[2]);
-							success=Resources.saveEventsList();
-						}
-					}else append("USAGE: ADD [EVENT] <code> <name> <team#>...");//team # comma or space separated work
-				}
-			}else{
-				append("USAGE: ADD [TEAM | EVENT] <number | code> <name>");//also least team #s for event
-				return;
-			}
-		}
-		if(args[0].equals("SAVE")){
-			success=Server.save();
-		}
-		consoleTextArea.append((success?"SUCCESS":"FAILED")+"\n");
 	}
+	
+	
 	public void append(String s){
 		consoleTextArea.append(s+"\n");
+		//TODO scroll down
 	}
 	
 	

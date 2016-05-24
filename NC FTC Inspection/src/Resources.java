@@ -66,14 +66,14 @@ public class Resources {
 		return in;
 	}
 
-	public static boolean createEventFile(String code, String name, String teams) {
+	public static boolean createEventFile(String code, String name) {
 		checkRoot();
 		File f=new File(root+"/"+code+".event");
 		try {
 			f.createNewFile();
 			PrintWriter pw=new PrintWriter(f);
 			pw.println(name);
-			pw.print(teams);
+			pw.print("");//no teams
 			pw.flush();
 			pw.close();
 			return true;
@@ -92,7 +92,6 @@ public class Resources {
 			try {
 				f.createNewFile();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return false;
 			}
@@ -120,20 +119,25 @@ public class Resources {
 		if(!f.exists()){
 			try{
 				f.createNewFile();
-				PrintWriter pw=new PrintWriter(f);
-				pw.println(Server.fullEventName);
-				String s="";
-				for(Team t:Server.theServer.teams){
-					s+=t.number+",";
-				}
-				pw.print(s.substring(0,s.length()-1));//remove last comma
-				pw.flush();
-				pw.close();
-				return true;
-			}catch(IOException e){
+			}catch(Exception e){
 				e.printStackTrace();
+				return false;
 			}
 		}
+		try{
+			PrintWriter pw=new PrintWriter(f);
+			pw.println(Server.fullEventName);
+			String s="";
+			for(Team t:Server.theServer.teams){
+				s+=t.number+",";
+			}
+			pw.print(s.substring(0,s.length()-1));//remove last comma
+			pw.flush();
+			pw.close();
+			return true;
+		}catch(IOException e){
+			e.printStackTrace();
+		}	
 		
 		return false;
 	}

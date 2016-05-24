@@ -628,11 +628,12 @@ public class Server {
 	public void startServer(final int port) throws FileNotFoundException{
 		this.setPassword(password); 
 		loadEvent();
+		addLogEntry("Starting server...");
 		threadPool=Executors.newCachedThreadPool();
 		try {
 			ServerSocket server=new ServerSocket(port);
 			server.setSoTimeout(1000);
-			addLogEntry("Starting server...");
+			addLogEntry("Server ready.");
 			while(!done){
 				try{
 					threadPool.execute(new Handler(server.accept()));
@@ -651,6 +652,11 @@ public class Server {
 			threadPool.awaitTermination(5, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		}
+		if(threadPool.isShutdown()){
+			addLogEntry("Client threads terminated");
+		}else{
+			addLogEntry("Client threads failed to terminate!");
 		}
 		threadPool.shutdownNow();
 		
@@ -863,6 +869,9 @@ public class Server {
 		
 		return true;
 	}
-	
+	public static boolean clearData(){
+		//TODO implement
+		return false;
+	}
 	
 }
