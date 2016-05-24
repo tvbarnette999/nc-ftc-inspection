@@ -561,6 +561,7 @@ public class Main extends JFrame {
 						try{
 							int num=Integer.parseInt(args[2]);
 							success=Server.theServer.teams.add(new Team(num));
+							//TODO if team unknown, add to master list
 							Collections.sort(Server.theServer.teams);
 							success&=Resources.saveEventFile();
 						}catch(Exception e){
@@ -642,9 +643,31 @@ public class Main extends JFrame {
 							return;
 						}
 					}
+					else if(args[1].equals("AUTOSAVE")){
+						try{
+							autoSave=Long.parseLong(args[2])*1000;
+							success=true;
+						}catch(Exception e){
+							append("USAGE: SET AUTOSAVE <time (s)>");
+							return;
+						}
+					}
+					else if(args[1].equals("TEAMNAME")){
+						try{
+							int number=Integer.parseInt(args[2]);
+							Team t=Server.theServer.getTeam(number);
+							if(t==null){
+								//TODO team not event
+							}
+							//TODO finish
+							
+						}catch(Exception e){
+							append("USAGE: SET TEAMNAME <number> <name>");
+						}
+					}
 				}
 				else{
-					append("USAGE: SET [STATUS | PASSWORD | ROOT | AUTOSAVE | TEAM | EVENT [NAME | CODE] ] <value>");
+					append("USAGE: SET [STATUS | PASSWORD | ROOT | AUTOSAVE | TEAMNAME | EVENT [NAME | CODE] ] <value>");
 					return;
 				}
 			}
