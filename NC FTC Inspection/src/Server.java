@@ -231,7 +231,7 @@ public class Server {
 			verified = checkHash(check);
 		} catch (Exception e) {
 			verified = false;
-			e.printStackTrace();
+			//e.printStackTrace();
 			//we dont have the password
 		}
 		req=req.substring(1,req.indexOf(" "));
@@ -352,6 +352,17 @@ public class Server {
 //				System.out.println(t+":"+type);
 				String note=data.substring(0, data.indexOf("&&&"));
 				getTeam(t).setNote(type,note);
+			}
+			else if(req.startsWith("sig?")){
+				String s=req.substring(req.indexOf("=")+1);
+				int t=Integer.parseInt(s.substring(0,s.indexOf("_")));
+				String type=s.substring(s.indexOf("_")+1,s.indexOf(" "));
+				System.out.println(data);
+				String teamSig=data.substring(data.indexOf("team=")+5,data.indexOf("&"));
+				String inpSig=data.substring(data.indexOf("inspector=")+10,data.indexOf("&&&"));
+				System.out.println(t+" "+type+": "+teamSig+", "+inpSig);
+				getTeam(t).setSignature(type, teamSig, inpSig);
+				
 			}
 			pageID=1;
 		}
@@ -568,6 +579,15 @@ public class Server {
 		pw.println("<br><br><button type=\"button\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
 		pw.println("<button type=\"button\" name=\""+extras+type+"\" onclick=\"fullfail()\">Fail</button>");
 		
+		String[] sigs=team.getSigs(type.substring(1));
+		if(sigs.length>0){
+			//TODO tidy this up a lot!
+			pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
+									"the FIRST Tech Challenge have been abided by.</b><br><br>");
+			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td>"+sigs[1]+"<hr></td><td>"+sigs[0]+"<hr></td></tr>");
+			pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
+		}
+		
 		pw.println("<script>");
 		try {
 			sendPage(pw,"fullUpdate.js");
@@ -689,6 +709,9 @@ public class Server {
 			for(int i=0;i<t.hw.length;i++){
 				t.hw[i]=scan.nextBoolean();
 			}
+			scan.nextLine();
+			t.hwTeamSig=scan.nextLine();
+			t.hwInspSig=scan.nextLine();
 			while(scan.hasNextLine()){
 				t.hwNote+=scan.nextLine()+"\n";
 			}
@@ -698,6 +721,9 @@ public class Server {
 			for(int i=0;i<t.sw.length;i++){
 				t.sw[i]=scan.nextBoolean();
 			}
+			scan.nextLine();
+			t.swTeamSig=scan.nextLine();
+			t.swInspSig=scan.nextLine();
 			while(scan.hasNextLine()){
 				t.swNote+=scan.nextLine()+"\n";
 			}
@@ -707,6 +733,9 @@ public class Server {
 			for(int i=0;i<t.fd.length;i++){
 				t.fd[i]=scan.nextBoolean();
 			}
+			scan.nextLine();
+			t.fdTeamSig=scan.nextLine();
+			t.fdInspSig=scan.nextLine();
 			while(scan.hasNextLine()){
 				t.fdNote+=scan.nextLine()+"\n";
 			}
@@ -803,6 +832,8 @@ public class Server {
 			for(boolean b:t.hw){
 				pw.println(b);
 			}
+			pw.println(t.hwTeamSig);
+			pw.println(t.hwInspSig);
 			pw.print(t.hwNote);
 			pw.flush();
 			pw.close();
@@ -812,6 +843,8 @@ public class Server {
 			for(boolean b:t.sw){
 				pw.println(b);
 			}
+			pw.println(t.swTeamSig);
+			pw.println(t.swInspSig);
 			pw.print(t.swNote);
 			pw.flush();
 			pw.close();
@@ -821,6 +854,8 @@ public class Server {
 			for(boolean b:t.fd){
 				pw.println(b);
 			}
+			pw.println(t.fdTeamSig);
+			pw.println(t.fdInspSig);
 			pw.print(t.fdNote);
 			pw.flush();
 			pw.close();

@@ -20,9 +20,9 @@ public class Team implements Comparable{
 		int cube;
 		int field;
 		boolean ready;
-		String hwNote="";
-		String swNote="";
-		String fdNote="";
+		String hwNote="",hwTeamSig="",hwInspSig="";
+		String swNote="",swTeamSig="",swInspSig="";
+		String fdNote="",fdTeamSig="",fdInspSig="";
 		//arrays for inspection
 		boolean[] hw;
 		boolean[] sw;
@@ -162,6 +162,35 @@ public class Team implements Comparable{
 				e.printStackTrace();
 			}
 			return null;
+		}
+
+		public void setSignature(String type, String teamSig, String inpSig) {
+			if(type.equals("HW")){
+				this.hwTeamSig=teamSig;
+				this.hwInspSig=inpSig;
+			}
+			if(type.equals("SW")){
+				this.swTeamSig=teamSig;
+				this.swInspSig=inpSig;
+			}
+			if(type.equals("FD")){
+				this.fdTeamSig=teamSig;
+				this.fdInspSig=inpSig;
+			}
+		}
+		
+		public String[] getSigs(String type){
+			String[] s=new String[0];
+			if(type.equals("HW") && hardware==Server.PASS){
+				s= new String[]{hwTeamSig,hwInspSig};
+			}
+			if(type.equals("SW") && software==Server.PASS){
+				s= new String[]{swTeamSig,swInspSig};
+			}
+			if(type.equals("FD") && field==Server.PASS){
+				s= new String[]{fdTeamSig,fdInspSig};
+			}
+			return s;
 		}
 
 		
