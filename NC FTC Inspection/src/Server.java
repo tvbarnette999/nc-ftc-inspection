@@ -567,7 +567,6 @@ public class Server {
 		 *       
 		 * remove auto check for pass when all checked? (forces signature) -DONE
 		 * 
-		 * TODO: signature: add username to login page so it autofills inspector's signature?
 		 */
 		for(String s:form){
 			pw.print("<tr><td><label>");
@@ -575,7 +574,8 @@ public class Server {
 			pw.println("</label></td><td>"+s+"</td></tr>");
 			j++;
 		}
-		pw.println("</table><br><b>General Comments or Reasons for Failure:</b><br><textarea name="+extras+type+" id=\"note\" rows=\"4\" cols=\"100\">"+note+"</textarea>");
+		pw.println("</table><br><b>General Comments or Reasons for Failure:</b><br><textarea name="+extras+type+" id=\"note\" rows=\"4\" co"
+				+ "ls=\"100\">"+note+"</textarea>");
 		pw.println("<br><br><button type=\"button\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
 		pw.println("<button type=\"button\" name=\""+extras+type+"\" onclick=\"fullfail()\">Fail</button>");
 		
