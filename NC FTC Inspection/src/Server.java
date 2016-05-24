@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
@@ -68,7 +69,7 @@ public class Server {
 	public static final long SEED = System.currentTimeMillis();
 	public static final String password="hello123";//"NCftc2016";
 
-	public static String event="BCRI2017";
+	public static String event="BCRI_16";
 	public static String fullEventName;
 
 	private static ExecutorService threadPool;
@@ -130,11 +131,11 @@ public class Server {
 		return cookieCount;
 	}
 	public boolean checkHash(String checkPass) {
-//		System.out.println("CHECKING HASH");
-//		System.out.println();
-//		System.out.println(checkPass);
-//		System.out.println();
-//		System.out.println(hashedPassString);
+		System.out.println("CHECKING HASH");
+		System.out.println();
+		System.out.println(checkPass);
+		System.out.println();
+		System.out.println(hashedPassString);
 		return hashedPassString.equals(checkPass);
 	}
 	/**
@@ -168,7 +169,7 @@ public class Server {
 		//TODO make constants for this, or an enum? Also replace all instances of the hardcoded #s with whichever we go with
 		switch(i){
 			case 0:sendStatusPage(pw);break;
-			case 1:sendPage(pw,"Resources/inspectorLogin.php");break;
+			case 1:sendPage(pw,"inspectorLogin.php");break;
 			case HARDWARE: 
 				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
 				else if(fullHardware)sendInspectionTeamSelect(pw,i);
@@ -192,11 +193,11 @@ public class Server {
 			case LOG:sendLogPage(pw);break;
 			
 			//TODO add forums. add truncated manual sections? ie Robot Rules section, etc?
-			case 98:sendDocument(pw,out,"Resources/manual1.pdf");break;
-			case 99:sendDocument(pw,out,"Resources/manual2.pdf");break;
-			case 100:sendDocument(pw,out,"Resources/firstfavicon.ico");break;
+			case 98:sendDocument(pw,out,"manual1.pdf");break;
+			case 99:sendDocument(pw,out,"manual2.pdf");break;
+			case 100:sendDocument(pw,out,"firstfavicon.ico");break;
 			case -1:
-				sendDocument(pw, out, "Resources/firstfavicon.png");
+				sendDocument(pw, out, "firstfavicon.png");
 				break;
 			default:
 				//404
@@ -373,7 +374,7 @@ public class Server {
 	 * @throws IOException
 	 */
 	public void sendPage(PrintWriter pw,String f) throws IOException{
-		Scanner s=new Scanner(new File(f));
+		Scanner s=Resources.getScanner(f);
 		while(s.hasNextLine())pw.println(s.nextLine());
 		s.close();
 	}
@@ -390,8 +391,10 @@ public class Server {
 		//if(f.substring(f.lastIndexOf(".")+1).equals("pdf")){
 		try{
 			//FIXME if 2 clients request manual within ~sec of each other is problem! might want to buffer into ram once. also syncrhonize
-//			System.out.println("Sending: "+f);
-			FileInputStream fin=new FileInputStream(f);
+
+			System.out.println("Sending: "+f);
+			InputStream fin=Resources.getInputStream(f);//new InputStream(f);
+
 			int q=0;
 			ByteArrayOutputStream bout=new ByteArrayOutputStream();
 			while((q=fin.read())!=-1){
@@ -479,7 +482,7 @@ public class Server {
 //				case 3:type="_SW";break;
 //				case 4:sendPage(pw,"Resources/fieldUpdate.js");break;
 //			}
-			sendPage(pw,"Resources/update.js");
+			sendPage(pw,"update.js");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -567,7 +570,7 @@ public class Server {
 		
 		pw.println("<script>");
 		try {
-			sendPage(pw,"Resources/fullUpdate.js");
+			sendPage(pw,"fullUpdate.js");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -633,17 +636,87 @@ public class Server {
 		
 	}
 
+	/**
+	 * Loads event data
+	 * file name: EVENTCODE ex:BCRI2017, NCCMP2016, CGHS
+	 * Format:
+	 * line 1:Event Full name
+	 * line 2:Comma separated list of team #s
+	 * @throws FileNotFoundException
+	 */
+	@SuppressWarnings("unchecked")
 	public void loadEvent() throws FileNotFoundException{
-		Scanner scan=new Scanner(new File("Resources/"+event));
+		Scanner scan=Resources.getScanner(event+".event");//new Scanner(new File("Resources/"+event));
 		fullEventName=scan.nextLine();
-		String[] nums=scan.nextLine().split(",");
-		scan.close();
-		for(String s:nums){
-			teams.add(new Team(Integer.parseInt(s)));
+		Vector<Integer> nums=new Vector<Integer>();
+		scan.useDelimiter(",| |\\n");
+		while(scan.hasNext()){
+			try{
+				nums.add(scan.nextInt());
+			}catch(Exception e){e.printStackTrace();}
 		}
-		addLogEntry("Loaded team data");
+//		scan.useDelimiter(",");
+//		String[] nums=scan.nextLine().split(",");
+		scan.close();
+		for(int i:nums){
+			teams.add(new Team(i));
+		}
+		addLogEntry("Loaded event data");
 		Collections.sort(teams);
+		
+		//TODO load status data if exists
+		scan=Resources.getStatusScanner();
+		if(scan==null)return;//were done here- no data
+		String[] line;
+		while(scan.hasNextLine()){
+			line=scan.nextLine().split(",");
+			if(line.length<1)continue;
+			try{
+				Team t=getTeam(Integer.parseInt(line[0]));
+				t.checkedIn=Boolean.parseBoolean(line[1]);
+				t.cube=Integer.parseInt(line[2]);
+				t.hardware=Integer.parseInt(line[3]);;
+				t.software=Integer.parseInt(line[4]);
+				t.field=Integer.parseInt(line[5]);
+			}catch(Exception e){
+				
+			}			
+		}
+		scan.close();
+		
+		for(Team t:teams){
+			scan= Resources.getHardwareScanner(t.number);
+			for(int i=0;i<t.hw.length;i++){
+				t.hw[i]=scan.nextBoolean();
+			}
+			while(scan.hasNextLine()){
+				t.hwNote+=scan.nextLine()+"\n";
+			}
+			scan.close();
+			
+			scan= Resources.getSoftwareScanner(t.number);
+			for(int i=0;i<t.sw.length;i++){
+				t.sw[i]=scan.nextBoolean();
+			}
+			while(scan.hasNextLine()){
+				t.swNote+=scan.nextLine()+"\n";
+			}
+			scan.close();
+			
+			scan= Resources.getFieldScanner(t.number);
+			for(int i=0;i<t.fd.length;i++){
+				t.fd[i]=scan.nextBoolean();
+			}
+			while(scan.hasNextLine()){
+				t.fdNote+=scan.nextLine()+"\n";
+			}
+			scan.close();
+		}
+		
+		
 	}
+	
+	//public void save
 
 	/**
 	 * Handles the HTTP requests and directs them to appropriate methods.
@@ -689,7 +762,7 @@ public class Server {
 	public static void addLogEntry(String s){
 		String time=new SimpleDateFormat ("[hh:mm:ss] ").format(Calendar.getInstance().getTime());
 		statusLog.add(time+s);
-		Main.me.consoleTextArea.append("\n"+time+s);
+		Main.me.consoleTextArea.append(time+s+"\n");
 		//TODO fire event to update GUI
 //		System.out.println(time+s);
 	}
@@ -702,4 +775,59 @@ public class Server {
 		addLogEntry("Stopping server!");
 		theServer.done=true;
 	}
+	public static boolean changeEvent(String name) {
+		System.out.println("New event:"+name);
+		event=name;
+		theServer.teams.clear();
+		//TODO SAVE!?
+		try {
+			theServer.loadEvent();
+			return true;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}		
+		return false;
+	}
+	public static boolean save(){
+		PrintWriter pw=Resources.getStatusWriter();
+		if(pw==null)return false;
+		for(Team t : theServer.teams){
+			pw.println(t.getStatusString());
+		}
+		pw.flush();
+		pw.close();
+		
+		for(Team t:theServer.teams){
+			//hardware
+			pw=Resources.getHardwareWriter(t.number);
+			for(boolean b:t.hw){
+				pw.println(b);
+			}
+			pw.print(t.hwNote);
+			pw.flush();
+			pw.close();
+			
+			//software
+			pw=Resources.getSoftwareWriter(t.number);
+			for(boolean b:t.sw){
+				pw.println(b);
+			}
+			pw.print(t.swNote);
+			pw.flush();
+			pw.close();
+			
+			//field
+			pw=Resources.getFieldWriter(t.number);
+			for(boolean b:t.fd){
+				pw.println(b);
+			}
+			pw.print(t.fdNote);
+			pw.flush();
+			pw.close();
+		}
+		
+		return true;
+	}
+	
+	
 }
