@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -25,6 +26,7 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.plaf.IconUIResource;
 
 public class Main extends JFrame {
 
@@ -91,7 +93,33 @@ public class Main extends JFrame {
 	private JLabel cookieCount = new JLabel("0");
 	private String trafficString = "Traffic (15s bin): ";
 	private JLabel trafficLabel = new JLabel(trafficString);
-	private JPanel trafficPanel = new JPanel();
+	private JPanel trafficPanel = new JPanel() {
+		@Override
+		public void paint(Graphics g) {
+			int max = 5;
+			for (int i : traffic)
+				max = Math.max(max, i);
+//			Graphics g = trafficPanel.getGraphics();
+			int x, y, width, height;
+			g.setColor(Color.black);
+			g.fillRect(-1, -1, trafficPanel.getWidth() + 2, trafficPanel.getHeight() + 2);
+			for (int i = 0; i < traffic.length; i++) {
+				g.setColor(Color.getHSBColor((float) (.333 - .333 * ((double) traffic[i] / max)), 1, 1));
+				x = i * trafficPanel.getWidth() / traffic.length;
+				y = trafficPanel.getHeight() - traffic[i] * trafficPanel.getHeight() / max;
+				
+				width = trafficPanel.getWidth() / traffic.length;
+				height =  traffic[i] * trafficPanel.getHeight() / max;
+				
+				g.fillRect(x, y, width, height);
+			}
+			int top = 4;
+			g.setColor(Color.white);
+			for (int i = 0; i < top - 1; i++) {
+				g.drawString("" + max * (top - i) / top, 0, trafficPanel.getHeight()  * i / top + g.getFontMetrics().getHeight());
+			}
+		}
+	};
 	/*
 	 * TODO add a scrollpane to show the elements of Server.statusLog
 	 * Make Server.addLogEntry fire ChangeEvent or something to trigger update for it 
@@ -108,6 +136,7 @@ public class Main extends JFrame {
 	private Thread graphics;
 	private int[] traffic = new int[50];
 	private void initGUI() {
+		setIconImage(new ImageIcon(getClass().getResource("firstfavicon.png")).getImage());
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 			
@@ -277,28 +306,7 @@ public class Main extends JFrame {
 //					System.out.println(Arrays.toString(traffic));
 					traffic[traffic.length - 1] = Server.theServer.getTraffic();
 					trafficLabel.setText(trafficString + traffic[traffic.length - 1]);
-					int max = 5;
-					for (int i : traffic)
-						max = Math.max(max, i);
-					Graphics g = trafficPanel.getGraphics();
-					int x, y, width, height;
-					g.setColor(Color.black);
-					g.fillRect(-1, -1, trafficPanel.getWidth() + 2, trafficPanel.getHeight() + 2);
-					for (int i = 0; i < traffic.length; i++) {
-						g.setColor(Color.getHSBColor((float) (.333 - .333 * ((double) traffic[i] / max)), 1, 1));
-						x = i * trafficPanel.getWidth() / traffic.length;
-						y = trafficPanel.getHeight() - traffic[i] * trafficPanel.getHeight() / max;
-						
-						width = trafficPanel.getWidth() / traffic.length;
-						height =  traffic[i] * trafficPanel.getHeight() / max;
-						
-						g.fillRect(x, y, width, height);
-					}
-					int top = 4;
-					g.setColor(Color.white);
-					for (int i = 0; i < top - 1; i++) {
-						g.drawString("" + max * (top - i) / top, 0, trafficPanel.getHeight()  * i / top + g.getFontMetrics().getHeight());
-					}
+					trafficPanel.invalidate();
 					try {
 						Thread.sleep(15000);
 					} catch (InterruptedException e) {
@@ -312,7 +320,6 @@ public class Main extends JFrame {
 
 
 	}
-
 
 	private static void loadFiles() {
 		Scanner scan = null;
