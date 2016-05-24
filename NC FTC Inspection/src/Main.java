@@ -612,11 +612,13 @@ public class Main extends JFrame {
 							append("USAGE: SET STATUS <number> <type> <status>");
 							append("<type= CI | SC | HW | SW | FD>");
 							append("<status= 0 | 1 | 2 | 3 | PASS | FAIL | NO_DATA | PROGRESS>");
+							return;
 						}
 					}
 				}
 				else{
 					append("USAGE: SET [STATUS | PASSWORD | ROOT | TEAM | EVENT [NAME | CODE] ] <value>");
+					return;
 				}
 			}
 			else if(args[0].equals("CLEAR")){
