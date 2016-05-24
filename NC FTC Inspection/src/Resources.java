@@ -83,6 +83,7 @@ public class Resources {
 		}
 		
 	}
+	
 
 	public static boolean saveEventsList() {
 		checkRoot();
@@ -136,6 +137,7 @@ public class Resources {
 		
 		return false;
 	}
+	
 
 	public static PrintWriter getStatusWriter() {
 		File f=new File(root+"/"+Server.event);
@@ -156,6 +158,16 @@ public class Resources {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	public static Scanner getStatusScanner(){
+		File f=new File(root+"/"+Server.event+"/"+Server.event+".status");
+		if(!f.exists())return null;
+		try{
+			return new Scanner(f);
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public static PrintWriter getHardwareWriter(int team) {
@@ -178,6 +190,16 @@ public class Resources {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	public static Scanner getHardwareScanner(int team){
+		File f=new File(root+"/"+Server.event+"/HW/"+team+".ins");
+		if(!f.exists())return null;
+		try{
+			return new Scanner(f);
+		}
+		catch(Exception e){
+			return null;
+		}
 	}
 
 	public static PrintWriter getSoftwareWriter(int team) {
@@ -202,6 +224,17 @@ public class Resources {
 		return null;
 	}
 	
+	public static Scanner getSoftwareScanner(int team){
+		File f=new File(root+"/"+Server.event+"/SW/"+team+".ins");
+		if(!f.exists())return null;
+		try{
+			return new Scanner(f);
+		}
+		catch(Exception e){
+			return null;
+		}
+	}
+	
 	public static PrintWriter getFieldWriter(int team) {
 		File f=new File(root+"/"+Server.event+"/FD");
 		if(!f.exists() || !f.isDirectory())f.mkdirs();
@@ -222,5 +255,16 @@ public class Resources {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static Scanner getFieldScanner(int team){
+		File f=new File(root+"/"+Server.event+"/FD/"+team+".ins");
+		if(!f.exists())return null;
+		try{
+			return new Scanner(f);
+		}
+		catch(Exception e){
+			return null;
+		}
 	}
 }

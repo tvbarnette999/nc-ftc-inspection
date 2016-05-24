@@ -661,8 +661,59 @@ public class Server {
 		for(int i:nums){
 			teams.add(new Team(i));
 		}
-		addLogEntry("Loaded team data");
+		addLogEntry("Loaded event data");
 		Collections.sort(teams);
+		
+		//TODO load status data if exists
+		scan=Resources.getStatusScanner();
+		if(scan==null)return;//were done here- no data
+		String[] line;
+		while(scan.hasNextLine()){
+			line=scan.nextLine().split(",");
+			if(line.length<1)continue;
+			try{
+				Team t=getTeam(Integer.parseInt(line[0]));
+				t.checkedIn=Boolean.parseBoolean(line[1]);
+				t.cube=Integer.parseInt(line[2]);
+				t.hardware=Integer.parseInt(line[3]);;
+				t.software=Integer.parseInt(line[4]);
+				t.field=Integer.parseInt(line[5]);
+			}catch(Exception e){
+				
+			}			
+		}
+		scan.close();
+		
+		for(Team t:teams){
+			scan= Resources.getHardwareScanner(t.number);
+			for(int i=0;i<t.hw.length;i++){
+				t.hw[i]=scan.nextBoolean();
+			}
+			while(scan.hasNextLine()){
+				t.hwNote+=scan.nextLine()+"\n";
+			}
+			scan.close();
+			
+			scan= Resources.getSoftwareScanner(t.number);
+			for(int i=0;i<t.sw.length;i++){
+				t.sw[i]=scan.nextBoolean();
+			}
+			while(scan.hasNextLine()){
+				t.swNote+=scan.nextLine()+"\n";
+			}
+			scan.close();
+			
+			scan= Resources.getFieldScanner(t.number);
+			for(int i=0;i<t.fd.length;i++){
+				t.fd[i]=scan.nextBoolean();
+			}
+			while(scan.hasNextLine()){
+				t.fdNote+=scan.nextLine()+"\n";
+			}
+			scan.close();
+		}
+		
+		
 	}
 	
 	//public void save
