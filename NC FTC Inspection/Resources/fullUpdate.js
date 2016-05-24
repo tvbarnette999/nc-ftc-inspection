@@ -2,7 +2,6 @@ function update(){
 	var xhttp = new XMLHttpRequest();
 	xhttp.open("POST", "../fullupdate?team="+event.target.name+"&value="+event.target.checked, true);
 	xhttp.send();
-	document.cookie = "username=FTC_VERIFIED";
 }
 
 function fullpass(){
@@ -12,7 +11,6 @@ function fullpass(){
 	var xhttp = new XMLHttpRequest();
 	xhttp.open("POST", "../update?team="+event.target.name+"&value=3", true);
 	xhttp.send();
-	document.cookie = "username=FTC_VERIFIED";
 }
 
 function fullfail(){
@@ -20,7 +18,6 @@ function fullfail(){
 	var xhttp = new XMLHttpRequest();
 	xhttp.open("POST", "../update?team="+event.target.name+"&value=1", true);
 	xhttp.send();
-	document.cookie = "username=FTC_VERIFIED";
 	sendNote();
 }
 
@@ -30,5 +27,4 @@ function sendNote(){
 	xhttp.open("POST", "../note?team="+n.name, true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("XX".concat(n.value.concat("&&&")));
-	document.cookie = "username=FTC_VERIFIED";
 }

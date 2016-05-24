@@ -78,7 +78,7 @@ public class Server {
 	
 	static Vector<String> statusLog=new Vector<String>();
 
-	public static String cookieHeader="FTC_COOKIE=\"";
+	public static String cookieHeader="FTC_COOKIE=";
 
 	public static Server theServer=new Server();
 	
@@ -105,7 +105,7 @@ public class Server {
 			hashedPassString += (char) (((int)'a') + Math.abs(b) / 12);
 	}
 	public boolean checkPassword(String password) {
-		System.out.println("Check Password: " + password);
+//		System.out.println("Check Password: " + password);
 		SecureRandom rand = new SecureRandom();
 		ByteBuffer buff = ByteBuffer.allocate(Long.BYTES + password.getBytes().length);
 		buff.putLong(SEED);
@@ -113,10 +113,10 @@ public class Server {
 		rand.setSeed(buff.array());
 		byte[] checkPass = new byte[hashedPass.length];
 		rand.nextBytes(checkPass);
-		System.out.println(Arrays.toString(hashedPass));
-		System.out.println(Arrays.toString(checkPass));
-		System.out.println(Arrays.toString(hashedPass));
-		System.out.println(Arrays.toString(checkPass));
+//		System.out.println(Arrays.toString(hashedPass));
+//		System.out.println(Arrays.toString(checkPass));
+//		System.out.println(Arrays.toString(hashedPass));
+//		System.out.println(Arrays.toString(checkPass));
 		for (int i = 0; i < checkPass.length; i++)
 			if (checkPass[i] != hashedPass[i])
 				return false;
@@ -131,8 +131,11 @@ public class Server {
 		return cookieCount;
 	}
 	public boolean checkHash(String checkPass) {
-		System.out.println(checkPass);
-		System.out.println(hashedPassString);
+//		System.out.println("CHECKING HASH");
+//		System.out.println();
+//		System.out.println(checkPass);
+//		System.out.println();
+//		System.out.println(hashedPassString);
 		return hashedPassString.equals(checkPass);
 	}
 	/**
@@ -223,7 +226,7 @@ public class Server {
 		String check = fullReq;
 		boolean verified = false;
 		try {
-			check = check.substring(check.indexOf(cookieHeader) + cookieHeader.length());
+			check = check.substring(check.indexOf(cookieHeader) + cookieHeader.length() + 1);
 			check = check.substring(0, check.indexOf('\"')); // also take off [ ]
 			verified = checkHash(check);
 		} catch (Exception e) {
@@ -231,9 +234,7 @@ public class Server {
 			e.printStackTrace();
 			//we dont have the password
 		}
-		System.err.println("VERIFIED" + verified);
 		req=req.substring(1,req.indexOf(" "));
-		System.out.println(req);
 		int pageID=Integer.MIN_VALUE; //default case
 		if(req.length() == 0)pageID = 0; //just localhost, show status page
 		if(req.equals("hardware"))pageID=verified?HARDWARE:LOGIN;
@@ -278,7 +279,7 @@ public class Server {
 		int pageID=0;
 		boolean valid=false;
 		String extras = "";
-		System.out.println("POST: \n"+req+"\nData:\n"+data);
+//		System.out.println("POST: \n"+req+"\nData:\n"+data);
 		/*
 		 * if the data contains a password, its from the login page.
 		 * That means we can send it a secured page.
@@ -289,12 +290,13 @@ public class Server {
 			if(checkPassword(pass)){
 //				OutputStream out=sock.getOutputStream();
 //				PrintWriter pw=new PrintWriter(out);
-				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
+//				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
+				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + hashedPassString + "\\\"\";</script>";
 				cookieCount++;
 //				pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: " + cookieHeader + hashedPassString + "\"\n\n    \n");
 //				pw.flush();
 				valid=true;
-				System.out.println("VERIFIED PASSWORD");
+//				System.out.println("VERIFIED PASSWORD");
 				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
 				System.out.println("REQ:"+req);
 				if(req.equals("hardware"))pageID=HARDWARE;
@@ -316,44 +318,44 @@ public class Server {
 		else{
 			//HANDLE POST FROM VERIFIED INSPECTOR
 			req=req.substring(1);
-			System.out.println("VERIFIED "+req);
+//			System.out.println("VERIFIED "+req);
 			if(req.startsWith("update?")){//"inspection?")){//||req.startsWith("field?")){//These are requests that contain a state change for a team for a level of inspection. rn only these 2.
 				String s=req.substring(req.indexOf("=")+1);
-				System.out.println(s);
+//				System.out.println(s);
 				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
 				String type=s.substring(s.indexOf("_")+1,s.indexOf("&"));
 				String v=s.substring(s.indexOf("=")+1);
 				v=v.substring(0, v.indexOf(" "));
-				System.out.println(t+":"+type+":"+v);
+//				System.out.println(t+":"+type+":"+v);
 				getTeam(t).set(type,Integer.parseInt(v));
 				//TODO send http status 204
 			}
 			///fullupdate?team=5064_HW1&value=true HTTP/1.1
 			else if(req.startsWith("fullupdate?")){//full inspection state change
 				String s=req.substring(req.indexOf("=")+1);
-				System.out.println(s);
+//				System.out.println(s);
 				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
 				String type=s.substring(s.indexOf("_")+1,s.indexOf("&"));
 				int index=Integer.parseInt(type.substring(2));//type is 2 characters
 				type=type.substring(0, 2);
 				String v=s.substring(s.indexOf("=")+1);
 				v=v.substring(0, v.indexOf(" "));
-				System.out.println(t+":"+type+":"+v);
+//				System.out.println(t+":"+type+":"+v);
 				getTeam(t).set(type,index,Boolean.parseBoolean(v));
 				//TODO send http status 204
 			}
 			else if(req.startsWith("note?")){
 				String s=req.substring(req.indexOf("=")+1);
-				System.out.println(s);
+//				System.out.println(s);
 				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
 				String type=s.substring(s.indexOf("_")+1,s.indexOf(" "));
-				System.out.println(t+":"+type);
+//				System.out.println(t+":"+type);
 				String note=data.substring(0, data.indexOf("&&&"));
 				getTeam(t).setNote(type,note);
 			}
 			pageID=1;
 		}
-		System.out.println(pageID);
+//		System.out.println(pageID);
 		sendPage(sock,pageID, extras, valid);	
 	}
 	/**
@@ -389,8 +391,10 @@ public class Server {
 		//if(f.substring(f.lastIndexOf(".")+1).equals("pdf")){
 		try{
 			//FIXME if 2 clients request manual within ~sec of each other is problem! might want to buffer into ram once. also syncrhonize
+
 			System.out.println("Sending: "+f);
 			InputStream fin=Resources.getInputStream(f);//new InputStream(f);
+
 			int q=0;
 			ByteArrayOutputStream bout=new ByteArrayOutputStream();
 			while((q=fin.read())!=-1){
@@ -524,7 +528,7 @@ public class Server {
 		}
 		
 		Vector<String> form;
-		System.out.println("full: "+i);
+//		System.out.println("full: "+i);
 		String type="";
 		String note="";
 		String head="Appendix ";
@@ -681,7 +685,8 @@ public class Server {
 				//System.out.println(req);
 
 				//				req=req.substring(0,req.indexOf("\n"));
-				System.err.println(req);
+				
+//				System.err.println(req);
 				if(req.startsWith("GET")){
 					//	System.out.println(req);
 					get(req.substring(4,req.indexOf("\n")),sock, req);
@@ -708,7 +713,7 @@ public class Server {
 		statusLog.add(time+s);
 		Main.me.consoleTextArea.append(time+s+"\n");
 		//TODO fire event to update GUI
-		System.out.println(time+s);
+//		System.out.println(time+s);
 	}
 	
 	/**
