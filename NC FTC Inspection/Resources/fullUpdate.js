@@ -5,9 +5,9 @@ function update(){
 }
 
 function fullpass(){
-	//check everything is passed first.
+	//check everything is passed first.- if ot pop up or something. dont post
 	//get signitures
-	//TODO send note
+	sendNote();
 	var xhttp = new XMLHttpRequest();
 	xhttp.open("POST", "../update?team="+event.target.name+"&value=3", true);
 	xhttp.send();

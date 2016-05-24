@@ -6,6 +6,33 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+/*
+ * Resources Directories:
+ * 
+ * 1st Check:
+ * 		<.jar>/Resources
+ * 			pdfs, html, php, js
+ * 			default event data
+ * 2nd Check:
+ * 		root/
+ * 			events.dat (if modified)
+ * 			<event>.event (if modified or created)
+ * 			/<event> (nothing in this dir is ever in jar)
+ * 				<event>.status 
+ * 				/hw
+ * 				/sw
+ * 				/fd
+ * 					<team#>.ins
+ * 3rd check:
+ * 		/Resources (should only work in eclipse or if exported with Resources in folder beside jar)
+ * 					(save data will not go here unless root is set to "/Resources")* 
+ * 
+ * root defaults to NC Inspection folder beside jar
+ * 
+ * 
+ */
+
+
 public class Resources {
 	public static String root="NC Inspection";
 	/**
@@ -40,9 +67,8 @@ public class Resources {
 	}
 
 	public static boolean createEventFile(String code, String name, String teams) {
-		File f=new File(root);
-		if(!f.exists() || ! f.isDirectory())f.mkdirs();
-		f=new File(root+"/"+code+".event");
+		checkRoot();
+		File f=new File(root+"/"+code+".event");
 		try {
 			f.createNewFile();
 			PrintWriter pw=new PrintWriter(f);
@@ -59,9 +85,8 @@ public class Resources {
 	}
 
 	public static boolean saveEventsList() {
-		File f=new File(root);
-		if(!f.exists() || ! f.isDirectory())f.mkdirs();
-		f=new File(root+"/events.dat");
+		checkRoot();
+		File f=new File(root+"/events.dat");
 		if(!f.exists()){
 			try {
 				f.createNewFile();
@@ -84,5 +109,118 @@ public class Resources {
 		}
 		return true;
 	}
+	private static void checkRoot(){
+		File f=new File(root);
+		if(!f.exists() || ! f.isDirectory())f.mkdirs();
+	}
+	public static boolean saveEventFile() {
+		checkRoot();
+		File f=new File(root+"/"+Server.event+".event");
+		if(!f.exists()){
+			try{
+				f.createNewFile();
+				PrintWriter pw=new PrintWriter(f);
+				pw.println(Server.fullEventName);
+				String s="";
+				for(Team t:Server.theServer.teams){
+					s+=t.number+",";
+				}
+				pw.print(s.substring(0,s.length()-1));//remove last comma
+				pw.flush();
+				pw.close();
+				return true;
+			}catch(IOException e){
+				e.printStackTrace();
+			}
+		}
+		
+		return false;
+	}
 
+	public static PrintWriter getStatusWriter() {
+		File f=new File(root+"/"+Server.event);
+		if(!f.exists() || !f.isDirectory())f.mkdirs();
+		
+		f=new File(root+"/"+Server.event+"/"+Server.event+".status");
+		if(!f.exists()){
+			try{
+				f.createNewFile();				
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		try{
+			PrintWriter pw=new PrintWriter(f);
+			return pw;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static PrintWriter getHardwareWriter(int team) {
+		File f=new File(root+"/"+Server.event+"/HW");
+		if(!f.exists() || !f.isDirectory())f.mkdirs();
+		
+		f=new File(f.getPath()+"/"+team+".ins");
+		if(!f.exists()){
+			try{
+				f.createNewFile();
+				
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		try{
+			PrintWriter pw=new PrintWriter(f);
+			return pw;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static PrintWriter getSoftwareWriter(int team) {
+		File f=new File(root+"/"+Server.event+"/SW");
+		if(!f.exists() || !f.isDirectory())f.mkdirs();
+		
+		f=new File(f.getPath()+"/"+team+".ins");
+		if(!f.exists()){
+			try{
+				f.createNewFile();
+				
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		try{
+			PrintWriter pw=new PrintWriter(f);
+			return pw;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static PrintWriter getFieldWriter(int team) {
+		File f=new File(root+"/"+Server.event+"/FD");
+		if(!f.exists() || !f.isDirectory())f.mkdirs();
+		
+		f=new File(f.getPath()+"/"+team+".ins");
+		if(!f.exists()){
+			try{
+				f.createNewFile();
+				
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		try{
+			PrintWriter pw=new PrintWriter(f);
+			return pw;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

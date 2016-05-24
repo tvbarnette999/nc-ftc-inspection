@@ -131,11 +131,11 @@ public class Server {
 		return cookieCount;
 	}
 	public boolean checkHash(String checkPass) {
-//		System.out.println("CHECKING HASH");
-//		System.out.println();
-//		System.out.println(checkPass);
-//		System.out.println();
-//		System.out.println(hashedPassString);
+		System.out.println("CHECKING HASH");
+		System.out.println();
+		System.out.println(checkPass);
+		System.out.println();
+		System.out.println(hashedPassString);
 		return hashedPassString.equals(checkPass);
 	}
 	/**
@@ -738,15 +738,45 @@ public class Server {
 		return false;
 	}
 	public static boolean save(){
-		//TODO SAVE!
+		PrintWriter pw=Resources.getStatusWriter();
+		if(pw==null)return false;
+		for(Team t : theServer.teams){
+			pw.println(t.getStatusString());
+		}
+		pw.flush();
+		pw.close();
 		
-		
+		for(Team t:theServer.teams){
+			//hardware
+			pw=Resources.getHardwareWriter(t.number);
+			for(boolean b:t.hw){
+				pw.println(b);
+			}
+			pw.print(t.hwNote);
+			pw.flush();
+			pw.close();
+			
+			//software
+			pw=Resources.getSoftwareWriter(t.number);
+			for(boolean b:t.sw){
+				pw.println(b);
+			}
+			pw.print(t.swNote);
+			pw.flush();
+			pw.close();
+			
+			//field
+			pw=Resources.getFieldWriter(t.number);
+			for(boolean b:t.fd){
+				pw.println(b);
+			}
+			pw.print(t.fdNote);
+			pw.flush();
+			pw.close();
+		}
 		
 		return true;
 	}
 	
-	public static boolean saveEventFile() {
-		// TODO SAVE
-		return true;
-	}
+	
 }

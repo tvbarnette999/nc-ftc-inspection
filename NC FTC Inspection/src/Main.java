@@ -422,14 +422,16 @@ public class Main extends JFrame {
 		 *REMOVE team
 		 *SET   status
 		 *      password
-		 *      TEAM
-		 *           name (# would be add)
+		 *      root
+		 *      TEAM [#] <name> (sets name- # would be add)
 		 *      EVENT
 		 *           name
 		 *           code - nasty- gotta move files 
 		 *      
 		 *CHANGE event
-		 *   
+		 *
+		 *RESET (warning?)
+		 * 
 		 *SAVE
 		 * 
 		 * 
@@ -475,7 +477,7 @@ public class Main extends JFrame {
 						int num=Integer.parseInt(args[2]);
 						success=Server.theServer.teams.add(new Team(num));
 						Collections.sort(Server.theServer.teams);
-						success&=Server.saveEventFile();
+						success&=Resources.saveEventFile();
 					}catch(Exception e){
 						append("FAILED: USAGE: ADD TEAM <number>");
 						return;
@@ -484,6 +486,7 @@ public class Main extends JFrame {
 				if(args[1].toUpperCase().equals("EVENT")){ 
 					if(args.length>3){
 						String teams="";
+						//TODO cmd support for events with spaces in name (could remove option to add team numbers.. -easiest)
 						if(args.length>3)teams=args[4];
 						for(int i=5;i<args.length;i++){
 							teams+=","+args[i];

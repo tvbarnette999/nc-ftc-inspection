@@ -1,4 +1,4 @@
-
+import java.util.Scanner;
 
 public class Team implements Comparable{
 		int number;
@@ -142,6 +142,26 @@ public class Team implements Comparable{
 				return number-((Team)o).number;
 			}
 			return 0;
+		}
+		
+		public String getStatusString(){
+			return number+","+checkedIn+","+cube+","+hardware+","+software+","+field;
+		}
+		
+		public static Team loadFromString(String data){
+			String[] dat=data.split(",");
+			try{
+				Team t=new Team(Integer.parseInt(dat[0]));
+				t.checkedIn=Boolean.parseBoolean(dat[1]);
+				t.cube=Integer.parseInt(dat[2]);
+				t.hardware=Integer.parseInt(dat[3]);
+				t.software=Integer.parseInt(dat[4]);
+				t.field=Integer.parseInt(dat[5]);
+				return t;
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			return null;
 		}
 
 		
