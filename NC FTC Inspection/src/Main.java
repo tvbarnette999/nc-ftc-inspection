@@ -89,12 +89,14 @@ public class Main extends JFrame {
 	public static Thread autoSaveThread;
 	public static void main(String[] args) {
 		
-		
+		DNS.startDNS();
+		if(1+2<5)return;
 		loadFiles();
 		me = new Main();
 		me.initGUI();
 		
 		try {
+			
 			Server.theServer.startServer(80);
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(null, "Error loading server:\n\t" + e.getMessage(), "Server Error", JOptionPane.ERROR_MESSAGE);
