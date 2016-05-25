@@ -567,6 +567,10 @@ public class Main extends JFrame {
 					if(args[1].toUpperCase().equals("TEAM")){
 						try{
 							int num=Integer.parseInt(args[2]);
+							if(Server.theServer.getTeam(num)!=null){
+								append("Team "+num+" already in event");
+								return;
+							}
 							success=Server.theServer.teams.add(new Team(num));
 							//TODO if team unknown, add to master list
 							Collections.sort(Server.theServer.teams);
