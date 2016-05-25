@@ -72,7 +72,6 @@ public class Main extends JFrame {
 	 *
 	 *TODO if web page cant send POST due to disconnect, have a button at bottom of page to send all data from page for reconnect?
 	 *
-	 *TODO save status data every minute or so
 	 *
 	 *TODO capability to run headless. just in case
 	 *

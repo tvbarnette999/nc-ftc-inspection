@@ -44,6 +44,7 @@ public class Server {
 	public static final int CHECKIN=6;
 	public static final int HOME=7;
 	public static final int LOG=11;
+	public static final int H204=10;
 	
 	//These parameters are set to determine whther a given event will show status for that stage and do paperless inspection.
 	public static boolean trackCheckin=true;
@@ -149,6 +150,13 @@ public class Server {
 	public void sendPage(Socket sock,int i, String extras, boolean verified, Object ... other) throws IOException{
 		OutputStream out=sock.getOutputStream();
 		PrintWriter pw=new PrintWriter(out);
+		if(i==H204){//responding to post with data success
+			pw.println("HTTP/1.1 204 No Content\n");
+			pw.flush();
+			pw.close();
+			traffic++;
+			return;
+		}
 		if(i>=100){
 			pw.println("HTTP/1.1 200 OK");
 			pw.println("Content-Type: image/x-icon");
@@ -328,7 +336,7 @@ public class Server {
 				v=v.substring(0, v.indexOf(" "));
 //				System.out.println(t+":"+type+":"+v);
 				getTeam(t).set(type,Integer.parseInt(v));
-				//TODO send http status 204
+				pageID=H204;
 			}
 			///fullupdate?team=5064_HW1&value=true HTTP/1.1
 			else if(req.startsWith("fullupdate?")){//full inspection state change
@@ -342,7 +350,7 @@ public class Server {
 				v=v.substring(0, v.indexOf(" "));
 //				System.out.println(t+":"+type+":"+v);
 				getTeam(t).set(type,index,Boolean.parseBoolean(v));
-				//TODO send http status 204
+				pageID=H204;
 			}
 			else if(req.startsWith("note?")){
 				String s=req.substring(req.indexOf("=")+1);
@@ -350,25 +358,31 @@ public class Server {
 				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
 				String type=s.substring(s.indexOf("_")+1,s.indexOf(" "));
 //				System.out.println(t+":"+type);
+				System.out.println("NOTE DATA:"+data);
 				String note=data.substring(0, data.indexOf("&&&"));
 				getTeam(t).setNote(type,note);
+				pageID=H204;
 			}
 			else if(req.startsWith("sig?")){
 				String s=req.substring(req.indexOf("=")+1);
 				int t=Integer.parseInt(s.substring(0,s.indexOf("_")));
 				String type=s.substring(s.indexOf("_")+1,s.indexOf(" "));
-				System.out.println(data);
+				System.out.println("SIG DATA:"+data);
 				String teamSig=data.substring(data.indexOf("team=")+5,data.indexOf("&"));
 				String inpSig=data.substring(data.indexOf("inspector=")+10,data.indexOf("&&&"));
 				System.out.println(t+" "+type+": "+teamSig+", "+inpSig);
 				getTeam(t).setSignature(type, teamSig, inpSig);
-				
+				pageID=H204;
 			}
-			pageID=1;
+			else{
+				pageID=1;
+			}
 		}
 //		System.out.println(pageID);
 		sendPage(sock,pageID, extras, valid);	
 	}
+	
+	
 	/**
 	 * Use extras = generateExtrasPopup(popup) to render a java script pop up on the page
 	 * @param popup The string to render
@@ -557,7 +571,6 @@ public class Server {
 		
 		int j=0;
 		/*
-		 * TODO improve js for pass and fail buttons:
 		 * 
 		 * pass: check all boxes are checked.
 		 *       popup for "signature"? like NobleHour did?
