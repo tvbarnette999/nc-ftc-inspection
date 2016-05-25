@@ -363,7 +363,8 @@ public class Main extends JFrame {
 //					System.out.println(Arrays.toString(traffic));
 					traffic[traffic.length - 1] = Server.theServer.getTraffic();
 					trafficLabel.setText(trafficString + traffic[traffic.length - 1]);
-					trafficPanel.invalidate();
+//					trafficPanel.invalidate();
+					trafficPanel.paint(trafficPanel.getGraphics());
 					try {
 						Thread.sleep(15000);
 					} catch (InterruptedException e) {
