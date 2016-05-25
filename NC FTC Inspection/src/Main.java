@@ -90,7 +90,7 @@ public class Main extends JFrame {
 	public static void main(String[] args) {
 		
 		DNS.startDNS();
-		if(1+2<5)return;
+		//if(1+2<5)return;
 		loadFiles();
 		me = new Main();
 		me.initGUI();

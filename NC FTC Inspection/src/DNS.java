@@ -1,7 +1,9 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class DNS {
 	private static DNS dns=new DNS();
@@ -33,8 +35,9 @@ public class DNS {
 						handleRequest(data);
 						serv.send(new DatagramPacket(data,data.length,dgp.getAddress(),dgp.getPort()));
 						data=new byte[512];
-					} catch (IOException e) {
-						e.printStackTrace();
+						dgp=new DatagramPacket(data,data.length);
+					} catch (Exception e) {
+						//e.printStackTrace();
 					}					
 				}
 			}
@@ -71,6 +74,30 @@ public class DNS {
 		int QType=Byte.toUnsignedInt(data[i])+Byte.toUnsignedInt(data[i+1]);
 		int QClass=Byte.toUnsignedInt(data[i+2])+Byte.toUnsignedInt(data[i+3]);
 		System.out.println(QType+" "+QClass);
-		//for(int i=13;i<40;i++)System.out.println(data[i]);
+				//put answer in:
+		System.arraycopy(data, 12, data, i+5, i-12+5);//+1 for end +4 for types
+		i=(i+i-12+5+5);//set i to index of TTL
+		i+=2;
+
+		data[i]=0x07;
+		data[i+1]=(byte) 0x08;//0x708=1800 seconds=1 hour
+		
+		data[i+2]=0;
+		data[i+3]=4;
+		
+		try {
+			i+=4;
+			String host=InetAddress.getLocalHost().getHostAddress();
+			System.out.println(host);
+			for(String s:host.split("\\.")){
+				int part=Integer.parseInt(s);				
+				data[i]=(byte)part;
+				i++;
+			}
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		
+		//for(int x=i-8;x<i+10;x++)System.out.println(data[x]);
 	}
 }
