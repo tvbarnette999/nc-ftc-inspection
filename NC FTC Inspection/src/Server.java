@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
@@ -26,6 +27,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Server {
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("[hh:mm:ss] ");
+	
 	public static final String RED="\"#FF0000\"";
 	public static final String GREEN="\"#00FF00\"";
 	public static final String CYAN="\"#00FFFF\"";
@@ -422,6 +425,7 @@ public class Server {
 			bout.close();
 		}catch(Exception e){
 			e.printStackTrace();
+			addErrorEntry(e);
 		}
 		//}
 
@@ -497,6 +501,7 @@ public class Server {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			addErrorEntry(e);
 		}
 
 		pw.println("</script></body></html>");
@@ -593,6 +598,7 @@ public class Server {
 			sendPage(pw,"fullUpdate.js");
 		} catch (IOException e) {
 			e.printStackTrace();
+			addErrorEntry(e);
 		}
 		pw.println("</script></body></html>");
 		pw.flush();
@@ -647,6 +653,7 @@ public class Server {
 					addLogEntry("ServerSocket closed");
 				} catch (IOException e) {
 					e.printStackTrace();
+					addErrorEntry(e);
 				}
 				addLogEntry("Attempting to shutdown client threads...");
 				threadPool.shutdown();
@@ -795,15 +802,28 @@ public class Server {
 				sock.close();
 			}catch(Exception e){
 				e.printStackTrace();
+				addErrorEntry(e);
 			}
 		}
 	}
 	
 	public static void addLogEntry(String s){
-		String time=new SimpleDateFormat ("[hh:mm:ss] ").format(Calendar.getInstance().getTime());
+		String time=DATE_FORMAT.format(Calendar.getInstance().getTime());
 		statusLog.add(time+s);
-		Main.me.consoleTextArea.append(time+s+"\n");
+		Main.me.append(s);
 		
+	}
+	
+	public static void addErrorEntry(String s) {
+		String time=DATE_FORMAT.format(Calendar.getInstance().getTime());
+		statusLog.add(time+s);
+		Main.me.error(s);
+	}
+	
+	public static void addErrorEntry(Exception e) {
+		ByteArrayOutputStream b = new ByteArrayOutputStream();
+		e.printStackTrace(new PrintStream(b));
+		addErrorEntry(b.toString());
 	}
 	
 	/**
@@ -825,6 +845,7 @@ public class Server {
 			return true;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+			addErrorEntry(e);
 		}		
 		return false;
 	}

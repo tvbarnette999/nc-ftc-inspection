@@ -1,3 +1,4 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -19,7 +20,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 
 import java.util.HashMap;
@@ -31,6 +34,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -43,11 +47,15 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.IconUIResource;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 public class Main extends JFrame {
 
 	public static HashMap<Integer,String> teamData=new HashMap<Integer,String>();
 
+	
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("[hh:mm:ss] ");
 
 	
 	/*
@@ -115,6 +123,7 @@ public class Main extends JFrame {
 					}
 					catch(Exception e){
 						e.printStackTrace();
+						me.error(e.getLocalizedMessage());
 					}
 				}
 			}
@@ -123,7 +132,12 @@ public class Main extends JFrame {
 		autoSaveThread.start();
 		
 	}
+	private JPanel mainPanel = new JPanel();
+	private JPanel leftPanel = new JPanel();
 	private JPanel pwPanel = new JPanel();
+	private JPanel pwSub1 = new JPanel();
+	private JPanel pwSub2 = new JPanel();
+	private JPanel pwSub3 = new JPanel();
 	private JPasswordField pw1 = new JPasswordField(15);
 	private JPasswordField pw2 = new JPasswordField(15);
 	private JLabel pw1Label = new JLabel("Please enter a password");
@@ -131,8 +145,9 @@ public class Main extends JFrame {
 	private JLabel pwStatus = new JLabel("");
 	private JButton pwEnter = new JButton("Set Password");
 	private JPanel statusPanel = new JPanel();
-	private JLabel cookieLabel = new JLabel("Cookies Issued: ");
-	private JLabel cookieCount = new JLabel("0");
+	private JPanel topStatusPanel = new JPanel();
+	private static final String COOKIE_LABEL_STRING = "Cookies Issued: ";
+	private JLabel cookieLabel = new JLabel(COOKIE_LABEL_STRING);
 	private String trafficString = "Traffic (15s bin): ";
 	private JLabel trafficLabel = new JLabel(trafficString);
 	private JPanel trafficPanel = new JPanel() {
@@ -168,7 +183,30 @@ public class Main extends JFrame {
 	 */
 	
 	private JPanel consolePanel = new JPanel();
-	JTextArea consoleTextArea = new JTextArea();
+	FTCEditorPane consoleTextArea = new FTCEditorPane();
+	public class FTCEditorPane extends JEditorPane {
+		String text = "";
+		public FTCEditorPane() {
+			setContentType("text/html");
+			setEditable(false);
+			setBackground(Color.black);
+			setForeground(Color.white);
+		}
+		public void append(String t) {
+			text += t;
+			setText("<html><body>" + text + "</body></html>");
+			System.out.println(getText());
+//			Document d = getDocument();
+//			try {
+//				d.insertString(d.getLength(), t, null);
+//			} catch (BadLocationException e) {
+//			}
+//			System.out.println(getText());
+		}
+		public void clear() {
+			text = "";
+		}
+	}
 	private JScrollPane consoleScrollPane = new JScrollPane(consoleTextArea);
 	private JTextField consoleField = new JTextField();
 	private JPanel consoleInputPanel = new JPanel();
@@ -196,10 +234,8 @@ public class Main extends JFrame {
 				}
 			}
 		});
-		GridBagConstraints c = new GridBagConstraints();
-		this.getContentPane().setLayout(new GridBagLayout());
-		pwPanel.setLayout(new GridBagLayout());
-		pwPanel.setBorder(new TitledBorder("Set Password"));
+//		GridBagConstraints c = new GridBagConstraints();
+		mainPanel.setLayout(new BorderLayout());
 		pw1.setEchoChar(((char)8226)); // dot
 		pw2.setEchoChar(((char)8226)); // dot
 		DocumentListener pwListener = new DocumentListener() {
@@ -252,86 +288,58 @@ public class Main extends JFrame {
 				Server.theServer.setPassword(new String(pw1.getPassword()));
 			}
 		});
+		pwPanel.setLayout(new BorderLayout());
+		pwPanel.setBorder(new TitledBorder("Set Password"));
+		pwSub1.setLayout(new BorderLayout());
+		pwSub2.setLayout(new BorderLayout());
+		pwSub3.setLayout(new BorderLayout());
+		pwSub1.add(pw1Label, BorderLayout.NORTH);
+		pwSub1.add(pw2Label, BorderLayout.SOUTH);
+		pwSub2.add(pw1, BorderLayout.NORTH);
+		pwSub2.add(pw2, BorderLayout.SOUTH);
+		pwSub3.add(pwStatus, BorderLayout.NORTH);
+		pwSub3.add(pwEnter, BorderLayout.SOUTH);
+		pwPanel.add(pwSub1, BorderLayout.WEST);
+		pwPanel.add(pwSub2, BorderLayout.CENTER);
+		pwPanel.add(pwSub3, BorderLayout.EAST);
+		leftPanel.setLayout(new BorderLayout());
+		leftPanel.add(pwPanel, BorderLayout.NORTH);
+//		c.gridx = 0;
+//		c.gridy = 0;
+//		c.gridheight = 2;
+//		this.getContentPane().add(pwPanel, c);
 		
-		c.weightx = 1;
-		c.weighty = 1;
-		c.fill = GridBagConstraints.BOTH;
-		c.gridheight = 1;
-		c.gridwidth = 1;
-		c.gridx = 0;
-		c.gridy = 0;
-		pwPanel.add(pw1Label, c);
-		c.gridy = 1;
-		pwPanel.add(pw2Label, c);
-		c.gridx = 1;
-		c.gridy = 0;
-		pwPanel.add(pw1, c);
-		c.gridy = 1;
-		pwPanel.add(pw2, c);
-		c.gridy = 0;
-		c.gridx = 2;
-		pwPanel.add(pwStatus, c);
-		c.gridy = 1;
-		pwPanel.add(pwEnter, c);
-		
-		c.gridx = 0;
-		c.gridy = 0;
-		c.gridheight = 2;
-		this.getContentPane().add(pwPanel, c);
-		
-		c.gridheight = 1;
-		statusPanel.setLayout(new GridBagLayout());
+//		c.gridheight = 1;
+		statusPanel.setLayout(new BorderLayout());
+		topStatusPanel.setLayout(new BorderLayout());
 		statusPanel.setBorder(new TitledBorder("Server Status"));
-		statusPanel.add(trafficLabel, c);
-		c.gridx = 1;
-		statusPanel.add(cookieLabel, c);
-		c.gridx = 2;
-		statusPanel.add(cookieCount, c);
-		c.gridx = 0;
-		c.gridy = 1;
-		c.gridwidth = 3;
-		c.gridheight = 2;
-		
+		trafficLabel.setHorizontalAlignment(JLabel.CENTER);
+		topStatusPanel.add(trafficLabel, BorderLayout.WEST);
+		cookieLabel.setHorizontalAlignment(JLabel.CENTER);
+		topStatusPanel.add(cookieLabel, BorderLayout.EAST);
+		statusPanel.add(topStatusPanel, BorderLayout.NORTH);
 		trafficPanel.setPreferredSize(new Dimension(300, 100));
-		statusPanel.add(trafficPanel, c);
+		statusPanel.add(trafficPanel, BorderLayout.CENTER);
 		
 		consolePanel.setBorder(new TitledBorder("Server Console"));
-		consolePanel.setLayout(new GridBagLayout());
-		c.gridx = 0;
-		c.gridy = 0;
-		c.gridheight = 8;
-		c.gridwidth = 2;
-		consolePanel.add(consoleScrollPane, c);
+		consolePanel.setLayout(new BorderLayout());
+
+		consolePanel.add(consoleScrollPane, BorderLayout.CENTER);
 		
-		consolePanel.setPreferredSize(getPreferredSize());
-		
-		consoleInputPanel.setLayout(new GridBagLayout());
-		c.gridx = 0;
-		c.gridy = 0;
-		c.gridwidth = 1;
-		consoleInputPanel.add(consoleInputLabel, c);
-		c.gridx = 1;
-		c.gridwidth = 5;
-		consoleInputPanel.add(consoleField, c);
-		
-		c.gridheight = 1;
-		c.gridy = 8;
-		consolePanel.add(consoleInputPanel, c);
-		c.gridx = 1;
-		c.gridy = 0;
-		c.gridheight = 4;
-		this.getContentPane().add(consolePanel, c);
-		
-		c.gridx = 0;
-		c.gridy = 2;
-		c.gridheight = 2;
-		c.gridwidth = 1;
-		this.getContentPane().add(statusPanel, c);
-		this.pack();
+		consoleInputPanel.setLayout(new BorderLayout());
+		consoleInputPanel.add(consoleInputLabel, BorderLayout.WEST);
+		consoleInputPanel.add(consoleField, BorderLayout.CENTER);
+		consolePanel.add(consoleInputPanel, BorderLayout.SOUTH);
+		leftPanel.add(statusPanel, BorderLayout.CENTER);
+		mainPanel.add(leftPanel, BorderLayout.WEST);
+		mainPanel.add(consolePanel, BorderLayout.CENTER);
+//		consolePanel.setPreferredSize(getPreferredSize());
+//		leftPanel.setPreferredSize(getPreferredSize());
+		this.getContentPane().add(mainPanel);
+//		this.pack();
+		setSize(800, 400);
 		this.setVisible(true);
 		this.setLocationRelativeTo(null);
-//		consoleField.setPreferredSize(new Dimension((int) getPreferredSize().getWidth(), 25));
-//		trafficPanel.setPreferredSize(getPreferredSize());
 		consoleField.addKeyListener(new KeyAdapter(){
 			public void keyReleased(KeyEvent e){
 				if(e.getKeyCode()==KeyEvent.VK_ENTER){
@@ -351,7 +359,7 @@ public class Main extends JFrame {
 					e1.printStackTrace();
 				}
 				while (true) {
-					cookieCount.setText(Server.theServer.getCookieCount() + "");
+				cookieLabel.setText(COOKIE_LABEL_STRING + Server.theServer.getCookieCount() + "");
 					System.arraycopy(traffic, 1, traffic, 0, traffic.length - 1); // shift array 1 left
 //					System.out.println(Arrays.toString(traffic));
 					traffic[traffic.length - 1] = Server.theServer.getTraffic();
@@ -473,7 +481,7 @@ public class Main extends JFrame {
 		 * 
 		 * 
 		 */
-		consoleTextArea.append(command+"\n");
+		append(command);
 		boolean success=false;//return to not show success
 		String[] args=command.split(" ");
 		if(args.length>0){
@@ -656,7 +664,7 @@ public class Main extends JFrame {
 						success=Server.clearData();
 					}
 					if(args[1].equals("CONSOLE")){
-						consoleTextArea.setText("");
+						consoleTextArea.clear();
 						return;
 					}
 					else{
@@ -672,7 +680,7 @@ public class Main extends JFrame {
 				success=Server.save();
 			}
 			else{
-				append("UNKNOW COMMAND:"+args[0]);
+				error("UNKNOW COMMAND: "+args[0]);
 				return;
 			}
 			consoleTextArea.append((success?"SUCCESS":"FAILED")+"\n");
@@ -680,10 +688,16 @@ public class Main extends JFrame {
 	}
 	
 	
-	public void append(String s){
-		consoleTextArea.append(s+"\n");
-		//TODO scroll down
+	public void append(String s) {
+		s = fixHTML(s);
+		consoleTextArea.append("<font color=\"#888888\">" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + "</font><font color=\"#ffffff\" face=\"lucida console\">" + s + "</font><br>");
 	}
-	
+	public void error(String s) {
+		s = fixHTML(s);
+		consoleTextArea.append("<font color=\"#ff0000\">" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + "</font><font color=\"#ff0000\" face=\"lucida console\">" + s + "</font><br>"); 
+	}
+	public static String fixHTML(String s) {
+		return s.replaceAll("\n", "<br>").replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+	}
 	
 }
