@@ -6,6 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -41,8 +43,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -54,10 +59,11 @@ public class Main extends JFrame {
 
 	public static HashMap<Integer,String> teamData=new HashMap<Integer,String>();
 
-	
+
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("[hh:mm:ss] ");
 
-	
+	public static final boolean NIMBUS = true;
+
 	/*
 	 * TODO Decide how events are structured:
 	 * 
@@ -96,12 +102,12 @@ public class Main extends JFrame {
 	public static Vector<String> events=new Vector<String>();
 	public static Thread autoSaveThread;
 	public static void main(String[] args) {
-		
-		
+
+
 		loadFiles();
 		me = new Main();
 		me.initGUI();
-		
+
 		try {
 			Server.theServer.startServer(80);
 		} catch (FileNotFoundException e) {
@@ -129,9 +135,12 @@ public class Main extends JFrame {
 		};
 		autoSaveThread.setDaemon(true);
 		autoSaveThread.start();
-		
+
 	}
-	private JPanel mainPanel = new JPanel();
+	private ImageIcon ftcIcon;
+	private JTabbedPane tabbedPane = new JTabbedPane();
+	private JPanel eventSettingsPanel = new JPanel();
+	private JPanel serverSettingsPanel = new JPanel();
 	private JPanel leftPanel = new JPanel();
 	private JPanel pwPanel = new JPanel();
 	private JPanel pwSub1 = new JPanel();
@@ -146,6 +155,10 @@ public class Main extends JFrame {
 	private JPanel statusPanel = new JPanel();
 	private JPanel topStatusPanel = new JPanel();
 	private static final String COOKIE_LABEL_STRING = "Cookies Issued: ";
+
+
+	private static final String SERVER_SETTINGS = "Server Settings";
+	private static final String EVENT_SETTINGS = "Event Settings";
 	private JLabel cookieLabel = new JLabel(COOKIE_LABEL_STRING);
 	private String trafficString = "Traffic (15s bin): ";
 	private JLabel trafficLabel = new JLabel(trafficString);
@@ -155,7 +168,7 @@ public class Main extends JFrame {
 			int max = 5;
 			for (int i : traffic)
 				max = Math.max(max, i);
-//			Graphics g = trafficPanel.getGraphics();
+			//			Graphics g = trafficPanel.getGraphics();
 			int x, y, width, height;
 			g.setColor(Color.black);
 			g.fillRect(-1, -1, trafficPanel.getWidth() + 2, trafficPanel.getHeight() + 2);
@@ -163,10 +176,10 @@ public class Main extends JFrame {
 				g.setColor(Color.getHSBColor((float) (.333 - .333 * ((double) traffic[i] / max)), 1, 1));
 				x = i * trafficPanel.getWidth() / traffic.length;
 				y = trafficPanel.getHeight() - traffic[i] * trafficPanel.getHeight() / max;
-				
+
 				width = trafficPanel.getWidth() / traffic.length;
 				height =  traffic[i] * trafficPanel.getHeight() / max;
-				
+
 				g.fillRect(x, y, width, height);
 			}
 			int top = 4;
@@ -180,7 +193,7 @@ public class Main extends JFrame {
 	 * TODO add a scrollpane to show the elements of Server.statusLog
 	 * Make Server.addLogEntry fire ChangeEvent or something to trigger update for it 
 	 */
-	
+
 	private JPanel consolePanel = new JPanel();
 	FTCEditorPane consoleTextArea = new FTCEditorPane();
 	public class FTCEditorPane extends JEditorPane {
@@ -190,38 +203,54 @@ public class Main extends JFrame {
 			setEditable(false);
 			setBackground(Color.black);
 			setForeground(Color.white);
+			setMaximumSize(new Dimension(10000, 400));
 		}
 		public void append(String t) {
 			text += t;
 			setText("<html><body>" + text + "</body></html>");
 			System.out.println(getText());
-//			Document d = getDocument();
-//			try {
-//				d.insertString(d.getLength(), t, null);
-//			} catch (BadLocationException e) {
-//			}
-//			System.out.println(getText());
+			//			Document d = getDocument();
+			//			try {
+			//				d.insertString(d.getLength(), t, null);
+			//			} catch (BadLocationException e) {
+			//			}
+			//			System.out.println(getText());
+			pack();
 		}
 		public void clear() {
 			text = "";
 		}
+
 	}
 	private JScrollPane consoleScrollPane = new JScrollPane(consoleTextArea);
 	private JTextField consoleField = new JTextField();
 	private JPanel consoleInputPanel = new JPanel();
 	private JLabel consoleInputLabel = new JLabel("Console: ");
-	
-	
+
+
 	private Thread graphics;
 	private int[] traffic = new int[50];
 	private void initGUI() {
-		setIconImage(new ImageIcon(getClass().getResource("firstfavicon.png")).getImage());
+		if (NIMBUS) {
+			try {
+				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+					if ("Nimbus".equals(info.getName())) {
+						UIManager.setLookAndFeel(info.getClassName());
+						break;
+					}
+				}
+			} catch (Exception e) {
+				// If Nimbus is not available, you can set the GUI to another look and feel.
+			}
+		}
+		ftcIcon = new ImageIcon(getClass().getResource("firstfavicon.png"));
+		setIconImage(ftcIcon.getImage());
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
-			
+
 			public void windowClosing(WindowEvent e) {
 				int answer = JOptionPane.showConfirmDialog(null, "This will close the server, are you sure?");
-//				System.out.println("ANSWER: " + answer);
+				//				System.out.println("ANSWER: " + answer);
 				if (answer == JOptionPane.YES_OPTION) {
 					Server.stopServer();
 					//TODO a thread keeps running. we need to find it and make it interruptible or daemon
@@ -233,8 +262,8 @@ public class Main extends JFrame {
 				}
 			}
 		});
-//		GridBagConstraints c = new GridBagConstraints();
-		mainPanel.setLayout(new BorderLayout());
+		//		GridBagConstraints c = new GridBagConstraints();
+		serverSettingsPanel.setLayout(new BorderLayout());
 		pw1.setEchoChar(((char)8226)); // dot
 		pw2.setEchoChar(((char)8226)); // dot
 		DocumentListener pwListener = new DocumentListener() {
@@ -242,17 +271,17 @@ public class Main extends JFrame {
 			public void changedUpdate(DocumentEvent e) {
 				checkFields();
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
 				checkFields();
 			}
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
 				checkFields();
 			}
-			
+
 			public void checkFields() {
 				char[] one = pw1.getPassword();
 				char[] two = pw2.getPassword();
@@ -303,12 +332,12 @@ public class Main extends JFrame {
 		pwPanel.add(pwSub3, BorderLayout.EAST);
 		leftPanel.setLayout(new BorderLayout());
 		leftPanel.add(pwPanel, BorderLayout.NORTH);
-//		c.gridx = 0;
-//		c.gridy = 0;
-//		c.gridheight = 2;
-//		this.getContentPane().add(pwPanel, c);
-		
-//		c.gridheight = 1;
+		//		c.gridx = 0;
+		//		c.gridy = 0;
+		//		c.gridheight = 2;
+		//		this.getContentPane().add(pwPanel, c);
+
+		//		c.gridheight = 1;
 		statusPanel.setLayout(new BorderLayout());
 		topStatusPanel.setLayout(new BorderLayout());
 		statusPanel.setBorder(new TitledBorder("Server Status"));
@@ -319,24 +348,30 @@ public class Main extends JFrame {
 		statusPanel.add(topStatusPanel, BorderLayout.NORTH);
 		trafficPanel.setPreferredSize(new Dimension(300, 100));
 		statusPanel.add(trafficPanel, BorderLayout.CENTER);
-		
+
 		consolePanel.setBorder(new TitledBorder("Server Console"));
 		consolePanel.setLayout(new BorderLayout());
 
 		consolePanel.add(consoleScrollPane, BorderLayout.CENTER);
-		
+
 		consoleInputPanel.setLayout(new BorderLayout());
 		consoleInputPanel.add(consoleInputLabel, BorderLayout.WEST);
 		consoleInputPanel.add(consoleField, BorderLayout.CENTER);
 		consolePanel.add(consoleInputPanel, BorderLayout.SOUTH);
 		leftPanel.add(statusPanel, BorderLayout.CENTER);
-		mainPanel.add(leftPanel, BorderLayout.WEST);
-		mainPanel.add(consolePanel, BorderLayout.CENTER);
-//		consolePanel.setPreferredSize(getPreferredSize());
-//		leftPanel.setPreferredSize(getPreferredSize());
-		this.getContentPane().add(mainPanel);
-//		this.pack();
-		setSize(800, 400);
+		serverSettingsPanel.add(leftPanel, BorderLayout.WEST);
+		serverSettingsPanel.add(consolePanel, BorderLayout.CENTER);
+		//		consolePanel.setPreferredSize(getPreferredSize());
+		//		leftPanel.setPreferredSize(getPreferredSize());
+		//		this.pack();
+		//		setSize(850, 400);
+		consoleTextArea.setPreferredSize(new Dimension(550, 375));
+		setMinimumSize(new Dimension(850, 400));
+
+		tabbedPane.addTab(SERVER_SETTINGS, UIManager.getIcon("FileChooser.hardDriveIcon"), serverSettingsPanel, SERVER_SETTINGS);
+		tabbedPane.addTab(EVENT_SETTINGS, ftcIcon, eventSettingsPanel, EVENT_SETTINGS);
+		this.getContentPane().add(tabbedPane);
+		pack();
 		this.setVisible(true);
 		this.setLocationRelativeTo(null);
 		consoleField.addKeyListener(new KeyAdapter(){
@@ -358,12 +393,12 @@ public class Main extends JFrame {
 					e1.printStackTrace();
 				}
 				while (true) {
-				cookieLabel.setText(COOKIE_LABEL_STRING + Server.theServer.getCookieCount() + "");
+					cookieLabel.setText(COOKIE_LABEL_STRING + Server.theServer.getCookieCount() + "");
 					System.arraycopy(traffic, 1, traffic, 0, traffic.length - 1); // shift array 1 left
-//					System.out.println(Arrays.toString(traffic));
+					//					System.out.println(Arrays.toString(traffic));
 					traffic[traffic.length - 1] = Server.theServer.getTraffic();
 					trafficLabel.setText(trafficString + traffic[traffic.length - 1]);
-//					trafficPanel.invalidate();
+					//					trafficPanel.invalidate();
 					trafficPanel.paint(trafficPanel.getGraphics());
 					try {
 						Thread.sleep(15000);
@@ -374,7 +409,7 @@ public class Main extends JFrame {
 			}
 		};
 		graphics.start();
-//		this.pack();
+		//		this.pack();
 
 
 	}
@@ -411,13 +446,13 @@ public class Main extends JFrame {
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		try {
 			loadInspectionForm("fdform.dat",Server.FDForm);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		try {
 			scan=Resources.getScanner("events.dat");
 			while(scan.hasNextLine()){
@@ -430,10 +465,10 @@ public class Main extends JFrame {
 		if(scan!=null)scan.close();
 
 	}
-	
-	
+
+
 	public static void loadInspectionForm(String srcFile, Vector<String> target) throws FileNotFoundException{
-		
+
 		Scanner scan=Resources.getScanner(srcFile);			
 		while(scan.hasNextLine()){
 			try{
@@ -446,13 +481,13 @@ public class Main extends JFrame {
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void handleCommand(String command){
 		//TODO implement commands
-		
+
 		/*   this does not include arguments
 		 * 
 		 * LIST events
@@ -486,7 +521,7 @@ public class Main extends JFrame {
 		String[] args=command.split(" ");
 		if(args.length>0){
 			args[0]=args[0].toUpperCase();
-		
+
 			if(args[0].equals("LIST")){
 				if(args.length>1){
 					args[1]=args[1].toUpperCase();
@@ -514,7 +549,7 @@ public class Main extends JFrame {
 						}
 					}
 					else if(args[1].equals("STATUS")){						
-						
+
 						try{
 							int num=Integer.parseInt(args[2]);
 							Team t=Server.theServer.getTeam(num);
@@ -623,7 +658,7 @@ public class Main extends JFrame {
 					append("USAGE: REMOVE TEAM <number>");
 					return;
 				}
-				
+
 			}
 			else if(args[0].equals("SET")){
 				if(args.length>1){
@@ -672,7 +707,7 @@ public class Main extends JFrame {
 								//TODO team not event
 							}
 							//TODO finish
-							
+
 						}catch(Exception e){
 							append("USAGE: SET TEAMNAME <number> <name>");
 						}
@@ -713,8 +748,8 @@ public class Main extends JFrame {
 			consoleTextArea.append((success?"SUCCESS":"FAILED")+"\n");
 		}
 	}
-	
-	
+
+
 	public void append(String s) {
 		s = fixHTML(s);
 		consoleTextArea.append("<font color=\"#888888\">" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + "</font><font color=\"#ffffff\" face=\"lucida console\">" + s + "</font><br>");
@@ -726,5 +761,5 @@ public class Main extends JFrame {
 	public static String fixHTML(String s) {
 		return s.replaceAll("\n", "<br>").replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
 	}
-	
+
 }
