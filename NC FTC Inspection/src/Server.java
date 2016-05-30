@@ -50,18 +50,21 @@ public class Server {
 	public static final int H204=10;
 	
 	//These parameters are set to determine whther a given event will show status for that stage and do paperless inspection.
-	public static boolean trackCheckin=true;
+	
 	/**Cube is still shown in status if HW is Full
 	 * Set this to true only if cube is separate?
 	 * */
 	//TODO change name to separateCube?
+	public static boolean trackCheckIn=true;
 	public static boolean trackCube=true;
+	public static boolean separateCube=true;//only relevant if trackCube
 	public static boolean trackHardware=true;
 	public static boolean fullHardware=true;
 	public static boolean trackSoftware=true;
 	public static boolean fullSoftware=true;
 	public static boolean trackField=true;
 	public static boolean fullField=true;
+	
 	
 	private boolean done=false;
 	
@@ -621,7 +624,7 @@ public class Server {
 	public void sendHomePage(PrintWriter pw){
 		//TODO make this page better
 		pw.println("<html>\n<body>");
-		if(trackCheckin)pw.println("<a href=\"/checkin\">Checkin</a>");
+		if(trackCheckIn)pw.println("<a href=\"/checkin\">Checkin</a>");
 		/*TODO if cube separate, do this, or if tracking cube and !fullhardware
 		 * Also, if cube separate, dont update from hardware POST
 		 * TODO move or copy this todo where relevant

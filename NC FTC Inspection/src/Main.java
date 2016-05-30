@@ -36,6 +36,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -46,6 +47,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.TitledBorder;
@@ -155,7 +157,66 @@ public class Main extends JFrame {
 	private JPanel statusPanel = new JPanel();
 	private JPanel topStatusPanel = new JPanel();
 	private static final String COOKIE_LABEL_STRING = "Cookies Issued: ";
-
+	
+	
+	private JCheckBox trackCheckIn = new JCheckBox("Check In",true);
+	private JCheckBox trackCube = new JCheckBox("Sizing Cube",true);
+	private JCheckBox separateCube = new JCheckBox("Separate Cube from HW",true);
+	private JCheckBox trackHardware = new JCheckBox("Hardware",true);
+	private JCheckBox fullHardware = new JCheckBox("Full Hardware",true);
+	private JCheckBox trackSoftware = new JCheckBox("Software",true);
+	private JCheckBox fullSoftware = new JCheckBox("Full Software",true);
+	private JCheckBox trackField = new JCheckBox("Field",true);
+	private JCheckBox fullField = new JCheckBox("Full Field",true);
+	private ActionListener trackListener = new ActionListener(){
+		public void actionPerformed(ActionEvent e){
+			Object source = e.getSource();
+			Server.trackCheckIn = trackCheckIn.isSelected();
+			Server.trackHardware = trackHardware.isSelected();
+			if(!Server.trackHardware){
+				fullHardware.setSelected(false);
+				fullHardware.setEnabled(false);
+			}
+			else{
+				fullHardware.setEnabled(true);
+			}
+			Server.trackField = trackField.isSelected();
+			if(!Server.trackField){
+				fullField.setSelected(false);
+				fullField.setEnabled(false);
+			}
+			else{
+				fullField.setEnabled(true);
+			}
+			Server.trackSoftware = trackSoftware.isSelected();
+			if(!Server.trackSoftware){
+				fullSoftware.setSelected(false);
+				fullSoftware.setEnabled(false);
+			}
+			else{
+				fullSoftware.setEnabled(true);
+			}
+			
+			
+			Server.fullHardware = fullHardware.isSelected();
+			Server.fullSoftware = fullSoftware.isSelected();
+			Server.fullField = fullField.isSelected();
+			Server.trackCube  = trackCube.isSelected();
+			
+			//if cube but not full hw, must be separate
+			if(Server.trackCube && !Server.fullHardware){
+				separateCube.setSelected(true);
+				separateCube.setEnabled(false);
+			}
+			else{
+				separateCube.setEnabled(true);
+			}
+			Server.separateCube = separateCube.isSelected();
+			
+			
+			
+		}
+	};
 
 	private static final String SERVER_SETTINGS = "Server Settings";
 	private static final String EVENT_SETTINGS = "Event Settings";
@@ -165,6 +226,7 @@ public class Main extends JFrame {
 	private JPanel trafficPanel = new JPanel() {
 		@Override
 		public void paint(Graphics g) {
+			
 			int max = 5;
 			for (int i : traffic)
 				max = Math.max(max, i);
@@ -370,6 +432,27 @@ public class Main extends JFrame {
 
 		tabbedPane.addTab(SERVER_SETTINGS, UIManager.getIcon("FileChooser.hardDriveIcon"), serverSettingsPanel, SERVER_SETTINGS);
 		tabbedPane.addTab(EVENT_SETTINGS, ftcIcon, eventSettingsPanel, EVENT_SETTINGS);
+		
+		eventSettingsPanel.add(trackCheckIn);
+		eventSettingsPanel.add(trackCube);
+		eventSettingsPanel.add(separateCube);
+		eventSettingsPanel.add(trackHardware);
+		eventSettingsPanel.add(fullHardware);
+		eventSettingsPanel.add(trackSoftware);
+		eventSettingsPanel.add(fullSoftware);
+		eventSettingsPanel.add(trackField);
+		eventSettingsPanel.add(fullField);
+		trackCheckIn.addActionListener(trackListener);
+		trackCube.addActionListener(trackListener);
+		trackHardware.addActionListener(trackListener);
+		trackSoftware.addActionListener(trackListener);
+		trackField.addActionListener(trackListener);
+		separateCube.addActionListener(trackListener);
+		fullHardware.addActionListener(trackListener);
+		fullSoftware.addActionListener(trackListener);
+		fullField.addActionListener(trackListener);
+				
+				
 		this.getContentPane().add(tabbedPane);
 		pack();
 		this.setVisible(true);

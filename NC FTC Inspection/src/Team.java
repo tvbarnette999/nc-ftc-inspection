@@ -3,6 +3,10 @@ import java.util.Scanner;
 public class Team implements Comparable{
 		int number;
 		String name;
+		
+		/**The index of the cube boolean in the fullHW boolean[]*/
+		public static int CUBE_INDEX=2;
+		
 		/*
 		 * TODO make it so that each event can configure which stages are tracked
 		 * If an event doesnt track Check-in with this system.
@@ -23,6 +27,7 @@ public class Team implements Comparable{
 		String hwNote="",hwTeamSig="",hwInspSig="";
 		String swNote="",swTeamSig="",swInspSig="";
 		String fdNote="",fdTeamSig="",fdInspSig="";
+		
 		//arrays for inspection
 		boolean[] hw;
 		boolean[] sw;
