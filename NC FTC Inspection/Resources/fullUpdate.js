@@ -12,14 +12,22 @@ function fullpass(){
 	var inputs=document.getElementsByTagName("input");
 	var length = inputs.length;
 	var allPass=true;
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("POST", "../cubeindex?",false);
-	xhttp.send();
-	var cubeIndex=parseInt(xhttp.responseText);
-	//TODO ask for cube index 
 	
+	//if HW,ask for cube index. We will skip checking that index's checkbox as it will be handled by the cube page
+	//if cube inspection not separate from hw, server will return -1.
+	var name = event.target.name;
+	var ind = name.indexOf("_");
+	var isHW = name.substring(ind+1, ind+3) == "HW";
+	var cubeIndex=-1;
+	
+	if(isHW){
+		var xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "../cubeindex?",false);
+		xhttp.send();
+		var cubeIndex=parseInt(xhttp.responseText);
+	}
 	for (var i = 0; i < length; i++) {
-		if(i==cubeIndex)continue;
+		if(i==cubeIndex)continue; //skip the sizing cube
 	    if(inputs[i].type=="checkbox" && !inputs[i].checked){
 	    	allPass=false;
 	    	break;
