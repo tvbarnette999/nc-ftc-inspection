@@ -78,8 +78,13 @@ public class Team implements Comparable{
 		 * @param i
 		 */
 		public void set(String type, int i) {
-			if(type.equals("CI"))this.checkedIn=i==3?true:false;
-			if(type.equals("SC"))this.cube=i;
+			if(type.equals("CI"))this.checkedIn = i==3?true:false;
+			if(type.equals("SC")){
+				this.cube = i;
+				if(this.cube ==  Server.PASS && !Server.separateCube){
+					hw[CUBE_INDEX] = true;
+				}
+			}
 			if(type.equals("HW"))this.hardware=i;
 			if(type.equals("SW"))this.software=i;
 			if(type.equals("FD"))this.field=i;
@@ -92,7 +97,7 @@ public class Team implements Comparable{
 				Server.addLogEntry(this.number+" "+type+" in progress");
 			}
 			else Server.addLogEntry(this.number+" has "+(i==Server.PASS?"passed ":"failed ")+type);
-			if(this.checkedIn&&this.cube==Server.PASS&&this.hardware==Server.PASS&&this.software==Server.PASS&&this.field==Server.PASS){
+			if(this.checkedIn && this.cube==Server.PASS && this.hardware==Server.PASS && this.software==Server.PASS && this.field==Server.PASS){
 				ready=true;
 			}
 		}
@@ -123,13 +128,22 @@ public class Team implements Comparable{
 			return true;
 		
 		}
-		public void set(String type, int index, boolean status) {
+		/**
+		 * This method sets the value of the boolean at the given index to the given status for the
+		 * given inspection type.
+		 * @param type
+		 * @param index
+		 * @param status
+		 */
+		public void setInspectionIndex(String type, int index, boolean status) {
 			System.out.println("TEAM SET:"+hw+" "+index+" "+status);
 			if(type.equals("HW")){
-				//TODO deal with cube
 				hw[index]=status;				
-				//if all true, set hardware to pass
+				//TODO pass hw and fail cube when not separate? Or not, cuz they have technically failed HW at that point. consider sigs for hw and how that affect this
 				if(this.get(Server.HARDWARE)!=Server.PROGRESS)this.set(type, Server.PROGRESS);//dont set if we dont have to cuz status log
+				if(index == CUBE_INDEX && Server.trackCube && !Server.separateCube){
+					set("SC",status?Server.PASS:Server.FAIL);
+				}
 			}
 			if(type.equals("SW")){
 				sw[index]=status;			

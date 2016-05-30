@@ -48,13 +48,11 @@ public class Server {
 	public static final int HOME=7;
 	public static final int LOG=11;
 	public static final int H204=10;
+	public static final int CUBE_INDEX_PAGE=12;
 	
 	//These parameters are set to determine whther a given event will show status for that stage and do paperless inspection.
 	
-	/**Cube is still shown in status if HW is Full
-	 * Set this to true only if cube is separate?
-	 * */
-	//TODO change name to separateCube?
+	
 	public static boolean trackCheckIn=true;
 	public static boolean trackCube=true;
 	public static boolean separateCube=true;//only relevant if trackCube
@@ -205,6 +203,9 @@ public class Server {
 				sendHomePage(pw);
 				break;
 			case LOG:sendLogPage(pw);break;
+			case CUBE_INDEX_PAGE:
+				pw.println((separateCube && fullHardware )?Team.CUBE_INDEX:-1);
+				break;
 			
 			//TODO add forums. add truncated manual sections? ie Robot Rules section, etc?
 			case 98:sendDocument(pw,out,"manual1.pdf");break;
@@ -333,7 +334,10 @@ public class Server {
 			//HANDLE POST FROM VERIFIED INSPECTOR
 			req=req.substring(1);
 //			System.out.println("VERIFIED "+req);
-			if(req.startsWith("update?")){//"inspection?")){//||req.startsWith("field?")){//These are requests that contain a state change for a team for a level of inspection. rn only these 2.
+			if(req.startsWith("cubeindex?")){//js is asking what the cube index is before passing the team
+				pageID=CUBE_INDEX_PAGE;
+			}
+			else if(req.startsWith("update?")){//"inspection?")){//||req.startsWith("field?")){//These are requests that contain a state change for a team for a level of inspection. rn only these 2.
 				String s=req.substring(req.indexOf("=")+1);
 //				System.out.println(s);
 				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
@@ -355,7 +359,7 @@ public class Server {
 				String v=s.substring(s.indexOf("=")+1);
 				v=v.substring(0, v.indexOf(" "));
 //				System.out.println(t+":"+type+":"+v);
-				getTeam(t).set(type,index,Boolean.parseBoolean(v));
+				getTeam(t).setInspectionIndex(type,index,Boolean.parseBoolean(v));
 				pageID=H204;
 			}
 			else if(req.startsWith("note?")){
@@ -461,17 +465,24 @@ public class Server {
 	}
 	public void sendStatusPage(PrintWriter pw){
 		//TODO do we want to have an overall inspection progress bar across the top? like its 100% when every team is fully through, etc..
-		//TODO only show tracked ones (only hide cube if cube is untracked and hw is not full)
 		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\"><table border=\"3\"><tr>");
-		pw.println("<th>CI</th><th>SC</th><th>HW</th><th>SW</th><th>FD</th><th>Team #</th><th>Team name</th></tr>");
+		if(trackCheckIn)pw.println("<th>CI</th>");
+		if(trackCube)pw.println("<th>SC</th>");
+		if(trackHardware)pw.println("<th>HW</th>");
+		if(trackSoftware)pw.println("<th>SW</th>");
+		if(trackField)pw.println("<th>FD</th>");
+		pw.println("<th>Team #</th><th>Team name</th></tr>");
+		
+		
 		for(Team t:teams){
-			pw.print("<tr><td bgcolor="+getColor(t.checkedIn)+"></td>"+
-					"<td bgcolor="+getColor(t.cube)+"></td>"+
-					"<td bgcolor="+getColor(t.hardware)+"></td>"+
-					"<td bgcolor="+getColor(t.software)+"></td>"+
-					"<td bgcolor="+getColor(t.field)+"></td>"+
-					"<td bgcolor="+getColor(t.ready)+">"+t.number+"</td>"+
-					"<td bgcolor="+getColor(t.ready)+">"+t.name+"</td>");
+			pw.println("<tr>");
+			if(trackCheckIn)pw.println("<td bgcolor="+getColor(t.checkedIn)+"></td>");
+			if(trackCube)pw.println("<td bgcolor="+getColor(t.cube)+"></td>");
+			if(trackHardware)pw.println("<td bgcolor="+getColor(t.hardware)+"></td>");
+			if(trackSoftware)pw.println("<td bgcolor="+getColor(t.software)+"></td>");
+			if(trackField)pw.println("<td bgcolor="+getColor(t.field)+"></td>");
+			pw.println("<td bgcolor="+getColor(t.ready)+">"+t.number+"</td>");
+			pw.println("<td bgcolor="+getColor(t.ready)+">"+t.name+"</td>");
 			pw.println("</tr>");
 		}
 //		pw.println("<img src=\"firstfavicon.png\"></html>");
@@ -516,7 +527,6 @@ public class Server {
 //			}
 			sendPage(pw,"update.js");
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			addErrorEntry(e);
 		}
@@ -589,7 +599,10 @@ public class Server {
 		 * remove auto check for pass when all checked? (forces signature) -DONE
 		 * 
 		 */
-		for(String s:form){
+		for(int ind=0;ind<form.size();ind++){
+			//if(separateCube && ind == Team.CUBE_INDEX)continue;//remove cube from full hw
+			
+			String s=form.get(ind);
 			pw.print("<tr><td><label>");
 			pw.println("<input type=\"checkbox\" name=\""+extras+type+j+"\" "+(team.get(i,j)?"checked=\"checked\"":"")+" onclick=\"update()\"/>");
 			pw.println("</label></td><td>"+s+"</td></tr>");

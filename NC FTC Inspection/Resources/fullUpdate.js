@@ -12,7 +12,14 @@ function fullpass(){
 	var inputs=document.getElementsByTagName("input");
 	var length = inputs.length;
 	var allPass=true;
+	var xhttp = new XMLHttpRequest();
+	xhttp.open("POST", "../cubeindex?",false);
+	xhttp.send();
+	var cubeIndex=parseInt(xhttp.responseText);
+	//TODO ask for cube index 
+	
 	for (var i = 0; i < length; i++) {
+		if(i==cubeIndex)continue;
 	    if(inputs[i].type=="checkbox" && !inputs[i].checked){
 	    	allPass=false;
 	    	break;

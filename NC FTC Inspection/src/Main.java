@@ -79,8 +79,6 @@ public class Main extends JFrame {
 	 * Also, lets avoid any items above java 1.6 incase this ends up running on linux (a Pi for example)
 	 * 
 	 * 
-	 *TODO Handle Sizing Cube tracking done by index 3 on team.hw;
-	 *TODO Handle Signatures.
 	 *
 	 *TODO could have rules column of forms direct you to that rule in the manual? (Super Long-term goal) but itd be really cool
 	 *
@@ -88,11 +86,13 @@ public class Main extends JFrame {
 	 *
 	 *TODO if web page cant send POST due to disconnect, have a button at bottom of page to send all data from page for reconnect?
 	 *
+	 *TODO have server respond with notes and signitures to confirm.
 	 *
 	 *TODO capability to run headless. just in case
 	 *
-	 *TODO checkboxes for which stages of inspection to track
-	 *TODO save which to track? save in event or .config?
+	 *TODO save which to track? save in .config in root?
+	 *
+	 *TODO Some GUI easy way to select root save dir.
 	 */
 
 	public Main() {
@@ -117,7 +117,7 @@ public class Main extends JFrame {
 			e.printStackTrace();
 			System.exit(0);
 		}
-		autoSaveThread=new Thread("AutoSave"){
+		autoSaveThread = new Thread("AutoSave"){
 			public void run(){
 				System.out.println("Started Autosave thread.");
 				while(true){
@@ -170,7 +170,6 @@ public class Main extends JFrame {
 	private JCheckBox fullField = new JCheckBox("Full Field",true);
 	private ActionListener trackListener = new ActionListener(){
 		public void actionPerformed(ActionEvent e){
-			Object source = e.getSource();
 			Server.trackCheckIn = trackCheckIn.isSelected();
 			Server.trackHardware = trackHardware.isSelected();
 			if(!Server.trackHardware){
@@ -203,17 +202,20 @@ public class Main extends JFrame {
 			Server.fullField = fullField.isSelected();
 			Server.trackCube  = trackCube.isSelected();
 			
+			
+			if(!Server.trackCube){
+				separateCube.setSelected(false);
+				separateCube.setEnabled(false);
+			}
 			//if cube but not full hw, must be separate
-			if(Server.trackCube && !Server.fullHardware){
+			else if(Server.trackCube && !Server.fullHardware){
 				separateCube.setSelected(true);
 				separateCube.setEnabled(false);
 			}
 			else{
 				separateCube.setEnabled(true);
 			}
-			Server.separateCube = separateCube.isSelected();
-			
-			
+			Server.separateCube = separateCube.isSelected();			
 			
 		}
 	};
@@ -467,7 +469,7 @@ public class Main extends JFrame {
 		});
 		trafficPanel.setOpaque(true);
 		boolean running=true;
-		graphics = new Thread() {
+		graphics = new Thread("Graphics Thread") {
 			@Override
 			public void run() {
 				try {
@@ -491,9 +493,9 @@ public class Main extends JFrame {
 				}
 			}
 		};
+		graphics.setDaemon(true);
 		graphics.start();
 		//		this.pack();
-
 
 	}
 
@@ -522,18 +524,22 @@ public class Main extends JFrame {
 		try {
 			loadInspectionForm("hwform.dat",Server.HWForm);
 		} catch (FileNotFoundException e1) {
+			
 			e1.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Unable to load Hardware Inspection form!");
 		}
 		try {
 			loadInspectionForm("swform.dat",Server.SWForm);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Unable to load Software Inspection form!");
 		}
 
 		try {
 			loadInspectionForm("fdform.dat",Server.FDForm);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Unable to load Field Inspection form!");
 		}
 
 		try {
