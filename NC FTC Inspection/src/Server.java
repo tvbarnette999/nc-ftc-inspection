@@ -1,25 +1,18 @@
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
-import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
@@ -77,6 +70,7 @@ public class Server {
 	public static String event="BCRI_16";
 	public static String fullEventName;
 
+	/**Thread pool for HTTP server*/
 	private static ExecutorService threadPool;
 
 	Vector<Team> teams=new Vector<Team>();
@@ -144,7 +138,7 @@ public class Server {
 		return hashedPassString.equals(checkPass);
 	}
 	/**
-	 * 
+	 * Determines how to send the requested page and calls appropriate method
 	 * @param sock
 	 * @param i
 	 * @param extras
@@ -230,7 +224,7 @@ public class Server {
 	}
 
 	/**
-	 * This method handles GET requests. Any pages that require passwords are NOT requested by GETs, so if they are, direct them to password page.
+	 * Handles GET requests.
 	 * @param req
 	 * @param sock
 	 * @param fullReq 
@@ -284,7 +278,7 @@ public class Server {
 	}
 	/**
 	 * This method handles POST requests. It should be passes the request, the data line, and the Socket.
-	 * Any pages requiring passwords are requested through POST, so are handles here.
+	 * 
 	 * @param req
 	 * @param data
 	 * @param sock
@@ -337,37 +331,30 @@ public class Server {
 			if(req.startsWith("cubeindex?")){//js is asking what the cube index is before passing the team
 				pageID=CUBE_INDEX_PAGE;
 			}
-			else if(req.startsWith("update?")){//"inspection?")){//||req.startsWith("field?")){//These are requests that contain a state change for a team for a level of inspection. rn only these 2.
+			else if(req.startsWith("update?")){//These are requests that contain a state change for a team for a level of inspection.
 				String s=req.substring(req.indexOf("=")+1);
-//				System.out.println(s);
 				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
 				String type=s.substring(s.indexOf("_")+1,s.indexOf("&"));
 				String v=s.substring(s.indexOf("=")+1);
 				v=v.substring(0, v.indexOf(" "));
-//				System.out.println(t+":"+type+":"+v);
 				getTeam(t).set(type,Integer.parseInt(v));
 				pageID=H204;
 			}
-			///fullupdate?team=5064_HW1&value=true HTTP/1.1
 			else if(req.startsWith("fullupdate?")){//full inspection state change
 				String s=req.substring(req.indexOf("=")+1);
-//				System.out.println(s);
 				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
 				String type=s.substring(s.indexOf("_")+1,s.indexOf("&"));
 				int index=Integer.parseInt(type.substring(2));//type is 2 characters
 				type=type.substring(0, 2);
 				String v=s.substring(s.indexOf("=")+1);
 				v=v.substring(0, v.indexOf(" "));
-//				System.out.println(t+":"+type+":"+v);
 				getTeam(t).setInspectionIndex(type,index,Boolean.parseBoolean(v));
 				pageID=H204;
 			}
 			else if(req.startsWith("note?")){
 				String s=req.substring(req.indexOf("=")+1);
-//				System.out.println(s);
 				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
 				String type=s.substring(s.indexOf("_")+1,s.indexOf(" "));
-//				System.out.println(t+":"+type);
 				System.out.println("NOTE DATA:"+data);
 				String note=data.substring(0, data.indexOf("&&&"));
 				getTeam(t).setNote(type,note);
@@ -388,13 +375,12 @@ public class Server {
 				pageID=1;
 			}
 		}
-//		System.out.println(pageID);
 		sendPage(sock,pageID, extras, valid);	
 	}
 	
 	
 	/**
-	 * Use extras = generateExtrasPopup(popup) to render a java script pop up on the page
+	 * Use extras = generateExtrasPopup(popup) to render a javascript pop up on the page
 	 * @param popup The string to render
 	 * @return The extra to show the pop up
 	 */
@@ -425,7 +411,6 @@ public class Server {
 	public void sendDocument(PrintWriter pw,OutputStream out,String f) throws IOException{
 		//if(f.substring(f.lastIndexOf(".")+1).equals("pdf")){
 		try{
-			//FIXME if 2 clients request manual within ~sec of each other is problem! might want to buffer into ram once. also syncrhonize
 
 			System.out.println("Sending: "+f);
 			InputStream fin=Resources.getInputStream(f);//new InputStream(f);
@@ -451,6 +436,11 @@ public class Server {
 		//}
 
 	}
+	/**
+	 * returns the color used for the given integer representation of progress(PASS,FAIL,etc)
+	 * @param i
+	 * @return
+	 */
 	public String getColor(int i){
 		switch(i){
 			case 0:return WHITE;
@@ -460,9 +450,18 @@ public class Server {
 		}
 		return "black";
 	}
+	/**
+	 * returns white for false, green for true; 
+	 * @param b
+	 * @return
+	 */
 	public String getColor(boolean b){
 		return getColor(b?3:0);
 	}
+	/**
+	 * Sends the status page, which is a table with colors to indicate how far a team is through inspection
+	 * @param pw
+	 */
 	public void sendStatusPage(PrintWriter pw){
 		//TODO do we want to have an overall inspection progress bar across the top? like its 100% when every team is fully through, etc..
 		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\"><table border=\"3\"><tr>");
@@ -487,6 +486,12 @@ public class Server {
 		}
 //		pw.println("<img src=\"firstfavicon.png\"></html>");
 	}
+	/**
+	 * Send page to edit the status of a team's inspection
+	 * @param pw
+	 * @param i
+	 * @throws IOException
+	 */
 	public void sendInspectionEditPage(PrintWriter pw, int i) throws IOException{
 		
 		/*
@@ -533,6 +538,11 @@ public class Server {
 
 		pw.println("</script></body></html>");
 	}
+	/**
+	 * returns the Team object associated with the team with the given number
+	 * @param num
+	 * @return
+	 */
 	public Team getTeam(int num){
 		for(int i=0;i<teams.size();i++){
 			if(teams.get(i).number==num)return teams.get(i);
@@ -540,6 +550,11 @@ public class Server {
 		return null;
 	}
 	
+	/**
+	 * Sends the page to select the team to inspect. Displays current status behind their numbers to prevent multiple inspections
+	 * @param pw
+	 * @param i
+	 */
 	public void sendInspectionTeamSelect(PrintWriter pw, int i){
 		String type="";
 		switch(i){
@@ -556,6 +571,12 @@ public class Server {
 		pw.flush();
 	}
 	
+	/**
+	 * Sends the full inspection page for the given team.
+	 * @param pw
+	 * @param i
+	 * @param extras
+	 */
 	public void sendFullInspectionPage(PrintWriter pw, int i, String extras){
 		
 		//when submit button clicked, send note and thats how you know IP->fail (or pass)
@@ -633,15 +654,14 @@ public class Server {
 		pw.flush();
 	}
 	
-	
+	/**
+	 * Sends the inspection home page, which has a menu to choose inspection
+	 * @param pw
+	 */
 	public void sendHomePage(PrintWriter pw){
 		//TODO make this page better
 		pw.println("<html>\n<body>");
 		if(trackCheckIn)pw.println("<a href=\"/checkin\">Checkin</a>");
-		/*TODO if cube separate, do this, or if tracking cube and !fullhardware
-		 * Also, if cube separate, dont update from hardware POST
-		 * TODO move or copy this todo where relevant
-		 */
 		if(trackCube)pw.println("<a href=\"/cube\">Sizing Cube</a>");
 		if(trackHardware || fullHardware)pw.println("<a href=\"/hardware\">Hardware</a>");
 		if(trackSoftware || fullSoftware)pw.println("<a href=\"/software\">Software</a>");
@@ -659,6 +679,11 @@ public class Server {
 		pw.println("</body></html>");
 		pw.flush();
 	}
+	/**
+	 * Starts the server.
+	 * @param port
+	 * @throws FileNotFoundException
+	 */
 	@SuppressWarnings("unchecked")
 	public void startServer(final int port) throws FileNotFoundException{
 		this.setPassword(password); 
@@ -795,8 +820,7 @@ public class Server {
 	//public void save
 
 	/**
-	 * Handles the HTTP requests and directs them to appropriate methods.
-	 * 
+	 * Handles the HTTP requests and directs them to appropriate methods.	 * 
 	 *
 	 */
 	public class Handler implements Runnable{

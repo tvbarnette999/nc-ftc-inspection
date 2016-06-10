@@ -85,8 +85,7 @@ public class Main extends JFrame {
 	 *TODO help pages are probably an important thing
 	 *
 	 *TODO if web page cant send POST due to disconnect, have a button at bottom of page to send all data from page for reconnect?
-	 *
-	 *TODO have server respond with notes and signitures to confirm.
+	 *TODO have server respond with notes and signitures to confirm.?
 	 *
 	 *TODO capability to run headless. just in case
 	 *
@@ -495,6 +494,7 @@ public class Main extends JFrame {
 		};
 		graphics.setDaemon(true);
 		graphics.start();
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		//		this.pack();
 
 	}
@@ -599,7 +599,7 @@ public class Main extends JFrame {
 		 *SELECT event-same
 		 *
 		 *CLEAR DATA*
-		 *DLEAR ALL LOCAL DATA? (resets to factory settings and events -deletes save dir)
+		 *CLEAR ALL LOCAL DATA? (resets to factory settings and events -deletes save dir)
 		 * 
 		 *SAVE*
 		 * 
