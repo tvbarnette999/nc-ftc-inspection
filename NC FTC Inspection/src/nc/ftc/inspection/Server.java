@@ -1,3 +1,4 @@
+package nc.ftc.inspection;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -201,7 +202,7 @@ public class Server {
 				pw.println((separateCube && fullHardware )?Team.CUBE_INDEX:-1);
 				break;
 			
-			//TODO add forums. add truncated manual sections? ie Robot Rules section, etc?
+			//TODO add forums. s
 			case 98:sendDocument(pw,out,"manual1.pdf");break;
 			case 99:sendDocument(pw,out,"manual2.pdf");break;
 			case 100:sendDocument(pw,out,"firstfavicon.ico");break;

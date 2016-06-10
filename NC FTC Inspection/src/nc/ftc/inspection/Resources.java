@@ -1,3 +1,4 @@
+package nc.ftc.inspection;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -5,27 +6,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
-
-/*
+//TODO fix this javadoc so it rended like this
+/**A class with static methods for accessing Resources 
+ * <br>
  * Resources Directories:
- * 
- * 1st Check:
- * 		<.jar>/Resources
- * 			pdfs, html, php, js
- * 			default event data
- * 2nd Check:
+ * <br>
+ * 1st Check:<br>
  * 		root/
  * 			events.dat (if modified)
- * 			<event>.event (if modified or created)
- * 			/<event> (nothing in this dir is ever in jar)
- * 				<event>.status 
+ * 			[eventName].event (if modified or created)
+ * 			[eventName]/ (nothing in this dir is ever in jar)
+ * 				[eventName].status 
  * 				/hw
  * 				/sw
  * 				/fd
- * 					<team#>.ins
- * 3rd check:
- * 		/Resources (should only work in eclipse or if exported with Resources in folder beside jar)
- * 					(save data will not go here unless root is set to "/Resources")* 
+ * 					[team#].ins
+ * 2nd Check:
+ * 		<.jar>/Resources
+ * 			pdfs, html, php, js
+ * 			default event data
+ * 
  * 
  * root defaults to NC Inspection folder beside jar
  * 
@@ -44,23 +44,26 @@ public class Resources {
 	public static Scanner getScanner(String name) throws FileNotFoundException{
 		return new Scanner(getInputStream(name));
 	}
-	
 	public static InputStream getInputStream(String name) throws FileNotFoundException{
 		InputStream in;
 		try{//try root save directory first- if we need to change a file on the fly it loads that one first (also any mod like add team- rewrite new event data file there and its saved)
 			in=new FileInputStream(root+"/"+name);
 		}catch(Exception e){
-			try{				
-				in=Resources.class.getResourceAsStream("Resources/"+name);
+			try{		
+				in=Resources.class.getResourceAsStream("/Resources/"+name);
+				if(in==null)System.out.println("E");
 				if(in==null)throw new Exception("First failed");
 			}catch(Exception e1){
-				try{
-					in=new FileInputStream("Resources/"+name);//this should not work outside eclipse for anything.
-				}catch(Exception e2){
-					System.err.println("Unable to load Resource: "+name);
-					throw new FileNotFoundException("Could not find resource: "+name);
-					//TODO check other exceptions to see if something worse happened?
-				}
+				System.err.println("Unable to load Resource: "+name);
+				throw new FileNotFoundException("Could not find resource: "+name);
+				//TODO check other exceptions to see if something worse happened?
+//				try{
+//					in=new FileInputStream("Resources/"+name);//this should not work outside eclipse for anything.
+//				}catch(Exception e2){
+//					System.err.println("Unable to load Resource: "+name);
+//					throw new FileNotFoundException("Could not find resource: "+name);
+//					//TODO check other exceptions to see if something worse happened?
+//				}
 			}
 		}
 		return in;
@@ -263,6 +266,38 @@ public class Resources {
 	
 	public static Scanner getFieldScanner(int team){
 		File f=new File(root+"/"+Server.event+"/FD/"+team+".ins");
+		if(!f.exists())return null;
+		try{
+			return new Scanner(f);
+		}
+		catch(Exception e){
+			return null;
+		}
+	}
+	
+	public static PrintWriter getConfigWriter(){
+		File f=new File(root);
+		if(!f.exists() || !f.isDirectory())f.mkdirs();
+		
+		f=new File(f.getPath()+"/.config");
+		if(!f.exists()){
+			try{
+				f.createNewFile();				
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		try{
+			PrintWriter pw=new PrintWriter(f);
+			return pw;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static Scanner getConfigScanner(){
+		File f=new File(root+"/"+".config");
 		if(!f.exists())return null;
 		try{
 			return new Scanner(f);

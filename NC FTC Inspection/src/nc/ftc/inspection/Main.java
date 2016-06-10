@@ -1,3 +1,5 @@
+package nc.ftc.inspection;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -34,6 +36,7 @@ import java.util.Vector;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -56,6 +59,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.plaf.IconUIResource;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+
 
 public class Main extends JFrame {
 
@@ -103,7 +107,14 @@ public class Main extends JFrame {
 	public static Vector<String> events=new Vector<String>();
 	public static Thread autoSaveThread;
 	public static void main(String[] args) {
-
+		for(String s:args){
+			if(s.startsWith("root=")){
+				//TODO set root
+			}
+			if(s.startsWith("headless")){
+				//TODO headless
+			}
+		}
 
 		loadFiles();
 		me = new Main();
@@ -306,7 +317,13 @@ public class Main extends JFrame {
 				// If Nimbus is not available, you can set the GUI to another look and feel.
 			}
 		}
-		ftcIcon = new ImageIcon(getClass().getResource("firstfavicon.png"));
+		try {
+			ftcIcon = new ImageIcon(ImageIO.read(Resources.getInputStream("firstfavicon.png")));
+		} catch (FileNotFoundException e2) {
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		}//getClass().getResource("Resources/firstfavicon.png"));
 		setIconImage(ftcIcon.getImage());
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {

@@ -1,3 +1,4 @@
+package nc.ftc.inspection;
 import java.util.Scanner;
 
 public class Team implements Comparable{
