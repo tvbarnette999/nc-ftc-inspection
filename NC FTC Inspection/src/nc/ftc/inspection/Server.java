@@ -888,11 +888,11 @@ public class Server {
 		addLogEntry("Stopping server!");
 		theServer.done=true;
 	}
-	public static boolean changeEvent(String name) {
+	public static boolean changeEvent(String name){
 		Server.save();
 		addLogEntry("Saved old event data");
 		System.out.println("New event:"+name);
-		event=name;
+		event = name;
 		theServer.teams.clear();
 		try {
 			theServer.loadEvent();
@@ -904,6 +904,7 @@ public class Server {
 		return false;
 	}
 	public static boolean save(){
+		theServer.saveConfig();
 		PrintWriter pw=Resources.getStatusWriter();
 		if(pw==null)return false;
 		for(Team t : theServer.teams){
@@ -948,6 +949,57 @@ public class Server {
 		}
 		
 		return true;
+	}
+	
+	public boolean saveConfig(){
+		
+		PrintWriter pw = Resources.getConfigWriter();
+		if(pw == null)return false;
+		pw.println(event);
+		pw.println(hashedPassString);
+		pw.println(trackCheckIn);
+		pw.println(trackCube);
+		pw.println(separateCube);
+		pw.println(trackHardware);
+		pw.println(fullHardware);
+		pw.println(trackSoftware);
+		pw.println(fullSoftware);
+		pw.println(trackField);
+		pw.println(fullField);
+		pw.flush();
+		pw.close();
+		return true;
+	}
+	
+	public void loadConfig(){
+		Scanner scan = Resources.getConfigScanner();
+		if(scan == null)return;
+		String event = scan.nextLine();
+		if(Main.events.contains(event)){
+			Server.event = event;
+		}
+		hashedPassString=scan.nextLine();
+		//TODO call whatever is needed for the password
+		trackCheckIn = scan.nextBoolean();
+		scan.nextLine();
+		trackCube = scan.nextBoolean();
+		scan.nextLine();
+		separateCube = scan.nextBoolean();
+		scan.nextLine();
+		trackHardware = scan.nextBoolean();
+		scan.nextLine();
+		fullHardware = scan.nextBoolean();
+		scan.nextLine();
+		trackSoftware = scan.nextBoolean();
+		scan.nextLine();
+		fullSoftware = scan.nextBoolean();
+		scan.nextLine();
+		trackField = scan.nextBoolean();
+		scan.nextLine();
+		fullField = scan.nextBoolean();
+		scan.nextLine();
+		scan.close();
+		Server.changeEvent(event);
 	}
 	public static boolean clearData(){
 		//TODO implement

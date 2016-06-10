@@ -565,6 +565,7 @@ public class Main extends JFrame {
 				events.add(scan.nextLine());
 			}
 			Server.event=events.get(0);
+			Server.theServer.loadConfig();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
