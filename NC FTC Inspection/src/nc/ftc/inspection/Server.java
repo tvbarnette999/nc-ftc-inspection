@@ -44,7 +44,7 @@ public class Server {
 	public static final int H204=10;
 	public static final int CUBE_INDEX_PAGE=12;
 	
-	//These parameters are set to determine whther a given event will show status for that stage and do paperless inspection.
+	//These parameters are set to determine whether a given event will show status for that stage and do paperless inspection.
 	
 	
 	public static boolean trackCheckIn=true;
@@ -704,7 +704,7 @@ public class Server {
 						try{
 							threadPool.execute(new Handler(server.accept()));
 						}catch(SocketTimeoutException e){
-							//this is so we can safely shutdown}
+							//this is so we can safely shutdown
 						}
 					}
 					server.close();
