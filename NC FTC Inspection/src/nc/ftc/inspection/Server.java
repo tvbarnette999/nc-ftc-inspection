@@ -60,9 +60,12 @@ public class Server {
 	
 	private boolean done=false;
 	
+	//TODO add sections to the form data to handle new one, accommodate for dual columned entries like new SW
 	public static Vector<String> HWForm=new Vector<String>();
 	public static Vector<String> SWForm=new Vector<String>();
 	public static Vector<String> FDForm=new Vector<String>();
+	
+	
 	
 
 	public static final long SEED = System.currentTimeMillis();
@@ -834,23 +837,13 @@ public class Server {
 				byte[] b=new byte[1024];
 				sock.getInputStream().read(b);
 				String req=new String(b);
-				//System.out.println(req);
-
-				//				req=req.substring(0,req.indexOf("\n"));
-				
-//				System.err.println(req);
 				if(req.startsWith("GET")){
-					//	System.out.println(req);
 					get(req.substring(4,req.indexOf("\n")),sock, req);
 				}
 				if(req.startsWith("POST")){			
-	//				System.err.println("******** RENDERING POST **********");
 					String[] datarray=req.split("\n");
-	//				System.err.println(Arrays.toString(datarray));
 					String data=datarray[datarray.length-1];
-	//				System.err.println(data); // this is correct
-					data=data.substring(data.indexOf("\n")+3);//why is this here?
-	//				System.err.println(data);
+					data=data.substring(data.indexOf("\n")+3);//why is this here? This is why we comment code.
 					post(req.substring(5,req.indexOf("\n")),data,sock);
 				}
 				sock.close();
@@ -861,6 +854,7 @@ public class Server {
 		}
 	}
 	
+	/**Adds a String to the Server's status log*/
 	public static void addLogEntry(String s){
 		String time=DATE_FORMAT.format(Calendar.getInstance().getTime());
 		statusLog.add(time+s);
@@ -868,12 +862,14 @@ public class Server {
 		
 	}
 	
+	/**Adds a String to the Server's Error log*/
 	public static void addErrorEntry(String s) {
 		String time=DATE_FORMAT.format(Calendar.getInstance().getTime());
 		statusLog.add(time+s);
 		Main.me.error(s);
 	}
 	
+	/**Adds an exception to the Server's Error log*/
 	public static void addErrorEntry(Exception e) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		e.printStackTrace(new PrintStream(b));
@@ -888,6 +884,12 @@ public class Server {
 		addLogEntry("Stopping server!");
 		theServer.done=true;
 	}
+	
+	/**
+	 * Saves the current event data and changes active event, loading the data for the new event.
+	 * @param name the code/abbreviation for the event to change to.
+	 * @return true if successful
+	 */
 	public static boolean changeEvent(String name){
 		Server.save();
 		addLogEntry("Saved old event data");
@@ -903,6 +905,12 @@ public class Server {
 		}		
 		return false;
 	}
+	
+	/**
+	 * Saves the current team status data to the .status file, and the full inspection data for each team
+	 * to the teams respective .ins file. Also saves server configuration.
+	 * @return
+	 */
 	public static boolean save(){
 		theServer.saveConfig();
 		PrintWriter pw=Resources.getStatusWriter();
@@ -951,8 +959,11 @@ public class Server {
 		return true;
 	}
 	
-	public boolean saveConfig(){
-		
+	/**
+	 * Saves the current Server configuration to the .config file. Should be called any time configuration changes
+	 * @return true if successful
+	 */ 
+	public boolean saveConfig(){		
 		PrintWriter pw = Resources.getConfigWriter();
 		if(pw == null)return false;
 		pw.println(event);
@@ -971,6 +982,9 @@ public class Server {
 		return true;
 	}
 	
+	/**
+	 * Loads the server configuration from the file.
+	 */
 	public void loadConfig(){
 		Scanner scan = Resources.getConfigScanner();
 		if(scan == null)return;
@@ -1001,6 +1015,11 @@ public class Server {
 		scan.close();
 		Server.changeEvent(event);
 	}
+	
+	/**
+	 * Clears the Server data
+	 * @return
+	 */
 	public static boolean clearData(){
 		//TODO implement
 		return false;

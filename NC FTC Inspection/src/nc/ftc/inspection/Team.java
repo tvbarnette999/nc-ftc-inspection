@@ -164,6 +164,16 @@ public class Team implements Comparable{
 			return 0;
 		}
 		
+		/**
+		 * Returns a comma separated String containing the team number followed by
+		 *  the overall status in the following order:<br>
+		 *  CheckIn, Cube, Hardware, Software, Field
+		 *  
+		 *  <br>
+		 *  This is used to save team status data.
+		 * 
+		 * @return
+		 */
 		public String getStatusString(){
 			return number+","+checkedIn+","+cube+","+hardware+","+software+","+field;
 		}
