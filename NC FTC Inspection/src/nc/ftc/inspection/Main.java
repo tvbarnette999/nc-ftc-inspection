@@ -93,7 +93,7 @@ public class Main extends JFrame {
 	 *
 	 *TODO capability to run headless. just in case
 	 *
-	 *TODO save which to track? save in .config in root?
+	 *TODO save which to track? save in server.config in root?
 	 *
 	 *TODO Some GUI easy way to select root save dir.
 	 *
@@ -228,7 +228,7 @@ public class Main extends JFrame {
 				separateCube.setEnabled(true);
 			}
 			Server.separateCube = separateCube.isSelected();			
-			
+			Server.theServer.saveConfig();
 		}
 	};
 
@@ -307,6 +307,7 @@ public class Main extends JFrame {
 	private Thread graphics;
 	private int[] traffic = new int[50];
 	private void initGUI() {
+		setCheckBoxes();
 		if (NIMBUS) {
 			try {
 				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -640,7 +641,7 @@ public class Main extends JFrame {
 					args[1]=args[1].toUpperCase();
 					if(args[1].equals("EVENTS")){
 						for(String e:events){
-							consoleTextArea.append(e+"\n");
+							append(e);
 						}
 						return;
 					}
@@ -698,7 +699,7 @@ public class Main extends JFrame {
 					if(args[1].toUpperCase().equals("EVENT")){
 						if(args.length>2){
 							if(events.contains(args[2])){
-								success=Server.changeEvent(args[2]);
+								success=changeEvent(args[2]);
 							}
 						}else{
 							append("USAGE: CHANGE [EVENT] <code>");
@@ -721,9 +722,13 @@ public class Main extends JFrame {
 								return;
 							}
 							success=Server.theServer.teams.add(new Team(num));
-							//TODO if team unknown, add to master list
+							if(!teamData.containsKey(num)){
+								teamData.put(num, null);
+							}
+							Resources.saveTeamList();
 							Collections.sort(Server.theServer.teams);
-							success&=Resources.saveEventFile();
+							success &= Resources.saveEventFile();
+							Server.save();
 						}catch(Exception e){
 							append("FAILED: USAGE: ADD TEAM <number>");
 							return;
@@ -817,10 +822,13 @@ public class Main extends JFrame {
 							int number=Integer.parseInt(args[2]);
 							Team t=Server.theServer.getTeam(number);
 							if(t==null){
-								//TODO team not event
+								append("Team "+number+" not found.");
+								return;
 							}
-							//TODO finish
-
+							String name = args[3];
+							t.setName(name);
+							teamData.put(number, name);
+							Resources.saveTeamList();
 						}catch(Exception e){
 							append("USAGE: SET TEAMNAME <number> <name>");
 						}
@@ -873,6 +881,24 @@ public class Main extends JFrame {
 	}
 	public static String fixHTML(String s) {
 		return s.replaceAll("\n", "<br>").replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+	}
+	
+	public void setCheckBoxes(){
+		trackCheckIn.setSelected(Server.trackCheckIn);
+		trackCube.setSelected(Server.trackCube);
+		separateCube.setSelected(Server.separateCube);
+		trackHardware.setSelected(Server.trackHardware);
+		fullHardware.setSelected(Server.fullHardware);
+		trackSoftware.setSelected(Server.trackSoftware);
+		fullSoftware.setSelected(Server.fullSoftware);
+		trackField.setSelected(Server.trackField);
+		fullField.setSelected(Server.fullField);
+	}
+	
+	public boolean changeEvent(String event){
+		boolean b=Server.changeEvent(event);
+		setCheckBoxes();
+		return b;
 	}
 
 }

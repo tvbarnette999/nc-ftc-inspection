@@ -222,6 +222,11 @@ public class Team implements Comparable{
 			}
 			return s;
 		}
+		
+		public void setName(String name){
+			this.name=name;
+			
+		}
 
 		
 }

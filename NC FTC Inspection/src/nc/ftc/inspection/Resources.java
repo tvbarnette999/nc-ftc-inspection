@@ -5,7 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
+import java.util.Set;
 
 /**A class with static methods for accessing Resources. The root directory is specified at runtime or in configuration, and 
  * is where the data is saved. It defaults to "NC Inspection" adjacent to .jar. It is the first place checked for any 
@@ -351,7 +354,7 @@ public class Resources {
 		File f=new File(root);
 		if(!f.exists() || !f.isDirectory())f.mkdirs();
 		
-		f=new File(f.getPath()+"/.config");
+		f=new File(f.getPath()+"/server.config");
 		if(!f.exists()){
 			try{
 				f.createNewFile();				
@@ -373,7 +376,7 @@ public class Resources {
 	 * @return the Scanner
 	 */
 	public static Scanner getConfigScanner(){
-		File f=new File(root+"/"+".config");
+		File f=new File(root+"/"+"server.config");
 		if(!f.exists())return null;
 		try{
 			return new Scanner(f);
@@ -381,5 +384,33 @@ public class Resources {
 		catch(Exception e){
 			return null;
 		}
+	}
+	
+	public static boolean saveTeamList(){
+		checkRoot();
+		File f = new File(root+"/teamdata.dat");
+		if(!f.exists()){
+			try{
+				f.createNewFile();
+			}catch(Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		}
+		try{
+			PrintWriter pw=new PrintWriter(f);
+			ArrayList<Integer> nums=new ArrayList<Integer>(Main.teamData.keySet());
+			Collections.sort(nums);
+			for(int num:nums){
+				pw.println(num+":"+Main.teamData.get(num));
+			}
+			pw.flush();
+			pw.close();
+			return true;
+		}catch(IOException e){
+			e.printStackTrace();
+		}	
+		
+		return false;
 	}
 }
