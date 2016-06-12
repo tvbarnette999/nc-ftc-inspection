@@ -1,0 +1,900 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0057)http://ftcforum.usfirst.org/archive/index.php/t-4624.html -->
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+	
+	<meta name="keywords" content="power, switch, wiring, module, guide, distribution, robot, standalone, years, field, released, interference, personnel, strongly, robots, allowed, connected, resources, updated, details, specific, rules, expose, accessible, readily, elements, ftc, build, reliable, constructing, inspection, http://www.usfirst.org/roboticsprograms/ftc/team-resources, [url=http://firstinspires.org/node/5181]2014-2016, outdated, information, system, ignore, samantha, nxt, references, control, battery, optional, switches, recommended, “tetrix, serve, toggle, rocker, states">
+	<meta name="description" content="You&#39;ll find the answers to questions posted about Electrical Robot Components here.">
+	
+	<title> Robot Inspection and Build Rules - Electrical - Answer Thread [Archive]  - FTC Forum</title>
+	<link rel="stylesheet" type="text/css" href="./electricalForum_files/archive.css">
+</head>
+<body>
+<div class="pagebody">
+<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-111.html">FTC Game Q&amp;A Archives</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-162.html">FIRST Tech Challenge - FIRST RES-Q - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-164.html">FIRST Tech Challenge - FIRST RES-Q - Robot Inspection and Build Rules</a> &gt;  Robot Inspection and Build Rules - Electrical - Answer Thread</div>
+<hr>
+<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-4624.html?pda=1" rel="nofollow">PDA</a></div>
+<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?4624-Robot-Inspection-and-Build-Rules-Electrical-Answer-Thread">Robot Inspection and Build Rules - Electrical - Answer Thread</a></p>
+<hr>
+<div class="floatcontainer">  </div><br>
+<div class="post"><div class="posttop"><div class="username">Microburst</div><div class="date">09-23-2015, 05:13 PM</div></div><div class="posttext">You'll find the answers to questions posted about Electrical Robot Components here.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Tsunami</div><div class="date">09-26-2015, 11:21 AM</div></div><div class="posttext">1.  Will teams be allowed to use Arduinos / prototyping boards this year?  <br>
+1b.  If they are allowed, are there restrictions as to their use (interfacing with a sensor and reporting results back to the CDIM, or only decorative use such as quickly cycling LEDs to save power instead of just hooking all the LEDs directly to the battery and/or displaying an image on an LED matrix, which also requires rapid LED cycling).<br>
+<br>
+The ability to incorporate Electrical Engineering more into the curriculum would be fantastic.  It's understood the Core Device Interface Module can perform many of these functions, but for something which requires rapid updates, it would be highly preferable to offload this away from the phone and the devices running the robot.<br>
+<br>
+<br>
+Does &lt;RE06&gt; exclude supplementary controller boards (ex: Arduino) and/or Custom/DIY Sensors?<br>
+<br>
+<br>
+Would a digital volt meter be allowed on the robot? (example: http://www.powerwerx.com/batteries-chargers/panel-mount-digital-volt-meter-12vdc.html )<br>
+<br>
+A: No, per &lt;RE06&gt;d. “Other electronics are not allowed.” The only allowed additional electronics by &lt;RE06&gt; are light sources (see also &lt;RE03&gt;g.), manufactured sensors and the HiTechnic NXT1060 multiplexor, and video recording devices (see also &lt;RE03&gt;f.); in addition, manufactured sensors must connect directly to the Core Device Interface Module or to the Core Legacy Module either directly or through a HiTechnic NTX1060 multiplexor and may not connect directly to robot power or to USB. Note that this rule also precludes the use of Legacy prototype boards, microcontroller boards, and custom sensors.<br>
+<br>
+Communicating with additional electronics is likely to require drivers or other software support which is not available or which may not be compatible with the Robot Controller software used in this year's game. Although not allowed for this year's game, GDC will evaluate software and driver availability and compatibility to determine what additional electronics can be supported in future games.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Tsunami</div><div class="date">09-26-2015, 11:36 AM</div></div><div class="posttext">Are there provisions in the rules that allow us to generate custom sensors as was indicated when the new control system was being released?  If so, what rule allows the use of momentary switches as limit switches and touch sensors?  Would the same be used for potentiometers as rotational sensors?<br>
+<br>
+A: No, per &lt;RE06&gt;b. custom sensors are not allowed; compatible sensors include manufactured sensors that are connected directly to the Core Device Interface Module or to the Core Legacy Module either directly or through a HiTechnic NTX1060 multiplexor.<br>
+<br>
+Simple manufactured devices may be considered sensors as long as they are compatible with the Core Device Interface Module; thus a simple switch is an allowed sensor. Note that per &lt;RE06&gt;d. you may not add any other electronics to the switch. If required, per &lt;RE05&gt;g. “sensor wires and their connectors may be extended, modified, custom made, or COTS” to connect to the Core Device Interface Module.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Tsunami</div><div class="date">09-26-2015, 11:49 AM</div></div><div class="posttext">Are LIDAR Sensors allowed?<br>
+They do use focused emitted light; but, so do the reflective light sensors.<br>
+I see some teams used them last year and were allowed if there power level was below a certain level<br>
+<br>
+A: No, per &lt;R06&gt;a. LIDAR is both a laser and a focused/directed light source and is thus not allowed.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Tsunami</div><div class="date">09-26-2015, 11:53 AM</div></div><div class="posttext">Are motor controller power lines classified as "battery" or "motor" wires for AWG?<br>
+<br>
+<br>
+Does &lt;RE03&gt;d mean power for legacy motor controllers have to connect direct to the Power Control Module (no chaining)?<br>
+This would force a lot of home run wiring and making custom crimped Power Pole cables<br>
+<br>
+A: Power connections to Core Devices must connect directly to the Core Power Distribution Module; this module acts as a power splitter for the battery thus these connections:<br>
+<br>
+<br>
+ must be connected directly to the Core Power Distribution Module per &lt;RE05&gt;e. and may not be chained<br>
+ should be considered Battery wires and per &lt;RE05&gt;g.i. must be 16 AWG or larger<br>
+ may use power splitters per &lt;RE05&gt;f.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Tsunami</div><div class="date">09-26-2015, 12:23 PM</div></div><div class="posttext">Are vision senors and/or using the phone camera allowed?  <br>
+How does that fit with the &lt;RE06&gt; c?<br>
+<br>
+A: Yes, you are free to use the phone camera as a sensor; other vision sensors are allowed if they are compatible manufactured sensors that are connected directly to the Core Device Interface Module or to the Core Legacy Module either directly or through a HiTechnic NTX1060 multiplexor. Note that per &lt;RE06&gt;c. “Video recording devices (GoPro or similar) are allowed providing they are used only for non-functional post match entertainment” and thus these devices may not be used as a sensor as they may not be connected to USB (&lt;RE06&gt;c.) or to power (&lt;RE04&gt;f.).</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Tsunami</div><div class="date">09-26-2015, 12:56 PM</div></div><div class="posttext">When wiring this year's robots, will teams still need to have a separate Power switch connected between the battery and the Core Power Distribution module? Or will the power switch on the Distribution Module itself serve as the main power switch this year?<br>
+<br>
+<br>
+&lt;RE03 c.&gt; States the we are allowed to use a second power switch before the PDM. Are we allowed to use any type of Toggle or Rocker Switch, or does it need to match last years switch? When will the Wiring Guide be released?<br>
+<br>
+A: Standalone power switches are optional but are strongly recommended; if used, per &lt;RG04&gt;a. the standalone power switch must be either “TETRIX (part #W39129) or MATRIX (part# 50-00300).”<br>
+<br>
+FIRST strongly recommends using a standalone main power switch both to make it easy for field personnel to find as well as to protect robot wiring from interference. Per &lt;RG04&gt; and &lt;RE03&gt;c., you may use either a single standalone main power switch or the switch on the Core Power Distribution Module. Note, however, that using the switch on the Core Power Distribution Module and placing it so that it is readily accessible to field personnel may expose wiring connected to the Core Power Distribution Module to interference from other robots or field elements.<br>
+<br>
+The FTC Wiring guide is available through  along with many other team resources; it is currently last year's wiring guide but will be updated soon with specific details for the new control system. Although some of the information is outdated (you should ignore references to the LEGO NXT and the Samantha module) the bulk of the guide will be useful in constructing a reliable robot.<br>
+<br>
+The FIRST ResQ Robot Wiring Guide is now released! Get yours now at [URL="http://firstinspires.org/node/5181"]2014-2016 Robot Wiring Guide (http://www.usfirst.org/roboticsprograms/ftc/team-resources).</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Tsunami</div><div class="date">09-26-2015, 01:36 PM</div></div><div class="posttext">To prevent a total system shut down if their is an electrical issue during a match (current setup has one main fuse near battery), are distribution panels that allow each circuit to be on their own fuse allowed? example RIGrunner 4005 from Powerwerx: http://www.powerwerx.com/powerpole-power-distribution/rigrunner-4005.html<br>
+<br>
+By using this system, if there were a short in one of the circuits, than only that "branch" of sub circuits would be disabled. Allowing for the robot to still have some mobility and opportunity to continue to compete during a match.<br>
+<br>
+According to the manual, power distribution splitters are allowed (&lt;RE05&gt;f). Just wanted to check that a "fused" splitter is allowed.<br>
+<br>
+A: Yes, per &lt;RE05&gt;f. splitters with or without fuses are allowed.<br>
+<br>
+Splitters may either be COTS/team constructed wire splitters (per &lt;RE05&gt;g. they must be at least 16 AWG) or purchased COTS passive power-distribution boxes such as the one that you have referenced; COTS passive power-distribution boxes may not contain switches or any other electronic components other than fuses. Splitters with fuses must have fuses configured so that they meet &lt;RE03&gt;e. such that all fuses are less than or equal to any fuses in line that are closer to the battery. Per manufacturer specification, the battery or Core Power Distribution Module must be fused with at most a 20 A fuse although you may use a fuse with a smaller current rating if desired.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">09-28-2015, 02:23 PM</div></div><div class="posttext">&lt;RE04&gt; Any compatible servo may be used.<br>
+<br>
+1.Does this mean we can use any servo that meets the specs of modern robotics servo controller?<br>
+<br>
+2.Is the HiTechnic servo controller still limited to only standard and quarter scale?<br>
+<br>
+A1. Yes, any servo that meets the electrical specifications of the servo controller may be used.  Make sure to pay attention to the stall current ratings.  Additionally, &lt;RE02&gt; prohibits modification of the internals of the servos.<br>
+A2. There is no limit based on the physical sizes of the servos. Both the Legacy HiTechnic and newer Modern Robotics servo controllers have the same 5 amp total current limit for servos connected to the controllers.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">09-28-2015, 02:48 PM</div></div><div class="posttext">Are NXT/EV3 Lego motors allowed? The NXT sensors are explicitly allowed, but there is no mention of the motors that we can find.<br>
+If legal, would they count as a motor or a servo for the purpose of the 8 motor/12 servo limit?<br>
+<br>
+A: No.  NXT motors are not allowed.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">09-28-2015, 02:51 PM</div></div><div class="posttext">Would servos that are bought with the capabilities of rotating continuously be legal, assuming it was not modified by a team?<br>
+<br>
+A: Yes.  Continuous Rotation Servos are allowed. Modification of non-continuous servos is not allowed per &lt;RE02&gt;</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">09-28-2015, 03:55 PM</div></div><div class="posttext">The title of this post pretty much asks our question. In other words, if we have a separate USB hub and Anderson Power Distribution hub, and a power switch, we don't really need the Modern Robotics "Core Power Distribution" component, right?<br>
+<br>
+thanks<br>
+<br>
+- - - -<br>
+FTC Team #6389 - The Lazybotts<br>
+<br>
+A: Yes, the Core Power Distribution Module is required per &lt;RE01&gt;.  It is the only allowed connection point for the USB connection from the Android device on the robot.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-02-2015, 01:00 PM</div></div><div class="posttext">We are new to FTC and it occurred to me that the VEX 393 motors (which are legal) are actually continuous rotation servos when used with the VEX motor controller. I just want to get an official clarification that we can use these in that way. In other words, we would be able to use a total of 20 VEX 393 motors (8 without the motor controllers and 12 with them-making them servos). Is that a correct understanding?  If you need or would like further details on the VEX motor controllers, you can see it here: http://www.robotmesh.com/vex-robotics/motors-and-gears/vex-motor-controller-29<br>
+<br>
+A: No. The Vex 393 motor is allowed only when connected to its companion Vex Motor Controller and only when controlled by a Servo Controller (per &lt;RE04&gt;) Further, &lt;RE04&gt; clearly identifies that the Vex motor is counted against the DC motor count.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-02-2015, 01:26 PM</div></div><div class="posttext">Hi GDC,<br>
+<br>
+Can slip rings can be used between motor controller and motors? Assuming: fully enclosed (no exposed contacts), wire guage correct for motors (per game rules), and rated sufficiently for motors (per motor controller output specs).<br>
+<br>
+Thanks!!<br>
+<br>
+- FTC Team #6389 - The Lazybotts<br>
+<br>
+A: Yes. A slip ring is a type of electrical connector.  Per &lt;RE06&gt;.g, wires and connectors my be extended, modified, custom made, or COTS.  Care should be taken to ensure appropriate wire gauge and insulation of contacts.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-02-2015, 01:32 PM</div></div><div class="posttext">Are distance sensors using IR emitters (such as Sharp sensors like this one: https://www.pololu.com/product/2474) allowed?<br>
+In the past IR LEDs were not allowed, but I see nothing against IR in the rules this year.<br>
+<br>
+A: Yes.  There is nothing in this year's rules that prohibits use of IR emitting sensors.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-02-2015, 01:37 PM</div></div><div class="posttext">We'd like clarification if a Linear Servo assembly such as the one in the link below would be considered legal as:<br>
+ <br>
+1. Servos (and not a motors)<br>
+2. Legal COTS Part<br>
+3. Only 1 degree of motion (Likely rolled into #1)<br>
+ <br>
+https://www.servocity.com/html/linear_servos.html<br>
+ <br>
+Thanks for your help,<br>
+<br>
+A: No.  This linear servo requires a connection to an external 12v power source and is not driven purely by the Servo Controller modules. Allowed servos must be controlled and powered by an allowed Servo Controller.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-04-2015, 07:47 PM</div></div><div class="posttext">A lot of the color sensors are on backorder now. We found this one still available:<br>
+<br>
+https://www.adafruit.com/products/1334<br>
+<br>
+This seems like a "manufactured sensor" that will plug into the Core Device Interface Module once the header and leads are soldered onto the board. That is all explicitly allowed, but I still would be a lot more comfortable with an official approval on this sensor.<br>
+<br>
+A: In general, it is not possible for the GDC to rule on the legality of all sensors. In this particular case, yes, this sensor appears to be an example of manufactured sensor as allowed via &lt;RE06&gt;.b.i</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-04-2015, 08:11 PM</div></div><div class="posttext">Hi, <br>
+<br>
+We've got several questions regarding the legality of interfacing with various types of sensors using the new control system. <br>
+<br>
+1) Is it now legal to use a LEGO Mindstorms NXT sensor with a spliced LEGO connector cable if it interfaces directly with the Core Device Interface Module? These could be considered "sensors from any manufacturer" as per &lt;RE06&gt;bi, but would this be in violation of the ruling on "legacy sensors" in &lt;RE06&gt;bii?  <br>
+<br>
+2a) Is it legal to use passive components in conjunction with sensor connectors, such as filter capacitors (necessary for using many IR rangefinders), or resistors (for creating voltage dividers to power lower-voltage sensors)? We feel that this could be covered under &lt;RE05&gt;g, as these components could be physically integrated into a sensor's connector, which we are free to modify. Since many manufactured sensors call for these components as part of the sensor's spec, could they be considered part of the manufactured sensor itself in that case? <br>
+<br>
+2b) Is it legal to connect a level shifter such as https://www.sparkfun.com/products/12009 between a legal manufactured sensor and the Core Device Interface Module? Many manufactured sensors require 3.3v power and signal, which the Core Device Module cannot provide without one of these shifters. We believe these could also reasonably be considered part of the "connector", which we are free to modify per &lt;RE05&gt;g. <br>
+<br>
+3) Would an integrated sensor package that includes a programmable microcontroller, such as https://www.sparkfun.com/products/10736, be considered a legal "manufactured sensor"? There are many more sensors beyond this that feature integrated microcontroller units with varying degrees of programmability. This includes practically any sensor that interfaces over I2C, such as some Modern Robotics sensors. Could we have some more clarification on what constitutes a legal "manufactured sensor"? <br>
+<br>
+Thank you very much!<br>
+FTC 4029<br>
+<br>
+A1: No. LEGO NXT Sensors may only be connected to the Legacy Module per &lt;RE06&gt;.b.ii. The Legacy NXT sensors require non-standard I2C support (as provided by the Core Legacy Module)<br>
+<br>
+A2: Yes. Passive components, as required by sensor manufacturers are allowed.<br>
+<br>
+A3: No. &lt;RE06&gt;.e.iii limits power for allowed sensors to come from either the Core Device Interface or the Core Legacy Module.<br>
+<br>
+A4: No.  Sensors combined with programmable systems are not allowed with year.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-05-2015, 02:35 PM</div></div><div class="posttext">The Vex 393 motors come geared for high torque and also come with a set of replaceable gears that will change them to high speed, and now there is a third gearing you can buy to change them to "turbo speed". Is it legal for the teams to change these gears as these motors were designed for these gears to be changed by the user?<br>
+<br>
+A: Yes.  The replacement gearsets and optional gearsets for the Vex 393 motors are allowed.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-05-2015, 02:40 PM</div></div><div class="posttext">Our team has a Parallax L3G4200D Gyroscope breakout board. We want to connect it to a breadboard for the sole purpose of attaching the I2C wires that will go directly into the Device Interface Module. In essence we will be doing nothing with the gyro other than extending the pins so that we can plug it into the DIM (like connecting the switch in one of your earlier posts). Would this be allowed?<br>
+<br>
+Using the provided com.qualcomm.robotcore.hardware I2cController interface class, it appears that we can easily obtain the information from the Gyro by writing a simple API/Driver. Would this be allowed?<br>
+<br>
+We will not be using any external processors, controllers, etc. for the Gyro and the only power source would be the I2C power lead coming from the DIM.<br>
+<br>
+Team 8881<br>
+Pirates of the Pacific<br>
+<br>
+A: Yes. collections of simple connectors and breadboards to allow easy connection of sensors to the Code Device Interface are allowed per &lt;RE05&gt;.g</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-05-2015, 02:50 PM</div></div><div class="posttext">Hello. Our team was wondering if we could use this chip since the ZTE phone doesn't have a built-in gyro sensor. Thanks for clarifying!<br>
+<br>
+http://www.adafruit.com/products/2472<br>
+<br>
+Team 8548<br>
+<br>
+A: In general, it is not possible for the GDC to rule on the legality of all possible manufactured sensors.  This sensor is an example of a broad class of sensors that are legal within the limits imposed by &lt;RE06&gt; and other rules.<br>
+<br>
+All questions about similar sensors will be mitigated to the "duplicate questions" forum.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-07-2015, 12:03 PM</div></div><div class="posttext">With support for Legacy Matrix motor controllers not yet available, our team has adapted a working robot with the following configuration:<br>
+<br>
+New Modern Robotics Core Power Module<br>
+New Modern Robotics Motor Controllers<br>
+Legacy Matrix 9.6v Motors<br>
+Legacy Matrix 9.6v Battery<br>
+Standard ZTE Speed Phones for Driver Station and Robot<br>
+Standard Driver Station &amp; Robot Apps, with custom op mode<br>
+<br>
+Note: This configuration does not provide motor encoder use/feedback, we are using power leads only on motors.<br>
+<br>
+As per current rules RE01 (control modules), RE03 (power) and RE04 (motors &amp; servos), the described configuration would only be legal for competition if we were using Legacy Matrix Motor/Servo controllers.<br>
+<br>
+As support for the Legacy Matrix Motor/Servo controllers is not yet available, no firm release date has been announced, and as we have no other options available, we are requesting that the applicable rules be adjusted to allow our team (and potentially others) to use the described configuration for the 2015/2016 season.<br>
+<br>
+Thank you for your time and consideration,<br>
+<br>
+Redfish Robotics<br>
+Team 9958<br>
+"We're Hooked on FIRST"<br>
+<br>
+A: No. This alternate configuration is not allowed. Matrix Controllers are now supported in the SDK.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-11-2015, 05:40 PM</div></div><div class="posttext">&lt;RG04&gt; says that "Any compatible servo is allowed"; Q&amp;A Forum update #9 says "Make sure to pay attention to the stall current ratings."<br>
+<br>
+Does this mean that the TETRIX Quarter Scale Servos (#W39904 and #W39905) are no longer legal if used with the ?  Both of these servos list a stall current rating of 1800mA; the MR Core Servo Module says individual servo power is 6 volts DC 1.5 amps max.<br>
+<br>
+Thanks!<br>
+<br>
+FTC7172<br>
+<br>
+A: Both the Legacy HiTechnic Servo Controller and the Modern Robotics Servo Controller have the same 5 amp total current limit. The total stall current rating for servos attached to a servo controller must stay below this 5 amp limit.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-18-2015, 01:43 PM</div></div><div class="posttext">It is not clear to me why the sensor referenced in Post #18 is not allowed while the sensor in Post #21 is allowed. Both appear to be sensors that offer on device processing.  Perhaps the distinction is that the sensor in Post #19 has a micro controller which appears allow full customization?  As opposed to Post #18 where the micro controller and firmware is is provided by the vendor (Bosch).  I am just looking for a way to distinguish between the two types of sensors so we can apply this to other sensors we might select.<br>
+<br>
+Post #19 - https://www.sparkfun.com/products/10736<br>
+Post #21 - http://www.adafruit.com/products/2472<br>
+<br>
+5385<br>
+<br>
+A: The Sparkfun sensor includes a on-board processor that is user programmable and is effectively an Arduino board with sensors included.  The Adafruit sensor is not user programmable, only configurable.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-18-2015, 01:58 PM</div></div><div class="posttext">(This question was previously addressed for the legacy Motor Controllers: <br>
+http://ftcforum.usfirst.org/showthread.php?3034-Robot-Electronics-and-Power-Answer-Thread #3)<br>
+<br>
+With the shift to the new hardware, is it acceptable to wire 2 motors to a single channel of Modern Robotics Motor Controller?<br>
+<br>
+A: Yes.  It is acceptable to wire up to 2 motors in parallel to be driven by a single motor controller.  Care should be taken during the electrical design process to avoid overloading the motor controller.  The internal thermal breaker takes significant time to cool and reset once tripped.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-18-2015, 02:20 PM</div></div><div class="posttext">Is it possible to use an optical encoder on Tetrix motors which is different from the one sold by Tetrix, (I believe this one is produced by US Digital), assuming that the alternate has input power and output quadrature which are the same as the Tetrix encoder (5V TTL compatible)?  The encoders sold by Tetrix are expensive, and we have found them in the past to be quite fragile and somewhat lacking in reliability.  It seems there are several other encoders out there that would be less expensive, more rugged, and compatible with the motor controllers.<br>
+<br>
+A: Encoders compatible with the Modern Robotics Motor Controllers and Legacy HiTechnic are allowed. Care should be taken to match the specifications of the Tetrix encoders exactly as the PID code that runs within the motor controllers relies on the characteristics of the encoder.  Encoders not compatible with the Motor Controllers may be used as connected to a Core Device Interface.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-26-2015, 02:37 PM</div></div><div class="posttext">My team has two tetrix motor encoders from previous years, it appears they will not work with the new system.  Is this accurate?<br>
+http://www.tetrixrobotics.com/TETRIX_MAX_Motor_Shaft_Encoder_Pack?SKU=38000<br>
+<br>
+FTC 7503<br>
+<br>
+A: There is nothing in the rules that would prohibit the use of the above encoders.  They are compatible with both the HiTechnic motor controllers and the Modern Robotics Controllers.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-26-2015, 02:44 PM</div></div><div class="posttext">In previous seasons, teams had electrical troubles when their power was daisy-chained through the HiTechnic motor and servo controllers.  This is because when a lot of current was drawn by a motor (e.g., if it was stalled, or changing direction, etc.), the large current passing through the small trace on the printed circuit board inside the controllers resulted in a downstream voltage drop which could affect the electronics.  The FTC Robot Wiring Guide, released by FIRST, specifically identified this as a problem and proposed the solution of using external power distribution terminal/splitter/network which bypasses power being distributed through the controller's printed circuit board traces.  See for example, page 18. of the FTC Robot Wiring Guide.  http://www.usfirst.org/sites/default/files/uploadedFiles/Robotics_Programs/FTC/Team_Resources/FTC_Robot_Wiring_Guide.pdf<br>
+<br>
+This year, the game manual states that we must route all power through the new Power Distribution Module.  This essentially requires that ALL power now go through traces on the Module's printed circuit board, which again can result in the same problem identified in the FTC Robot Wiring Guide.<br>
+<br>
+So, our question is, may we use an external power distribution terminal/splitter/network as suggested in the FTC Robot Wiring Guide instead of or in addition to the power distribution option in the Power Distribution Module?  Please consider that a lot of time and trouble was spent by FIRST in making the FTC Robot Wiring Guide to address previous chronic power distribution problems, and we humbly suggest that the recommendations in that document be at least permitted as an option for teams concerned about the same issues.<br>
+<br>
+A: Power splitters are explicitly allowed per rule &lt;RE05&gt;.f.  They may only be used downstream from the Core Power Distribution module ... i.e. the battery must connect to the Power Distribution module with nothing more than a (recommended) single power switch between.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-26-2015, 02:47 PM</div></div><div class="posttext">We're concerned about possibly burning out motors or motor controllers, so we want to insert a 1 ohm resistor in series with the motor controller 12 volt input to limit the current.  Is this allowed or is it a violation of RE06 or another rule?  We noticed passive components are allowed for creating voltage dividers for sensors.  Thank you for your help.<br>
+<br>
+A: No.  Resistors are not allowed to be placed inline with DC motors per &lt;RE06&gt;.d</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-26-2015, 02:51 PM</div></div><div class="posttext">Hello I have a question about preventing our robot from being affected. Can we have our robot store static electricity in a battery as long as we don't use it for our power source? Thank you!<br>
+<br>
+A: No. Per &lt;RG10&gt; and &lt;RE03&gt;.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-26-2015, 02:56 PM</div></div><div class="posttext">Is an indirect current sensor wired between a motor and a motor controller legal? (Such as the one here: https://www.pololu.com/product/2452)<br>
+<br>
+A: No. Per rule &lt;RE05&gt;.g</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-29-2015, 12:21 PM</div></div><div class="posttext">We are considering what would be permitted in the realm of I2C controlled light sources.<br>
+It appears that some common COTS I2C light sources, that are powered directly from the Device Interface I2C bus, would be permissible.<br>
+Others, that draw too much power to be powered directly from the Device Interface I2C bus, would arguably be impermissible, unless perhaps they were commercially available and purchased in a form that allowed them to powered directly from the PDM.<br>
+Please confirm or advise re this understanding.<br>
+Thanks,<br>
+Martin Haeberli<br>
+Mentor, FTC 7539, TigerBots<br>
+<br>
+<br>
+A: Please read &lt;RE03&gt;.g for power options for allowed light sources (including LED's).</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">10-29-2015, 12:24 PM</div></div><div class="posttext">At least one seller of servos offers one or more servos for sale in 90° stock rotation, 180° modified rotation, or continuous rotation, which is selected when ordering the servo.   May teams purchase either a 180 degree or a continuous rotation version and use either one as long as the team does not make any changes to the servo which violates RE02 or any other rule?<br>
+<br>
+<br>
+A: No.  Modifications of servos that are done post-manufacturer are not allowed per &lt;RE02&gt;</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-01-2015, 08:08 PM</div></div><div class="posttext">Response #51 in this tread stated that Tetrix and Matrix approved motors could both be used on a robot "providng the total number of motors does not exceed the quantity specified in rule &lt;RE04&gt;."<br>
+<br>
+This response, while welcomed by our team, caused us to notice that there is a conflict between Rules RE03 which only allows the use of the 9.6v Matrix battery pack when using legacy Matrix controllers, and RE04 which constrains which "Matrix" motors can be used based on whether a "Matrix" 12v or 9.6v battery pack is used.<br>
+<br>
+Again, our team welcomes the flexibility to use optional "approved" motors, however, there does seem to be a need for additional clarification to prevent potential issues at events, as one rule (RE04) lists allowable Matrix Only motors based on two different power supplies, and the other rule (RE03) only allows the 9.6v power source, effectively eliminating the option for multiple motor choices. <br>
+<br>
+Additional question on the same topic: With Legacy Matrix Controllers (2) and a single Legacy 9.6v battery pack, would it be acceptable to use the newer 12v Matrix, and/or Tetrix, and/or AndyMark "approved" motors if the team understood and accepted that the motors would be under-powered?<br>
+<br>
+<br>
+Thank you in advance for your responses and again for the GDC's continued support of our efforts.<br>
+<br>
+A: Matrix has introduced a new line of motors that are 12V  tolerant. These motors may be used with Legacy HiTechnic or Modern Robotics motor controllers.  Additionally, they may be used with Legacy Matrix Controllers when a 12V Matrix Battery pack is used.  9.6v Matrix Motors may only be used with Legacy Matrix controllers with a 9.6v battery pack.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-03-2015, 04:47 PM</div></div><div class="posttext">&lt;RE04&gt; States that "Any compatible servo may be used".<br>
+<br>
+Robot Inspection Manual Pg 36 states "Any hobby servo (standard size or smaller) rated at 800mA or less are allowed." and later on page 37 makes allowance for a legal 1/4 scale servo "TETRIX HS-755HB Quarter-Scale Servo Motor with Horn".<br>
+<br>
+Does this mean that HS-755HB is the only allowable Quarter-Scale servo, or are other HiTec Quarter-Scale servos, i.e. HiTec HS-785HB and HS-765HB also legal?<br>
+<br>
+Thanks,<br>
+<br>
+       Team 4644<br>
+<br>
+A: The robot electronics rules do not constrain the size of the servos allowed (&lt;RE04&gt; ... "Any compatible servo may be used;" Pay attention to total current used per servo controller (i.e. no more than 5A total Stall Current for servos connected to a single servo controller)</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-04-2015, 10:52 AM</div></div><div class="posttext">Last year, programming servos was not allowed (see post dated 04-15-2015, 07:23 PM). Is that still the case? For example, the REV servo is designed to be easily programmed to switch between continuous rotation and angular mode (http://www.andymark.com/product-p/am-3217.htm). Additionally, the HFP-25 Programmer (https://www.servocity.com/html/hfp-25_servo_programmer.html#.ViecBH6rQps) is specifically designed to program many of the Hitech servos. Is programming still considered modification?<br>
+<br>
+A: Yes. Servos that are designed by the manufacturer to be software programmable are allowed.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-04-2015, 11:00 AM</div></div><div class="posttext">After reading game manual part one it states that "All compatible Servos may be used" We have tested these http://store.firgelli.com/RC_linear_servos_s/1853.htm linear servos and they are compatible, acting like a 180 servo with position feedback. Is a linear servo considered a servo under this year's rules?<br>
+<br>
+Thank you team 3491<br>
+<br>
+A: Yes.  The indicated linear servo is allowed.  Care should be taken to purchase the 6v version with the RC control option to make sure it is compatible with the allowed servo controllers.<br>
+<br>
+Note: For those that actually read ALL of the forum posts, this linear servo has very different connection requirements than the linear servo that was disallowed in an earlier question and answer.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-05-2015, 11:46 AM</div></div><div class="posttext">Can we use AM motor # PG188 Planetary Gearbox with AM 9015 Motor (am-3183)?<br>
+<br>
+A: No.  The AM 9015 (am-3183) motor is not an allowed motor.  All allowed motors are listed in &lt;RE04&gt;. Any motor that is not listed there is not allowed.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Avalanche</div><div class="date">11-08-2015, 07:11 PM</div></div><div class="posttext">Can wires and motors utilized in an FTC robot be soldered instead of using a motor cap? And if they are soldered, is the robot still following all of the rules and regulations? Thanks!<br>
+<br>
+A: Rule &lt;RM02&gt; allows soldering of wires to motor leads.  Many teams solder the wires instead of using the motor cap.  However, change out of the motor at an event becomes more difficult.  Please check with your Event Manager since many venues do not allow soldering irons during an event.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-09-2015, 11:43 AM</div></div><div class="posttext">Are you allowed to control the servos with the core device interface module?<br>
+<br>
+A: No.  Servos may be controlled only by Servo Controllers</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-09-2015, 11:51 AM</div></div><div class="posttext">Good Evening!<br>
+<br>
+I was hoping to get a clarification to the response to Post #33.<br>
+<br>
+The post asks "At least one seller of servos offers one or more servos for sale in 90° stock rotation, 180° modified rotation, or continuous rotation, which is selected when ordering the servo. May teams purchase either a 180 degree or a continuous rotation version and use either one as long as the team does not make any changes to the servo which violates RE02 or any other rule?"<br>
+<br>
+Response was "No. Modifications of servos that are done post-manufacturer are not allowed per &lt;RE02&gt;".  <br>
+<br>
+However, the HS-485HB 180 degree servo (sold as part of the Tetrix/Pitsco kit of parts) is one of the those servos.  We are confused as the status of the servo.  Is it no longer allowed?  Does it have to be purchased only from Tetrix? <br>
+<br>
+As always, thanks for your response and all you do for FTC Robotics Teams!<br>
+<br>
+A: The question in post #33 asks specifically about servos that are modified by the seller to add new functionality.  Servos modified by the seller are not allowed.  All compatible servos that are in original manufactured condition, from any seller are allowed per &lt;RE04&gt;</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-09-2015, 11:59 AM</div></div><div class="posttext">Rule RE02  states that it is acceptable to modify servos by changing the gearbox.  Therefore, am I correct in assuming that these servos are legal?<br>
+<br>
+Servocity HS-785HB with gearbox.<br>
+https://www.servocity.com/html/spg785a-cm_servo_gearbox.html#.VkApwv2FM5s<br>
+<br>
+A: &lt;RE02&gt; is about modifying motors/servos. The product mentioned is an assembly of two products, a servo and a gearbox.  Since the servo is not modified by the seller and is compatible with the Servo Controllers, it is allowed.  Since the gearbox meets the constraints of &lt;RM01&gt;.c (i.e. 1 degree of freedom COTS item) then it would be allowed as well.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-10-2015, 11:52 AM</div></div><div class="posttext">(Sorry: we're not sure which forum software questions belong in: this seemed like the closest one?)<br>
+<br>
+Rule &lt;RS03&gt; specifies that the robot is to be programmed using only Java and Android Studio (or App Inventor). Are we permitted to link to libraries that contain native JNI code, as long as our own code is written in Java, and only Android Studio is used to develop, build, and deploy our robot software to our robot controller phone?<br>
+<br>
+A: Use of the Android NDK (and JNI) is allowed, including linking libraries that are built using the NDK.  Teams that use the NDK do so completely at their own risk and should use extreme caution when working with the NDK.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-10-2015, 11:55 AM</div></div><div class="posttext">Hello,<br>
+We have a couple of questions about what is allowed/required in building the Robot Controller app. Based on the PushBot and FTC training manual, it seems like the latest Android Studio (currently 144.288) + JDK 7u79 is the required bundle. We've seen (had internally) the question of the latest Studio + JDK8. We've got it working (we select API 19 for the SDK tools for KitKat) but we aren't sure if there is a required combination.<br>
+<br>
+This is also of interest as the competitions aren't too far away, and we aren't sure how the required combinations will be communicated to the teams. <br>
+<br>
+Thanks in advance!<br>
+<br>
+Bob<br>
+(Sorry for posting in electrical, it seemed a closer fit than mechanical.)<br>
+<br>
+A: There is no rule that requires a particular version of Android Studio or Java.  The recommendation is to use the latest stable version of Android Studio, with the Java version recommended by Google for that version of Android Studio.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-10-2015, 12:01 PM</div></div><div class="posttext">We have a few questions based on :<br>
+&lt;RG07&gt; The Driver’s Station must comply with the following constraints:<br>
+a. The Driver’s Station must consist only of:<br>
+i. One (1) Android device<br>
+ii. One (1) OTG Cable<br>
+iii. No more than one (1) non-powered USB hub<br>
+iv. No more than two (2) gamepads<br>
+<br>
+We have a hub like this http://www.amazon.com/Hittime-Adapter-Extension-Smartphone-Tablet/dp/B00FGKXY9S/ref=sr_1_1?ie=UTF8&amp;qid=1443991876&amp;sr=8-1&amp;keywords=micro+usb+hub .  It is non powered and it allows two gamepads to connect to the ZTE Speed and has an available charge port.<br>
+<br>
+Question 1:  Is it legal to use on the drivers station?<br>
+Question 2:  Could we connect a back-up battery like this  http://www.amazon.com/Powerful-Portable-RAVPower-Technology-Lightning/dp/B00MQSMEEE/ref=sr_1_1?ie=UTF8&amp;qid=1443992199&amp;sr=8-1-spons&amp;keywords=usb+battery+pack&amp;psc=1 to the charge port while :<br>
+(A) at the field<br>
+(B) in queue ( especially during Elimination Rounds )<br>
+(C) in the pits<br>
+<br>
+We have noticed that the Driver Station Phone dies fairly quickly.<br>
+<br>
+Thank You,<br>
+TuTu Turtles FTC 5086<br>
+<br>
+A1: No.  The Driver Station is constrained to the equipment listed in &lt;RG07&gt;<br>
+<br>
+<br>
+A2: Only commercial USB charging solutions are allowed; i.e. an external battery pack with a builtin USB charging port, USB wall-wart, etc..  Custom-made charging solutions are NOT allowed.<br>
+<br>
+Charging is not allowed at the field.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-11-2015, 10:06 PM</div></div><div class="posttext">Hi,<br>
+<br>
+We have a Moto G 2nd Gen running Lollipop, and according to http://ftcforum.usfirst.org/showthread.php?5180-Can-t-downgrade-Moto-G-to-KitKat&amp;p=20211&amp;viewfull=1#post20211 (this post) on the FTC Technology Forum, this is approved by the GDC. Can we please get an official ruling on this in the official forum so that we can use it at a competition? Thanks!<br>
+<br>
+<br>
+A: Thanks to the friendly folks at Motorola, Moto G 2nd Gen phones with the latest version of Android (currently Lollipop) will work and are allowed for use in FTC robots and Drivers Stations.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-11-2015, 10:10 PM</div></div><div class="posttext">Are the servo actuators legal to use in FTC?  URL follows:<br>
+https://www.servocity.com/html/25_lbs__thrust_linear_actuator.html#.VkOlPb_F9z_<br>
+<br>
+A: No.  The linear actuator linked above is not allowed.  It is not a servo and is not a legal DC motor.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-11-2015, 10:16 PM</div></div><div class="posttext">Pitsco has a new battery. The 10-cell, 12-volt AA rechargeable pack is small and lightweight yet still packs a powerful punch. This 2,000 mAh NiMH pack features a built-in 15-amp replaceable fuse for safety - See more at: http://www.pitsco.com/TETRIX_MAX_12_V_Battery_Pack#sthash.F2X9gZVG.dpuf<br>
+<br>
+Is this battery legal for for FTC competitions?<br>
+<br>
+A: No.  The only legal batteries are listed in &lt;RE03&gt;.b</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-18-2015, 12:28 PM</div></div><div class="posttext">Just wondering if having blue LEDs on the robot will be an issue with the field sensors. That and because the team colors are blue and red, and if we're on red team would it be an issue? Pretty much just asking if blue LEDs are okay.<br>
+<br>
+A: There is nothing in the rules that prohibits particular colors of LED's.  If in the opinion of the inspectors or the referees, the LED's pose a risk of interference with another robot, they may require re-inspection and/or disallow the use of the LED's. (per Part 1 Section 5.3.1)</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-18-2015, 12:33 PM</div></div><div class="posttext">We just had a quick question about the wiring of our robot -- We know that the Core Power Distribution Module has its own Power Switch on one side. Are we allowed to wire an external switch, such as the ones used last year, between the Battery and Power Distribution Module? We would then use this switch to turn the robot on and off, while the one built into the module stays permanently on. In our current electrical setup, the Power Distribution Module is not easily accessible, and that switch would not be easily turned off for an emergency power shut down on the field.<br>
+<br>
+Thanks!<br>
+--<br>
+MOE 365 FTC<br>
+<br>
+A: Yes.  A separate Main Power Switch is strongly recommended. This is covered in &lt;RG04&gt;</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-25-2015, 12:05 AM</div></div><div class="posttext">Hi,<br>
+<br>
+We wanted to use multiple Adafruit RGB Sensors on our robot. However, since they have a fixed I2C address, and each DIM only has a single I2C bus, a separate DIM would be required for each sensor, which is unreasonable and not feasible. We were wondering if the following I2C multiplexer would be allowed, so that multiple RGB sensors could be on one DIM: https://www.adafruit.com/products/2717 This thread has some more information: http://ftcforum.usfirst.org/showthread.php?5392-Black-box-implementation-of-two-Adafruit-RGB-Sensors<br>
+<br>
+Thanks!<br>
+<br>
+A: Yes. Simple I2C multiplexers, such as the one referenced, are allowed.  They may only be connected to and powered from the I2C connections available on the Core Device Interface Module.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-25-2015, 01:19 AM</div></div><div class="posttext">Can we use an external battery bank for the purpose of charging only a camera for non-functional post match entertainment?<br>
+<br>
+A: No.  Per &lt;RE03&gt;.f (internal, manufacturer supplied battery only)</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-25-2015, 01:25 AM</div></div><div class="posttext">Is it legal to use 3rd party libraries when programming our app? I'm thinking specifically of using OpenCV. But I'd like the general answer as well. Does it matter whether the 3rd party library is open source or not?<br>
+<br>
+A: There is nothing in the rules that prohibits the used of 3rd party code/libraries.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-30-2015, 12:08 PM</div></div><div class="posttext">As we continue to test our robot, we have found that the USB hub inside the Core Power Distribution module is very unreliable. We tried to get around this by using the USB hub usually connected to the driver phone to connect the game pads in the place of the core power distribution module. The CPDM is still being used to distribute power from the battery to the modules. Is it legal to use this USB hub in place of the Core Power Distribution Module?<br>
+<br>
+A: No.  Per &lt;RE01&gt;.b, the Robot Controller Android device USB interface may only connect to the Core Power Distribution Module.  Standalone USB hubs are allowed, but only as connected to the USB hub ports on the Core Power Distribution Module (i.e. not directly to the Robot Controller Android Device)</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-30-2015, 12:11 PM</div></div><div class="posttext">During the autonomous period of our last meet, our robot had made an unexpected turn. This lead us to wonder if we are allowed to store our telemetry data during the match in order to review it afterwards. Are we allowed to store this data on the phone during the match? This will help us analyze our autonomous and to better understand why it makes certain decisions during a match.<br>
+<br>
+A: There is nothing in the rules that prohibits the recording of data during a match on the Robot Controller Android Device.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-30-2015, 12:28 PM</div></div><div class="posttext">I.<br>
+Per &lt;RE06&gt;d, "Other electronics are not allowed." However, we are using ours as a form of manufactured sensor, which would be allowed under &lt;RE06&gt;b.i, where our Arduino is exclusively used for sensor purposes and is only connected to another sensor and the Core Device Interface Module. <br>
+<br>
+If the Arduino would not be considered a manufactured sensor, why? It is not exclusively allowed or disallowed in the rules, and we used ours to great advantage last year through the HiTechnic SuperPro board. There seems to be no reason that the rules should have changed in this matter, since so many teams used this last year.<br>
+<br>
+A comment earlier referenced that communication with an Arduino would require additional drivers, which may be an argument against it. However I already have a working prototype for communication with said Arduino through the I2C bus of the Core Device Interface Module, so it is definitely compatible for this year's game with a little work by the team, making the argument invalid.<br>
+<br>
+II.<br>
+Is there any way to use 3.3v sensors with the Core Device Interface Module? Currently, my team only has access to 3.3v versions of the sensors that we require, however under &lt;RE03&gt;h, "External power adapters or voltage converters are not allowed." It would be cost prohibitive to buy new sensors when we already have the 3.3v sensors and voltage converters that are required for communication over I2C to the Core Device Interface Module.<br>
+<br>
+A1: Arduino systems are not allowed per FTC Q&amp;A Electronics Forum post #2 and post #18 (answers A3 &amp; A4)<br>
+<br>
+A2: We are not in a position to recommend solutions for this type of question.  &lt;RE05&gt;.e.iii requires all power for allowed sensors to come directly from either the Core Device Interface or the Core Legacy Module.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">11-30-2015, 01:23 PM</div></div><div class="posttext">Can the kids use a small laser pointer to align the robot during during autonomous? We are looking to start at an angle to get to the Beacon repair zone. They would turn it off after setup and before they start the program.<br>
+<br>
+Please let us know.<br>
+<br>
+Team 9908<br>
+<br>
+A: No. &lt;G4&gt; requires alignment devices to be made from legal components and to stay completely within the 18" cube starting configuration.  Per &lt;RE06&gt;.a explicitly disallows focused light sources (including lasers).</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">12-09-2015, 05:04 PM</div></div><div class="posttext">Hello,<br>
+<br>
+Under rule RE02, is removing the encoder from an otherwise legal Andymark motor such as AM2964A a legal modification?<br>
+<br>
+We have a mechanism that is space constrained and we don't need the encoder, removing it makes the motor smaller. This does not impact safety and makes the motor "more usable" in this situation, so I'm hoping you say this is legal under RE02.<br>
+<br>
+Thanks!<br>
+<br>
+A: Yes. This is allowed.  Be prepared to explain the modification to the robot inspectors</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">12-09-2015, 05:11 PM</div></div><div class="posttext">Hello! We have been having USB problems with our CPDM interfacing with the phone and detecting controllers. To have a running robot, we switched out the CPMD for the Legacy Module, and daisy chained HiTechnic Motor and Servo Controllers to the battery with a switch. This configuration works perfectly. Would a configuration with a Legacy Module be legal if we cannot run our system via the CPMD?<br>
+<br>
+Thanks,<br>
+FTC3737<br>
+<br>
+A: No.  This is not a legal configuration.  Per &lt;RE01&gt;.b the Robot Controller USB connection must be to a CPDM.  &lt;RE03&gt;.d requires that all powered modules be connected to the output ports of the CPDM.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">12-10-2015, 11:01 AM</div></div><div class="posttext">Currently we use the Modern Robotics-supplied USB On-The-Go male to USB micro male cable to connect our on-robot phone to the core power distribution module.  May we replace that single cable with following  two cables strung together?<br>
+ 1) a USB On-The-Go to USB full-sized male cable connected to  2) a USB full-sized female to USB micro male cable.<br>
+<br>
+We have had dead-robot disconnection problems at our first qualifier.   The above would allow us to reduce the repetitions of plug and unplug cables into the phone and/or the power distribution module, potentially reducing wear and tear on those parts.  More of the wear and tear would happen in plugging and unplugging the full-sized connectors in the middle of the double cable, which might be more durable or more easily replaced than the phone or the CPDM.<br>
+<br>
+Thank you!<br>
+<br>
+A: This is explicitly allowed by &lt;RE05&gt;.c "Either a Mini USB OTG (On-The-Go) Micro Cable or a Mini USB adapter and OTG (On-The-Go) Micro Cable is used to connect the Robot Controller Android device ..."</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">12-17-2015, 01:02 AM</div></div><div class="posttext">Can we extend the black wire that connects the legacy module to tetrix motor controllers?<br>
+<br>
+A: NXT cables beyond the .9m length are not recommended by either Modern Robotics or LEGO. The I2C signaling done over the wires is not reliable at longer lengths.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">12-17-2015, 01:41 AM</div></div><div class="posttext">Can we mount these lights and the remote to the robot and turn the lights on with it's remote control prior to the match starting? Meaning we will not touch the light's remote during the match and it will stay mounted on the robot.<br>
+<br>
+http://www.eachbuyer.com/croled-5m-5050-smd-150-rgb-led-flexible-strip-light-car-auto-bar-24-keys-remote-p5730.html?currency=USD&amp;from=pla&amp;gclid=Cj0KEQiAtMSzBRDs7fvDosLZmpoBEiQADzG1vJ99YMb7 qPEO2itgQg6ef9keOBHzwwIKcahOLJXVEGYaAt8U8P8HAQ <br>
+<br>
+Thanks,<br>
+<br>
+Linda<br>
+<br>
+A: No.  The LED's alone would be legal, but the controller module is not allowed per &lt;RE06&gt;.d.  Additionally, &lt;T4&gt; prohibits all forms of wireless communication with the robot other than Wi-Fi Direct</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">12-29-2015, 11:07 PM</div></div><div class="posttext">-it communicates via I2C<br>
+-it can be powered via USB<br>
+see http://www.cmucam.org/projects/cmucam5/wiki for description<br>
+(I will have to check whether it can be powered within the power limits permitted).<br>
+While it does have an on-board microprocessor, so does the NavX; neither can be programmed while it is in the robot.<br>
+Thanks!<br>
+Martin Haeberli<br>
+Mentor, FTC 7593, TigerBots<br>
+<br>
+A: No. Sensors may only be powered by the Core Device Interface or the Core Legacy Module (per &lt;RE05&gt; and &lt;RE06&gt;)</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Avalanche</div><div class="date">01-11-2016, 04:48 PM</div></div><div class="posttext">Rule RE06.a is about light emitted from the robot.  It says mirrors cannot be used to direct that light.  We want to confirm that directing incoming light IS allowed.  As an example - a periscope for the cameras on the phone would be allowed.<br>
+<br>
+A: Yes, it is legal to use a mirror to redirect incoming light.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">01-14-2016, 11:42 AM</div></div><div class="posttext">Thanks for the earlier reply related to the Pixy.<br>
+Assuming:<br>
+a) it is the sole device on a DIM;<br>
+b) it draws less than the 150ma DIM maximum current;<br>
+c) it is in this context only an I2C device<br>
+Would the Pixy be a permitted sensor?<br>
+See also http://www.cmucam.org/projects/cmucam5<br>
+Thanks,<br>
+Martin Haeberli<br>
+Mentor, FTC 7593, TigerBots<br>
+<br>
+A: Assuming all the above can be done without violating any other rules, yes, the Pixy would be a legal sensor</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">01-14-2016, 11:48 AM</div></div><div class="posttext">Hi,<br>
+<br>
+Is it legal to power multiple servos off two common power wires (like when using a servo Y-cable), but using two separate signal cables to control each servo individually? There seems to be no rules explicitly disallowing this, assuming we use the proper gauge of wire, keep in mind the current capabilities of the controller and wiring, and power/control the setup from the servo controller only. <br>
+<br>
+Thanks!<br>
+FTC 4029<br>
+<br>
+A: Yes. &lt;RE05&gt;.g allows for custom made servo control wiring.Care should be taken to ensure good wiring practices (wire gauge and proper insulation)</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">01-18-2016, 06:56 PM</div></div><div class="posttext">Our team has intermittent problems with "back-drive" on our motors used for hanging on the cliff.  In the future we'll use worm gears, but for now we have to deal with the back-drive issue.  One method that one of the team found during his research was "motor braking" where the terminals of a motor, when shorted together, would cause a motor to stop back-driving (mostly).  This led to two designs and questions:<br>
+<br>
+1 - Once the robot was hanging, the driver would press the controller button that would cause a servo to short the two motor wires together.  The servo has a cleverly designed servo horn that will make/break electrical connections.  After refinement of the design and with an eye toward potentially saving our fuses, the servo would first break the connection to the motor controller then short the motor wires together. Our read of the rules, particularly &lt;RE02&gt; and &lt;RE05&gt; still left us wondering if this is legal?<br>
+<br>
+2 - If the answer to #1 is "yes it is legal" - would using a DPDT switch (activated by the servo) also be legal?  I would feel much better using a switch than the previous approach.<br>
+<br>
+A: No. For safety reasons, motors may only be controlled by motor controllers.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">01-18-2016, 07:01 PM</div></div><div class="posttext">We have a follow-up question to the question asked by FTC3620 and replied to in post #2 in "Robot Inspection and Build Rules - Electrical - Answer Thread".<br>
+<br>
+The question was "Would a digital volt meter be allowed on the robot?".<br>
+<br>
+Our follow-up question:<br>
+<br>
+Would a volt meter be allowed if it can only be activated by holding down a button and the button would never be activated in a competition? Such a configuration in our thinking would serve no purpose other than being extra weight during a competition, but would allow us to check the battery between competitions without removing it. Another justification would be electronics that are not connected to electricity aren't really electronics (maybe a broad ruling such as this would be useful for other teams).<br>
+<br>
+Thanks,<br>
+	Team 7330<br>
+<br>
+<br>
+A: No. All parts on the robot must be legal, regardless of usage within any given match.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">FTC5116</div><div class="date">01-22-2016, 02:00 PM</div></div><div class="posttext">Hello,<br>
+<br>
+We have some vex 2-wire 269 motors. We were wondering if we could use those or do we have to use the 2-wire 393 motors?</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">01-28-2016, 10:41 AM</div></div><div class="posttext">We have some old vex 2-wire 269 motors. Can we use these motors instead of the 393 motors?<br>
+<br>
+A: No.  The Vex 269 motor is not allowed.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">01-28-2016, 10:47 AM</div></div><div class="posttext">With this years game we need to switch the side some mechanisms are on depending on which alliance we are on. If we have more than the max number of servos on our robot but only the max number are plugged in and active is this legal? When we don't use a certain mechanism we unplug the servo and plug the other servo in.<br>
+<br>
+A: No. The servo limit applies to all servos on the robot, regardless of their status/use. Servos that are not currently in use still count against the limit.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">01-28-2016, 11:42 AM</div></div><div class="posttext">Hello,<br>
+<br>
+Ruling #33 and its followup #41 are somewhat unclear, and seem rather backwards when interpreted in the strict sense. They appear to extend the limitations of modifications on servos specified in &lt;RE02&gt; to the sellers, not just the manufacturers.  Therefore, is the onus on the teams to ensure that their servo vendor has not made modifications (i.e. contact the seller if the listing is unclear), or is it simply that a servo which is advertised as modified post-manufacturing is illegal?  In addition, what exactly is the definition of a seller versus a manufacturer?  Our interpretation was that a manufacturer is any entity that took components that do not qualify as a servo, and then modified or machined those components into something that does qualify as a servo.  Under &lt;RE02&gt;, the team cannot be the entity that is the manufacturer.  However, a custom-servo manufacturer could be the entity.  This seems to be a bit backwards, as a team could order a custom servo to circumvent any &lt;RE02&gt; rule, while being forbidden from customizing servos themselves.<br>
+<br>
+Thank you,<br>
+9791<br>
+<br>
+A: A servo manufacturer is the one that creates the servo initially.  Any modifications made to a servo post-manufacturer are not allowed.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-04-2016, 01:34 AM</div></div><div class="posttext">Robot electronics answer #62 comes very close to answering my question, but it asks about a COTS decorative light controller.  Would a custom-built controller circuit for LED lights be considered part of the "light source," or would a custom-built controller circuit also be considered "other electronics?"<br>
+<br>
+Sorry to press the point, and thank you for clarifying<br>
+<br>
+Matt<br>
+<br>
+<br>
+A: A custom built controller would fall under &lt;RE06&gt;.d and not be allowed.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-04-2016, 01:39 AM</div></div><div class="posttext">May we wire an LED and appropriate resistor in parallel with servos or motors?  The are passive components and would be powered through the core power distribution module.<br>
+<br>
+A: No.  The described connection would not be allowed. The LED as describe is NOT powered by the Core Power Distribution Module (it is powered by a motor or servo controller)</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-04-2016, 01:48 AM</div></div><div class="posttext">Under ruling #72 that reiterated the previous stance on servo manufacturers, is the following action legal?<br>
+A student affiliated with the team, acting independently from the team, takes a power window motor (or similar) which in its current state is classified as a motor, and then designs and builds controller circuitry that turns the motor into something that uses feedback and is compatible with the servo controller - a servo, according to the best definitions we can find online or in the game manual.  The student then gives the newly-manufactured servo to the team.<br>
+<br>
+If this action is not legal, what rules prevent it and why? <br>
+<br>
+Thank you,<br>
+9791<br>
+<br>
+A: No.  This is an assembly of parts that are individually not allowed.  The student does not qualify as a servo manufacturer. &lt;RE04&gt; constrains motors.  &lt;RE06&gt;.d constrains all other electronics</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-04-2016, 01:59 AM</div></div><div class="posttext">We have asked Modern Robotics Inc. for more MATRIX 9.6V motors (14-001 and the like), as our robot is built on it and we have invested in the system significantly. However, MR has told us that they don't have any more of the motors, which is quite frustrating. The RES-Q game manual suggests that we are allowed to use motors like the AndyMark AM-3102, can you confirm that this is accurate? If we are unable to source compatible, permitted motors then we will not be able to compete effectively with other teams, and will have to purchase even more motor controllers, motors, and batteries. If there are any other motors that we can use with a 9.6V Legacy Module/MATRIX system, please let us know.<br>
+<br>
+Additionally, we are considering using 12V batteries and replacing our motors with 12V versions as the 9.6V can sometimes be slow. Will 12V cause damage to the MATRIX Servo Controllers, which appear to be rated at 9.7V? Thank you.<br>
+<br>
+A: Given that Modern Robotics is selling MATRIX 12v batteries and motors to use with the MATRIX system, it would be reasonable to assume that they are compatible with the MATRIX Motor/Servo Controller.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-08-2016, 02:46 PM</div></div><div class="posttext">Although rule &lt;RE03 - h&gt; forbids the use of voltage converters (and rules on forum questions state we shouldn't ask since it is already a rule), we would like to ask if a 12 volt voltage regulator may be used to stabilize the power output from the batteries to the PDM to a fixed 12 volts. FTC is currently aware of USB connection issues in relation to the batteries. ( http://ftcforum.usfirst.org/showthread.php?4993-Update-on-USB-Disconnect-Issues-%28unable-to-detect-USB-modules-during-scan%29 ) When the batteries are low they give off ~9.5 volts rather than 12. This low voltage is then further stepped down in the PDM to power the USBs, but if the input power is too low, the USBs fail. We feel that a voltage regulator between the battery and the PDM would alleviate the issue, allow teams to fully utilize their battery power, and correct any other issues that may be caused by voltage. Allowed 12 volt Batteries that have full charge have a voltage of ~14 volts, which widens the range of voltage, and could also potentially lead to issues, though it is unlikely. A fixed 12 volt regulator can be bought for as cheap as $1.50, making this easily accessible to almost all teams. <br>
+<br>
+Q: Since voltage regulators are currently disallowed, would it be okay in this instance to use one, or that one is allowed in the rules for this specific purpose, even if it is strictly outlined to one brand, one model, and one use?<br>
+<br>
+~Thank you for your time<br>
+Team 6559 Geared Reaction<br>
+<br>
+A: No.  There are no allowed voltage regulators or converters. &lt;RE03&gt;.g explicitly disallowed power adapters or voltage converters.  &lt;RE06&gt;.d disallows "Other electronics" (i.e. voltage regulators)</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-08-2016, 02:52 PM</div></div><div class="posttext">We were wondering if it is allowed to power a LED as a status indicator off of the PWM ports on the core device interface module. We have two LED's that flash alternatively and they will stop flashing if the program stops(if we disconnect, program crashes, etc). We assume that these are allowed as the interface module takes power from the core power device module, so its coming from the same source.<br>
+Thanks! - FTC8686<br>
+<br>
+<br>
+A: No.  &lt;RE03&gt;.g specifies the allowed power sources for approved light sources.  The Core Device Interface is not one of those power sources.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-08-2016, 02:55 PM</div></div><div class="posttext">Modern robotics is offering a service to fix PDMs that have damaged regulators and USB ports. If a team has the ability to make the same repair for a fraction of the cost. Is this allowed?<br>
+<br>
+We are specifically interested in replacing a broken USB port on our otherwise perfect PDM. We would be replacing it with an equivalent USB port and it would be done by a professional with plenty of experience in electronics repair. We can get the part to fox this for less than $1, where it would cost $30+ to ship it to Modern Robotics to be fixed.<br>
+<br>
+Thanks,<br>
+Team 5414<br>
+<br>
+A: No.  Modern Robotics repair service is the only allowed option for fixing damaged modules.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-09-2016, 02:53 PM</div></div><div class="posttext">Hello, we have a few questions concerning nonfunctional decoration items.<br>
+<br>
+First, regarding LED lighting. We are interested in using some LED strips (example: http://www.amazon.com/Lumcrissy-Flexible-Lights-Waterproof-300LED/dp/B011294UEY/ref=sr_1_1?ie=UTF8&amp;qid=1454873874&amp;sr=8-1&amp;keywords=led+strip+purple+5m) however, this item lacks a manufacture created power source. Is it acceptable to create a safe power supply (within specifications for the LEDs) for the system, as none was provided?<br>
+<br>
+Our second question regards a GoPro (specifically, the mounting). When attached, is the GoPro (all WiFi capabilities disabled) required to fit within the 18" cube sizing constraint? It's sole purpose is to provide post match entertainment and mounting the camera higher would protect it from robot contact and offer a better viewing angle.<br>
+<br>
+Thank you,<br>
+Team 516<br>
+<br>
+A1: LED's may be powered as listed in &lt;RE03&gt;.g only.  A custom made power supply is not allowed.<br>
+<br>
+A2: Decorations are part of the robot and are subject to the sizing limits of the robot.  The camera would need to fit inside the 18" cube.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-09-2016, 02:59 PM</div></div><div class="posttext">Are we allowed to drag a copper chain attached to our robot chassis to the floor? We are having horrible static problems. When the robot touches another robot, or the ramp, or the field walls, our robot dies immediately. We have taken all other precautions with regard to separation of power and control wires, stain relieving the USB connectors, etc. We have proven through testing that the ESD event is in fact the problem.<br>
+<br>
+thanks<br>
+<br>
+- The Lazybotts<br>
+<br>
+A: No.  Rule &lt;RG02&gt;.i prohibits mechanisms or components that are designed to ground the Robot frame to the Playing Field.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-11-2016, 11:03 AM</div></div><div class="posttext">Is a 12v solenoid legal?<br>
+<br>
+http://www.jameco.com/1/1/28077-smo-0837s12std-r-12vdc-open-frame-dual-shaft-push-solenoid.html<br>
+<br>
+They're single axis.<br>
+<br>
+Thanks<br>
+<br>
+A: No.  While it is true that a solenoid is a 1 degree of freedom assembly, it is also an electrical part.  &lt;RE06&gt;.d disallows all other electronics (including solenoids)</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-18-2016, 10:37 AM</div></div><div class="posttext">We would like to have a strip of LEDs on our robot for decoration. <br>
+http://www.amazon.com/FAVOLCANO-Flexible-Lighting-Waterproof-60Leds/dp/B012FFYWOW/ref=sr_1_29?ie=UTF8&amp;qid=1455308057&amp;sr=8-29<br>
+<br>
+According to rule &lt;RE03&gt; :<br>
+"Approved light sources may include an internal (as supplied by the manufacturer) battery. Additional<br>
+approved power sources are the use of a power port on the Core Power Distribution Module, a motor control<br>
+port on the Core Motor Controller Module, or a motor controller port on the Legacy HiTechnic<br>
+Motor Controller. "<br>
+<br>
+We do not want to power it from our main battery through the Core Power Distribution Module because of the drain it would cause on the battery. Last year we hooked the lights to a separate 9v battery. The rule says that the lights may be powered by an internal (as supplied by the manufacturer) battery. These lights do not have one and are meant to be powered by a separate battery. We would like to confirm that this is still legal.<br>
+<br>
+A: No.  &lt;RE03&gt; lists the allowed power sources.  An external battery pack is not a listed source and is not allowed.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-25-2016, 11:12 AM</div></div><div class="posttext">Hello,<br>
+<br>
+Our team has a rack and pinion on our robot powered by a DC Motor. When the rack and pinion is all the way in, it presses a touch sensor. During the initialization of autonomous, is it legal to move the rack and pinion in all the way until it presses the touch sensor?<br>
+<br>
+Thank you,<br>
+Team 9794<br>
+Wizards.exe<br>
+<br>
+A: Yes.  This type of initialization motion is allowed.  Be sure to add a sticker warning of robot motion during initialization (see the game manual)</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-25-2016, 11:16 AM</div></div><div class="posttext">We want to use a 12V DC Computer Fan to blow away the debris.<br>
+If it is allowed, when the fan is plugged into the motor controller, does that count as a motor?<br>
+<br>
+A: No.  A 12V DC Computer Fan is not an allowed DC motor and may not be used on a robot.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-25-2016, 11:21 AM</div></div><div class="posttext">We want to use a string of 6V LED Lights on our robot:<br>
+http://www.amazon.com/gp/product/B012F1EMTG?psc=1&amp;redirect=true&amp;ref_=oh_aui_search_detailpage<br>
+<br>
+We wish to remove the battery and add the wire to the robot so it can be controlled in the program. It would still serve no functional purpose to the robot other than decoration.<br>
+<br>
+According to rule &lt;RE03&gt; g:<br>
+"Approved light sources may include an internal (as supplied by the manufacturer) battery. Additional approved power sources are the use of a power port on the Core Power Distribution Module, a motor-control port on the Core Motor Controller Module, or a motor controller port on the Legacy HiTechnic Motor Controller."<br>
+<br>
+Can we use a servo-control port on the Core Servo Controller Module instead? The rule implies that there are other approved power sources not listed.<br>
+<br>
+In addition, if we were to use the supplied battery pack to power the LED strip and signaled the LED strip independently with the Core Servo Controller Module, would it be legal?<br>
+<br>
+Thanks!<br>
+<br>
+A1: No.  LED's may not be connected to or powered by Servo Control Ports of any module.<br>
+<br>
+A2: Without additional description, it is not possible to determine what "signaled the LED strip independently" means or whether the would be allowed under current rules.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">02-25-2016, 11:40 AM</div></div><div class="posttext">As winter has arrived with drier air, we are seeing many robots experience static electricity discharges.  Last year FIRST recommended installing a USB surge suppressor from l-com http://www.l-com.com/surge-protector-usb-surge-protector-panel-mount-style between the NXT and Samantha.  We did this, and it seemed to help.  Would this part be legal this year to install in the cable between the phone and the Power Distribution Module?  If so we'll do some testing.<br>
+<br>
+FTC 6081 i²r robotics<br>
+<br>
+A: USB Surge Protectors are explicitly allowed by &lt;RE05&gt;.a</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">03-03-2016, 11:54 AM</div></div><div class="posttext">Hello FIRST,<br>
+<br>
+To clarify our previous question, we are using a Legacy Matrix system with a single 9.6V battery, two Matrix motor/servo controllers, and three Matrix 9.6V motors. We have been unable to source additional Matrix motors from Modern Robotics Inc., of any sort, and so we would like to use two or three of the AndyMark NeveRest (20,40,60) series of motors, with our Matrix module to drive additional mechanisms. We do not want to waste our money buying motors we cannot use, so we have not finished some of our mechanisms. The motors are rated at 12V, but we have heard from another team that they work fine on 9.6V - they simply run slower than they would at 12V, with no risk of damaging them. Is using NeveRest motors with the 9.6V Legacy a legal configuration? <br>
+<br>
+Thank you.<br>
+<br>
+A: After getting input from the manufacturers, 12v motors (of any of the allowed types) can be used with any of the Motor Controllers (Matrix, Legacy HiTechnic, Modern Robotics).  Please note that the motor connectors may need to be changed. Care should be taken to fully understand the connections before modifying the motor connectors to minimize the chance of damage to the motors or controllers.<br>
+<br>
+Teams should also be aware that the encoders that are built into several of the motors produce different counts per revolution and will likely make using the built-in PID control functionality difficult.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">03-03-2016, 12:06 PM</div></div><div class="posttext">Hi, we were wondering if the following type of device is legal per forum ruling #51, which explicitly allows an i2c multiplexer like this: https://www.adafruit.com/products/2717<br>
+Are either of these (https://www.adafruit.com/products/593, or https://www.adafruit.com/products/292) similar devices which expand an i2c port allowed to be connected to the CDIM in order to get more digital type pins?<br>
+<br>
+Thanks,<br>
+FTC 5206, The Knights of Ni<br>
+<br>
+A: No.  The I2C multiplexor option was allowed to take care of the case where sensors have non-changeable i2c addresses.  The allowance permits using multiple sensors of the same type.<br>
+<br>
+The chips/boards referenced above are general purpose I/O expanders and fall under the category of "other electronics" and are prohibited by &lt;RE06&gt;.d</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">03-08-2016, 11:19 AM</div></div><div class="posttext">Post #118 of the Mechanical thread (http://ftcforum.usfirst.org/showthread.php?4623-Robot-Inspection-and-Build-Rules-Mechanical-Answer-Thread&amp;p=26298&amp;viewfull=1#post26298) states that the mentioned red dot scopes are illegal because they are not powered by the main robot battery. However, it does not say anything about the legality of them. Would a red dot scope (NOT a laser) that is powered by the main robot battery be legal? Thanks!<br>
+<br>
+A: "Red Dot" scopes are not legal. Focused light sources are disallowed by &lt;R06&gt;.a</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">03-08-2016, 11:23 AM</div></div><div class="posttext">According to Rule &lt;RE03&gt; :<br>
+"Approved light sources may include an internal (as supplied by the manufacturer) battery. "<br>
+<br>
+Would this battery pack be considered an internal battery?  It's an LED strip with an internal battery holder which holds three AA batteries.<br>
+<br>
+http://www.amazon.com/TEQIN-Waterproof-Flexible-Decoration-batteries/dp/B014PHW8I0/ref=sr_1_1?ie=UTF8&amp;qid=1457058447&amp;sr=8-1&amp;keywords=led+strip+aa<br>
+<br>
+Team 6081 i²r robotics<br>
+<br>
+A: Yes.  The above product is an example of a vendor supplied battery for LED's as allowed by &lt;RE03&gt;.g</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">03-08-2016, 11:29 AM</div></div><div class="posttext">Rule &lt;RE05&gt;.h states:<br>
+"Power and motor control wires must use consistent color coding with different colors used for the Positive (red, white, brown, or black with a stripe) and Negative/Common (black or blue) wires."<br>
+<br>
+It specifically states for "power and motor control".  If we use extension wires for sensors (analog and i2c), does the "consistent color coding" portion of the above statement also apply?  For example, if a sensor is soldered with 4 colored wires, and a 4 wire extension that has 4 different colors extends the connection to the DIM controller, is that legal?<br>
+<br>
+Thanks....<br>
+<br>
+A: Yes. In your example, the wires you are extending include power/ground and have a color convention that denotes power/ground vs. signal.  Care should be taken to match the convention.  The colors used in your extensions do not need to be identical to the wiring that is being extended, but should be clearly identifiable and the same color convention you use should be applied consistently to all extensions.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">04-06-2016, 12:54 PM</div></div><div class="posttext">We don't see limits for servo Amperage in the Game manual, but do note that the MR modules are only rated for 1.5A per servo and that according to ServoCity, the stall current for quarterscale servos is 1.8A and the popular 645MG servos is 1.6A.    We're not sure this poses a real safety problem, but would like to confirm that the use of quarterscale servos and the 645MG servos are legal even though the specs on the servo controller say we shouldn't be using them.<br>
+<br>
+A: This question has already been addressed. Please see post #9 (http://ftcforum.usfirst.org/showthread.php?4624-Robot-Inspection-and-Build-Rules-Electrical-Answer-Thread&amp;p=17427&amp;viewfull=1#post17427) under the Robot Inspection and build Rules - Electrical - Answer thread.</div></div><hr>
+
+
+<div class="post"><div class="posttop"><div class="username">Earthquake</div><div class="date">04-13-2016, 02:01 PM</div></div><div class="posttext">Just a quick question to clarify what the limits are on the servos we are allowed to use.<br>
+<br>
+&lt;RE04&gt; states that the servos are limited to 12 in number and that any compatible servos are allowed barring the fact that they don't overload the servo controller.  But then on this document posted:  http://www.firstinspires.org/sites/default/files/uploads/resource_library/ftc/2015-2016-legal-illegal-parts-list.pdf it states clearly that all servos must be rated at 800mA or less.<br>
+<br>
+Can you please clarify?  Thank you<br>
+<br>
+A: As long as the servo is compatible with the servo controller and the total stall current for all servos controlled by a single controller does not exceed 5 amps the servo is allowed.</div></div><hr>
+
+ 
+<div id="copyright">Powered by vBulletin® Version 4.2.0 Copyright © 2016 vBulletin Solutions, Inc. All rights reserved.</div>
+</div>
+
+</body></html>

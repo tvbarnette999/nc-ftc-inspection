@@ -43,6 +43,12 @@ public class Server {
 	public static final int LOG=11;
 	public static final int H204=10;
 	public static final int CUBE_INDEX_PAGE=12;
+	public static final int GAME_FORUM=20;
+	public static final int MECHANICAL_FORUM=21;
+	public static final int ELECTRICAL_FORUM=22;
+	public static final int TOURNAMENT_FORUM=23;
+	public static final int JUDGING_FORUM=24;
+	public static final int FORUM_HOME=8;
 	
 	//These parameters are set to determine whether a given event will show status for that stage and do paperless inspection.
 	
@@ -152,24 +158,27 @@ public class Server {
 	public void sendPage(Socket sock,int i, String extras, boolean verified, Object ... other) throws IOException{
 		OutputStream out=sock.getOutputStream();
 		PrintWriter pw=new PrintWriter(out);
-		if(i==H204){//responding to post with data success
+		//responding to post with data success header
+		if(i==H204){
 			pw.println("HTTP/1.1 204 No Content\n");
 			pw.flush();
 			pw.close();
 			traffic++;
 			return;
 		}
+		//respond to request for images
 		if(i>=100){
 			pw.println("HTTP/1.1 200 OK");
 			pw.println("Content-Type: image/x-icon");
 		}
+		//respond to pdf requests
 		else if(i>90){
-			//\nContent-Transfer-Encoding: binary
 			pw.println("HTTP/1.1 200 OK");
 			pw.println("Content-Type: application/pdf");
 			pw.println("Content-Disposition: inline; filename=manual1.pdf");
 
 		}
+		//respond to default text/html request
 		else pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\n");
 		
 		if (extras == null){ 
@@ -199,6 +208,24 @@ public class Server {
 			case CHECKIN:sendInspectionEditPage(pw,i);break;
 			case HOME:
 				sendHomePage(pw);
+				break;
+			case FORUM_HOME:
+				sendPage(pw, "forum.html");
+				break;
+			case GAME_FORUM:
+				sendPage(pw, "gameForum.html");
+				break;
+			case TOURNAMENT_FORUM:
+				sendPage(pw, "tournamentForum.html");
+				break;
+			case ELECTRICAL_FORUM:
+				sendPage(pw, "electricalForum.html");
+				break;
+			case MECHANICAL_FORUM:
+				sendPage(pw, "mechanicalForum.html");
+				break;
+			case JUDGING_FORUM:
+				sendPage(pw, "judgeForum.html");
 				break;
 			case LOG:sendLogPage(pw);break;
 			case CUBE_INDEX_PAGE:
@@ -256,6 +283,7 @@ public class Server {
 		if(req.equals("cube"))pageID=verified?CUBE:LOGIN;
 		if(req.equals("checkin"))pageID=verified?CHECKIN:LOGIN;
 		if(req.equals("home"))pageID=verified?HOME:LOGIN;
+		if(req.equals("forum"))pageID=FORUM_HOME;
 		if(req.equals("log"))pageID=verified?LOG:LOGIN;
 		
 		if(req.startsWith("hardware/") && fullHardware){
@@ -269,6 +297,16 @@ public class Server {
 		if(req.startsWith("field/") && fullField){
 			pageID=verified?FIELD:LOGIN;
 			other=req.substring(req.indexOf("/")+1);			
+		}
+		//handle forums
+		if(req.startsWith("forum/")){
+			req = req.substring(req.indexOf("/")+1);
+			if(req.startsWith("game"))pageID=GAME_FORUM;
+			if(req.startsWith("mechanical"))pageID=MECHANICAL_FORUM;
+			if(req.startsWith("electrical"))pageID=ELECTRICAL_FORUM;
+			if(req.startsWith("tournament"))pageID=TOURNAMENT_FORUM;
+			if(req.startsWith("judge"))pageID=JUDGING_FORUM;
+			
 		}
 		//these do not require login
 		if(req.equals("favicon.ico"))pageID=100;
