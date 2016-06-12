@@ -742,6 +742,7 @@ public class Server {
 	 */
 	@SuppressWarnings("unchecked")
 	public void loadEvent(String event) throws FileNotFoundException{
+		if(event == null)return;//Do not attempt to load null event.
 		Scanner scan=Resources.getScanner(event+".event");//new Scanner(new File("Resources/"+event));
 		Server.event=event;//if finds file, set Server event to the new one.
 		fullEventName=scan.nextLine();

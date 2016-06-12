@@ -568,7 +568,8 @@ public class Main extends JFrame {
 			}
 			Server.theServer.loadConfig();
 			if(!events.contains(Server.event)){
-				Server.event=events.get(0);
+				if(events.size()>0)Server.event=events.get(0);
+				else Server.event=null;
 			}
 			Server.theServer.loadEvent(Server.event);
 		} catch (FileNotFoundException e) {
