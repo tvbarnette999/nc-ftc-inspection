@@ -691,7 +691,7 @@ public class Server {
 	@SuppressWarnings("unchecked")
 	public void startServer(final int port) throws FileNotFoundException{
 		this.setPassword(password); 
-		loadEvent();
+		//loadEvent(event); //loads the default event if 
 		addLogEntry("Starting server...");
 		Thread serverThread=new Thread("Server"){
 			public void run(){
@@ -733,7 +733,7 @@ public class Server {
 	}
 
 	/**
-	 * Loads event data
+	 * Loads event data- name, code, and teams.
 	 * file name: EVENTCODE ex:BCRI2017, NCCMP2016, CGHS
 	 * Format:
 	 * line 1:Event Full name
@@ -741,8 +741,9 @@ public class Server {
 	 * @throws FileNotFoundException
 	 */
 	@SuppressWarnings("unchecked")
-	public void loadEvent() throws FileNotFoundException{
+	public void loadEvent(String event) throws FileNotFoundException{
 		Scanner scan=Resources.getScanner(event+".event");//new Scanner(new File("Resources/"+event));
+		Server.event=event;//if finds file, set Server event to the new one.
 		fullEventName=scan.nextLine();
 		Vector<Integer> nums=new Vector<Integer>();
 		scan.useDelimiter(",| |\\n");
@@ -751,13 +752,11 @@ public class Server {
 				nums.add(scan.nextInt());
 			}catch(Exception e){e.printStackTrace();}
 		}
-//		scan.useDelimiter(",");
-//		String[] nums=scan.nextLine().split(",");
 		scan.close();
 		for(int i:nums){
 			teams.add(new Team(i));
 		}
-		addLogEntry("Loaded event data");
+		addLogEntry("Loaded event: "+fullEventName);
 		Collections.sort(teams);
 		
 		//load status data if exists
@@ -821,7 +820,6 @@ public class Server {
 		
 	}
 	
-	//public void save
 
 	/**
 	 * Handles the HTTP requests and directs them to appropriate methods.	 * 
@@ -897,7 +895,7 @@ public class Server {
 		event = name;
 		theServer.teams.clear();
 		try {
-			theServer.loadEvent();
+			theServer.loadEvent(name);
 			return true;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -1013,7 +1011,6 @@ public class Server {
 		fullField = scan.nextBoolean();
 		scan.nextLine();
 		scan.close();
-		Server.changeEvent(event);
 	}
 	
 	/**

@@ -96,6 +96,8 @@ public class Main extends JFrame {
 	 *TODO save which to track? save in .config in root?
 	 *
 	 *TODO Some GUI easy way to select root save dir.
+	 *
+	 *FIXME Hitting No on popup for closing the window still closes it.
 	 */
 
 	public Main() {
@@ -116,8 +118,8 @@ public class Main extends JFrame {
 			}
 		}
 
-		loadFiles();
 		me = new Main();
+		loadFiles();
 		me.initGUI();
 
 		try {
@@ -564,8 +566,11 @@ public class Main extends JFrame {
 			while(scan.hasNextLine()){
 				events.add(scan.nextLine());
 			}
-			Server.event=events.get(0);
 			Server.theServer.loadConfig();
+			if(!events.contains(Server.event)){
+				Server.event=events.get(0);
+			}
+			Server.theServer.loadEvent(Server.event);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
