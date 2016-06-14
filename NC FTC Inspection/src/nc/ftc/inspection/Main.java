@@ -21,9 +21,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -89,6 +91,7 @@ public class Main extends JFrame {
 	 *TODO help pages are probably an important thing
 	 *
 	 *TODO if web page cant send POST due to disconnect, have a button at bottom of page to send all data from page for reconnect?
+	 *-or keep a vector in js or something?
 	 *TODO have server respond with notes and signitures to confirm.?
 	 *
 	 *TODO capability to run headless. just in case
@@ -861,6 +864,14 @@ public class Main extends JFrame {
 			}
 			else if(args[0].equals("SAVE")){
 				success=Server.save();
+			}
+			else if(args[0].equals("IP")){
+				try {
+					append("Server IP: "+InetAddress.getLocalHost().getHostAddress());
+				} catch (UnknownHostException e) {
+					
+				}
+				
 			}
 			else{
 				error("UNKNOW COMMAND: "+args[0]);
