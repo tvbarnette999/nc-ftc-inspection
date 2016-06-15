@@ -629,6 +629,8 @@ public class Main extends JFrame {
 		 *CLEAR DATA*
 		 *CLEAR ALL LOCAL DATA? (resets to factory settings and events -deletes save dir)
 		 * 
+		 * IP - show ip.
+		 * 
 		 *SAVE*
 		 * 
 		 * 
