@@ -559,7 +559,15 @@ public class Server {
 			case SOFTWARE:type="_SW";break;
 			case FIELD:type="_FD";break;
 		}
-		pw.println("<html><body><table>");
+		pw.println("<html><body><h1>");
+		switch(i){
+			case HARDWARE:pw.println("Hardware Inspection");break;
+			case SOFTWARE:pw.println("Software Inspection");break;
+			case FIELD:pw.println("Field Inspection");break;
+			case CUBE:pw.println("Sizing Cube");break;
+			case CHECKIN:pw.println("Checkin");break;
+		}
+		pw.println("</h1><table cellspacing=\"10\">");
 		for(Team t:teams){
 			pw.println("<tr><td>"+t.number+"</td><td>");
 			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+PASS+"\" "+(t.get(i)==PASS?"checked=\"checked\"":"")+" onclick=\"update()\"/>Pass</label></td>");
@@ -610,7 +618,13 @@ public class Server {
 			case FIELD: type="field";break;
 			default:return;//TODO something else here?
 		}
-		pw.println("<html><body><table><tr><th>Team #</th><th>Link</th></tr>");
+		pw.println("<html><body><h1>");
+		switch(i){
+			case HARDWARE:pw.println("Hardware Inspection");break;
+			case SOFTWARE:pw.println("Software Inspection");break;
+			case FIELD:pw.println("Field Inspection");break;
+		}
+		pw.println("</h1><br><table cellspacing=\"10\"><tr><th>Team #</th><th>Link</th></tr>");
 		for(Team t:teams){
 			pw.println("<tr><td bgcolor="+getColor(t.get(i))+">"+t.number+"</td><td><a href=\"/"+type+"/"+t.number+"\">Inspect</a></td></tr>");
 		}
@@ -652,6 +666,7 @@ public class Server {
 		if(type.contains("W")) head+="A: Robot Inspection Checklist";
 		else head+="B: Field Inspection Checklist";
 		pw.println("<html><head><h2>"+head+"</h2><hr style=\"border: 3px solid #943634\" /><h3>Team Number: "+extras+"</h3></head>");
+		//TODO adjust table size so it is useable on phone.
 		pw.println("<body><table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;\">");
 		pw.println("<tr bgcolor=\"#E6B222\" ><th>Insp.</th><th>Inspection Rule</th><th>Rule #</th></tr>");
 		
