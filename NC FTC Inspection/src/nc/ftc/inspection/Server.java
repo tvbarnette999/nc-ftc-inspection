@@ -48,7 +48,9 @@ public class Server {
 	public static final int ELECTRICAL_FORUM=22;
 	public static final int TOURNAMENT_FORUM=23;
 	public static final int JUDGING_FORUM=24;
-	public static final int FORUM_HOME=8;
+	public static final int REFERENCE_HOME=8;
+	public static final int MANUAL1=98;
+	public static final int MANUAL2=99;
 	
 	//These parameters are set to determine whether a given event will show status for that stage and do paperless inspection.
 	
@@ -209,8 +211,8 @@ public class Server {
 			case HOME:
 				sendHomePage(pw);
 				break;
-			case FORUM_HOME:
-				sendPage(pw, "forum.html");
+			case REFERENCE_HOME:
+				sendPage(pw, "reference.html");
 				break;
 			case GAME_FORUM:
 				sendPage(pw, "gameForum.html");
@@ -233,8 +235,8 @@ public class Server {
 				break;
 			
 			//TODO add forums. s
-			case 98:sendDocument(pw,out,"manual1.pdf");break;
-			case 99:sendDocument(pw,out,"manual2.pdf");break;
+			case MANUAL1:sendDocument(pw,out,"manual1.pdf");break;
+			case MANUAL2:sendDocument(pw,out,"manual2.pdf");break;
 			case 100:sendDocument(pw,out,"firstfavicon.ico");break;
 			case -1:
 				sendDocument(pw, out, "firstfavicon.png");
@@ -283,7 +285,8 @@ public class Server {
 		if(req.equals("cube"))pageID=verified?CUBE:LOGIN;
 		if(req.equals("checkin"))pageID=verified?CHECKIN:LOGIN;
 		if(req.equals("home"))pageID=verified?HOME:LOGIN;
-		if(req.equals("forum"))pageID=FORUM_HOME;
+		if(req.equals("reference") || req.equals("forum"))pageID=REFERENCE_HOME;
+		
 		if(req.equals("log"))pageID=verified?LOG:LOGIN;
 		
 		if(req.startsWith("hardware/") && fullHardware){
@@ -299,13 +302,15 @@ public class Server {
 			other=req.substring(req.indexOf("/")+1);			
 		}
 		//handle forums
-		if(req.startsWith("forum/")){
+		if(req.startsWith("reference/")){
 			req = req.substring(req.indexOf("/")+1);
 			if(req.startsWith("game"))pageID=GAME_FORUM;
 			if(req.startsWith("mechanical"))pageID=MECHANICAL_FORUM;
 			if(req.startsWith("electrical"))pageID=ELECTRICAL_FORUM;
 			if(req.startsWith("tournament"))pageID=TOURNAMENT_FORUM;
 			if(req.startsWith("judge"))pageID=JUDGING_FORUM;
+			if(req.startsWith("manual1"))pageID=MANUAL1;
+			if(req.startsWith("manual1"))pageID=MANUAL2;
 			
 		}
 		//these do not require login
@@ -704,11 +709,18 @@ public class Server {
 		//TODO make this page better
 		pw.println("<html>\n<body>");
 		if(trackCheckIn)pw.println("<a href=\"/checkin\">Checkin</a>");
+		pw.println("<br><br>");
 		if(trackCube)pw.println("<a href=\"/cube\">Sizing Cube</a>");
+		pw.println("<br><br>");
 		if(trackHardware || fullHardware)pw.println("<a href=\"/hardware\">Hardware</a>");
+		pw.println("<br><br>");
 		if(trackSoftware || fullSoftware)pw.println("<a href=\"/software\">Software</a>");
+		pw.println("<br><br>");
 		if(trackField || fullField)pw.println("<a href=\"/field\">Field</a>");
+		pw.println("<br><br>");
 		pw.println("<a href=\"/\">Status</a>");//TODO do we want to have a /status page that has the links at the top? (diff from /)
+		pw.println("<br><br>");
+		pw.println("<a href=\"reference\">Manuals and Forums");
 		pw.println("</body></html>");
 		pw.flush();
 	}
