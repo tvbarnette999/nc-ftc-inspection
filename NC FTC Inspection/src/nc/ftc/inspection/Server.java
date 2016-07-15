@@ -51,6 +51,7 @@ public class Server {
 	public static final int REFERENCE_HOME=8;
 	public static final int MANUAL1=98;
 	public static final int MANUAL2=99;
+	public static final int KAMEN = 80;
 	
 	//These parameters are set to determine whether a given event will show status for that stage and do paperless inspection.
 	
@@ -241,6 +242,9 @@ public class Server {
 			case -1:
 				sendDocument(pw, out, "firstfavicon.png");
 				break;
+			case KAMEN:
+				sendDocument(pw, out, "DeanKamen.jpg");
+				break;
 			default:
 				//404
 				pw.write("Error 404: Showing default<br><br>\n\n");
@@ -287,6 +291,7 @@ public class Server {
 		if(req.equals("home"))pageID=verified?HOME:LOGIN;
 		if(req.equals("reference") || req.equals("forum"))pageID=REFERENCE_HOME;
 		
+		
 		if(req.equals("log"))pageID=verified?LOG:LOGIN;
 		
 		if(req.startsWith("hardware/") && fullHardware){
@@ -318,6 +323,8 @@ public class Server {
 		if(req.equals("manual1"))pageID=98;
 		if(req.equals("manual2"))pageID=99;
 
+		if(req.equals("DeanKamen.jpg"))pageID = KAMEN;
+		
 		if (req.equals("firstfavicon.png")) pageID = -1;
 		if(other!=null)sendPage(sock,pageID,null,verified,other);
 		else sendPage(sock,pageID,null,verified);
@@ -531,6 +538,14 @@ public class Server {
 			pw.println("<td bgcolor="+getColor(t.ready)+">"+t.name+"</td>");
 			pw.println("</tr>");
 		}
+		pw.println("<script>");
+		try {
+			sendPage(pw, "konami.js");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		pw.println("</script>");
 //		pw.println("<img src=\"firstfavicon.png\"></html>");
 	}
 	/**
