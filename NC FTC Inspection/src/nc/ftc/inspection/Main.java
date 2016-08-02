@@ -342,9 +342,10 @@ public class Main extends JFrame {
 					//TODO a thread keeps running. we need to find it and make it interruptible or daemon
 					setVisible(false);
 					dispose();
+					System.exit(0);
 				} else {
 					setVisible(true);
-					System.err.println("Opening");
+					System.err.println("Not closing");
 				}
 			}
 		});
@@ -517,7 +518,7 @@ public class Main extends JFrame {
 		};
 		graphics.setDaemon(true);
 		graphics.start();
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+//		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		//		this.pack();
 
 	}

@@ -12,12 +12,14 @@ const KEYUP = 38;
 const KEYDOWN = 40;
 const KEYLEFT = 37;
 const KEYRIGHT = 39;
-const KEYA = 65
-const KEYB = 66
+const KEYA = 65;
+const KEYB = 66;
+const KAMEN_IMAGE = 'DeanKamen.jpg';
 var state = 0;
 document.onkeydown = function (e) {
     e = e || window.event;
 	key = e.keyCode;
+	//begin giant state machine
 	switch(state){
 		case START:
 			if(key == KEYUP){
@@ -32,15 +34,21 @@ document.onkeydown = function (e) {
 		case UP2:
 			if(key == KEYDOWN){
 				state = DOWN1;
-			} else{ state = START;}
+			} else{ 
+				state = START;
+			}
 		case DOWN1:
 			if(key == KEYDOWN){
 				state = DOWN2;
-			}else{state = START;}
+			}else{
+				state = START;
+			}
 		case DOWN2:
 			if(key == KEYLEFT){
 				state = LEFT1;
-			} else{ state = START;}
+			} else{ 
+				state = START;
+			}
 		case LEFT1:
 			if(key == KEYRIGHT){
 				state = RIGHT1;
@@ -69,7 +77,7 @@ document.onkeydown = function (e) {
 			if(key == KEYA){
 		
 				img = new Image();
-				img.src = 'DeanKamen.jpg';
+				img.src = KAMEN_IMAGE;
 				img.style.position = 'absolute';
 				img.style.left = 400;
 				img.style.top = window.innerHeight;
