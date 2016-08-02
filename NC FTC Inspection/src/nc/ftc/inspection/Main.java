@@ -3,6 +3,7 @@ package nc.ftc.inspection;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -39,6 +40,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import javax.imageio.ImageIO;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -56,6 +59,8 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.IconUIResource;
@@ -92,6 +97,7 @@ public class Main extends JFrame {
 	 *
 	 *TODO if web page cant send POST due to disconnect, have a button at bottom of page to send all data from page for reconnect?
 	 *-or keep a vector in js or something?
+	 *
 	 *TODO have server respond with notes and signitures to confirm.?
 	 *
 	 *TODO capability to run headless. just in case
@@ -100,7 +106,7 @@ public class Main extends JFrame {
 	 *
 	 *TODO Some GUI easy way to select root save dir.
 	 *
-	 *FIXME Hitting No on popup for closing the window still closes it.
+	 *
 	 */
 
 	public Main() {
@@ -171,6 +177,7 @@ public class Main extends JFrame {
 	private JButton pwEnter = new JButton("Set Password");
 	private JPanel statusPanel = new JPanel();
 	private JPanel topStatusPanel = new JPanel();
+	private JPanel trackingPanel = new JPanel();
 	private static final String COOKIE_LABEL_STRING = "Cookies Issued: ";
 	
 	
@@ -183,6 +190,7 @@ public class Main extends JFrame {
 	private JCheckBox fullSoftware = new JCheckBox("Full Software",true);
 	private JCheckBox trackField = new JCheckBox("Field",true);
 	private JCheckBox fullField = new JCheckBox("Full Field",true);
+	private static final int INDENT = 50;
 	private ActionListener trackListener = new ActionListener(){
 		public void actionPerformed(ActionEvent e){
 			Server.trackCheckIn = trackCheckIn.isSelected();
@@ -454,19 +462,42 @@ public class Main extends JFrame {
 		//		setSize(850, 400);
 		consoleTextArea.setPreferredSize(new Dimension(550, 375));
 		setMinimumSize(new Dimension(850, 400));
+		
+		
+		
 
 		tabbedPane.addTab(SERVER_SETTINGS, UIManager.getIcon("FileChooser.hardDriveIcon"), serverSettingsPanel, SERVER_SETTINGS);
 		tabbedPane.addTab(EVENT_SETTINGS, ftcIcon, eventSettingsPanel, EVENT_SETTINGS);
+		trackingPanel.setOpaque(true);
+		trackingPanel.setBorder(new TitledBorder("Tracking Option"));
+		trackingPanel.setPreferredSize(new Dimension(300, 300));
+		trackingPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		trackingPanel.add(trackCheckIn);
+		trackingPanel.add(Box.createHorizontalStrut(150));
+		trackingPanel.add(trackCube);
+
+		trackingPanel.add(Box.createHorizontalStrut(150));
+//		trackingPanel.add(new J);
+
+		trackingPanel.add(Box.createHorizontalStrut(INDENT));
+		trackingPanel.add(separateCube);
+		trackingPanel.add(trackHardware);
+
+		trackingPanel.add(Box.createHorizontalStrut(150));
+		trackingPanel.add(Box.createHorizontalStrut(INDENT));
+		trackingPanel.add(fullHardware);
+		trackingPanel.add(Box.createHorizontalStrut(50));
+		trackingPanel.add(trackSoftware);
+		trackingPanel.add(Box.createHorizontalStrut(250));
+		trackingPanel.add(Box.createHorizontalStrut(INDENT));
+		trackingPanel.add(fullSoftware);
+		trackingPanel.add(Box.createHorizontalStrut(100));
+		trackingPanel.add(trackField);
+
+		trackingPanel.add(Box.createHorizontalStrut(250));
+		trackingPanel.add(Box.createHorizontalStrut(INDENT));
+		trackingPanel.add(fullField);
 		
-		eventSettingsPanel.add(trackCheckIn);
-		eventSettingsPanel.add(trackCube);
-		eventSettingsPanel.add(separateCube);
-		eventSettingsPanel.add(trackHardware);
-		eventSettingsPanel.add(fullHardware);
-		eventSettingsPanel.add(trackSoftware);
-		eventSettingsPanel.add(fullSoftware);
-		eventSettingsPanel.add(trackField);
-		eventSettingsPanel.add(fullField);
 		trackCheckIn.addActionListener(trackListener);
 		trackCube.addActionListener(trackListener);
 		trackHardware.addActionListener(trackListener);
@@ -476,8 +507,24 @@ public class Main extends JFrame {
 		fullHardware.addActionListener(trackListener);
 		fullSoftware.addActionListener(trackListener);
 		fullField.addActionListener(trackListener);
+		
+
+		
+		eventSettingsPanel.setLayout(new BorderLayout());
+		eventSettingsPanel.add(trackingPanel, BorderLayout.WEST);
 				
+		//listener to update graphics when tab changed
+		tabbedPane.addChangeListener(new ChangeListener(){
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				if(tabbedPane.getSelectedIndex() == 0){
+					updateServerGraphics();
+				}
 				
+			}
+			
+		});
 		this.getContentPane().add(tabbedPane);
 		pack();
 		this.setVisible(true);
@@ -491,6 +538,7 @@ public class Main extends JFrame {
 			}
 		});
 		trafficPanel.setOpaque(true);
+		
 		boolean running=true;
 		graphics = new Thread("Graphics Thread") {
 			@Override
@@ -501,13 +549,8 @@ public class Main extends JFrame {
 					e1.printStackTrace();
 				}
 				while (true) {
-					cookieLabel.setText(COOKIE_LABEL_STRING + Server.theServer.getCookieCount() + "");
-					System.arraycopy(traffic, 1, traffic, 0, traffic.length - 1); // shift array 1 left
-					//					System.out.println(Arrays.toString(traffic));
-					traffic[traffic.length - 1] = Server.theServer.getTraffic();
-					trafficLabel.setText(trafficString + traffic[traffic.length - 1]);
-					//					trafficPanel.invalidate();
-					trafficPanel.paint(trafficPanel.getGraphics());
+					//dont do anything if tab is hidden.
+					if(tabbedPane.getSelectedIndex() == 0)updateServerGraphics();
 					try {
 						Thread.sleep(15000);
 					} catch (InterruptedException e) {
@@ -521,6 +564,15 @@ public class Main extends JFrame {
 //		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		//		this.pack();
 
+	}
+	private void updateServerGraphics(){
+		cookieLabel.setText(COOKIE_LABEL_STRING + Server.theServer.getCookieCount() + "");
+		System.arraycopy(traffic, 1, traffic, 0, traffic.length - 1); // shift array 1 left
+		//					System.out.println(Arrays.toString(traffic));
+		traffic[traffic.length - 1] = Server.theServer.getTraffic();
+		trafficLabel.setText(trafficString + traffic[traffic.length - 1]);
+		//					trafficPanel.invalidate();
+		trafficPanel.paint(trafficPanel.getGraphics());
 	}
 
 	private static void loadFiles() {
