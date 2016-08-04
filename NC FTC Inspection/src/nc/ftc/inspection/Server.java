@@ -386,6 +386,7 @@ public class Server {
 				pageID=CUBE_INDEX_PAGE;
 			}
 			else if(req.startsWith("update?")){//These are requests that contain a state change for a team for a level of inspection.
+				System.out.println("LINE 389: "+req);
 				String s=req.substring(req.indexOf("=")+1);
 				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
 				String type=s.substring(s.indexOf("_")+1,s.indexOf("&"));
@@ -584,15 +585,25 @@ public class Server {
 		}
 		pw.println("</h1><table cellspacing=\"10\">");
 		for(Team t:teams){
-			pw.println("<tr><td>"+t.number+"</td><td>");
+			pw.println("<tr><td bgcolor="+getColor(t.get(i))+">"+t.number+"</td><td>");
+			/* radio button code (OLD)
 			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+PASS+"\" "+(t.get(i)==PASS?"checked=\"checked\"":"")+" onclick=\"update()\"/>Pass</label></td>");
 			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+FAIL+"\" "+(t.get(i)==FAIL?"checked=\"checked\"":"")+" onclick=\"update()\"/>Fail</label></td>");
 			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+PROGRESS+"\" "+(t.get(i)==PROGRESS?"checked=\"checked\"":"")+" onclick=\"update()\"/>In Progress</label></td>");
 			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+NO_DATA+"\" "+(t.get(i)==NO_DATA?"checked=\"checked\"":"")+" onclick=\"update()\"/>Uninspected</label></td>");
+			*/
+			//ComboBox code:
+			pw.println("<select onchange=\"update()\" name="+t.number + type + "\""+">");
+			pw.println("<option title=\"" + t.number + type + "\" value=\"" + PASS     + "\"" + (t.get(i) == PASS?"selected":"")     + ">PASS</option>");
+			pw.println("<option title=\"" + t.number + type + "\" value=\"" + FAIL     + "\"" + (t.get(i) == FAIL?"selected":"")     + ">FAIL</option>");
+			pw.println("<option title=\"" + t.number + type + "\" value=\"" + PROGRESS + "\"" + (t.get(i) == PROGRESS?"selected":"") + ">IN PROGRESS</option>");
+			pw.println("<option title=\"" + t.number + type + "\" value=\"" + NO_DATA  + "\"" + (t.get(i) == NO_DATA?"selected":"")  + ">NONE</option>");
+			pw.print("</select>");
 			pw.println("</tr>");
 		}
 		pw.println("</table><script>");
 		try {
+			//OLD protocol
 //			switch(i){
 //				case 0:type="_CI";break;
 //				case 1:type="_SC";break;

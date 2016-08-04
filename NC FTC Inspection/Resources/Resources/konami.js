@@ -25,54 +25,63 @@ document.onkeydown = function (e) {
 			if(key == KEYUP){
 				state = UP1;
 			}
+			break;
 		case UP1:
 			if(key == KEYUP){
 				state = UP2;
 			} else{
 				state = START;
 			}
+			break;
 		case UP2:
 			if(key == KEYDOWN){
 				state = DOWN1;
 			} else{ 
 				state = START;
 			}
+			break;
 		case DOWN1:
 			if(key == KEYDOWN){
 				state = DOWN2;
 			}else{
 				state = START;
 			}
+			break;
 		case DOWN2:
 			if(key == KEYLEFT){
 				state = LEFT1;
 			} else{ 
 				state = START;
 			}
+			break;
 		case LEFT1:
 			if(key == KEYRIGHT){
 				state = RIGHT1;
 			}else{
 				state = START;
 			}
+			break;
 		case RIGHT1:
 			if(key == KEYLEFT){
 				state = LEFT2;
 			} else{
 				state = START;
 			}
+			break;
 		case LEFT2:
 			if(key == KEYRIGHT){
 				state = RIGHT2;
 			} else{
 				state = START;
 			}
+			break;
 		case RIGHT2:
 			if(key == KEYB){
 				state = B;
 			} else{
 				state = START;
 			}
+			break;
 		case B:
 			if(key == KEYA){
 		
@@ -110,6 +119,10 @@ document.onkeydown = function (e) {
 			}else{
 				state = START;
 			}
+			break;
+		default:
+			state = START;
+		
 		
 	}
 	
