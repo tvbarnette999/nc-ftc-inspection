@@ -585,7 +585,7 @@ public class Server {
 		}
 		pw.println("</h1><table cellspacing=\"10\">");
 		for(Team t:teams){
-			pw.println("<tr><td bgcolor="+getColor(t.get(i))+">"+t.number+"</td><td>");
+			pw.println("<tr><td id=\"R"+t.number+"\" bgcolor="+getColor(t.get(i))+">"+t.number+"</td><td>");
 			/* radio button code (OLD)
 			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+PASS+"\" "+(t.get(i)==PASS?"checked=\"checked\"":"")+" onclick=\"update()\"/>Pass</label></td>");
 			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+FAIL+"\" "+(t.get(i)==FAIL?"checked=\"checked\"":"")+" onclick=\"update()\"/>Fail</label></td>");
@@ -593,11 +593,11 @@ public class Server {
 			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+NO_DATA+"\" "+(t.get(i)==NO_DATA?"checked=\"checked\"":"")+" onclick=\"update()\"/>Uninspected</label></td>");
 			*/
 			//ComboBox code:
-			pw.println("<select onchange=\"update()\" name="+t.number + type + "\""+">");
-			pw.println("<option title=\"" + t.number + type + "\" value=\"" + PASS     + "\"" + (t.get(i) == PASS?"selected":"")     + ">PASS</option>");
-			pw.println("<option title=\"" + t.number + type + "\" value=\"" + FAIL     + "\"" + (t.get(i) == FAIL?"selected":"")     + ">FAIL</option>");
-			pw.println("<option title=\"" + t.number + type + "\" value=\"" + PROGRESS + "\"" + (t.get(i) == PROGRESS?"selected":"") + ">IN PROGRESS</option>");
-			pw.println("<option title=\"" + t.number + type + "\" value=\"" + NO_DATA  + "\"" + (t.get(i) == NO_DATA?"selected":"")  + ">NONE</option>");
+			pw.println("<select onchange=\"update()\" name=\""+ t.number + type + "\""+">");
+			pw.println("<option value=\"" + PASS     + "\"" + (t.get(i) == PASS?"selected":"")     + ">PASS</option>");
+			pw.println("<option value=\"" + FAIL     + "\"" + (t.get(i) == FAIL?"selected":"")     + ">FAIL</option>");
+			pw.println("<option value=\"" + PROGRESS + "\"" + (t.get(i) == PROGRESS?"selected":"") + ">IN PROGRESS</option>");
+			pw.println("<option value=\"" + NO_DATA  + "\"" + (t.get(i) == NO_DATA?"selected":"")  + ">NONE</option>");
 			pw.print("</select>");
 			pw.println("</tr>");
 		}
@@ -612,6 +612,8 @@ public class Server {
 //				case 4:sendPage(pw,"Resources/fieldUpdate.js");break;
 //			}
 			sendPage(pw,"update.js");
+			
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			addErrorEntry(e);
