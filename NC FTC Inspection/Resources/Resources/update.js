@@ -4,8 +4,6 @@ function update(){
 	xhttp.send();
 	var num = event.target.name;
 	var r = document.getElementById("R"+num.substring(0, num.indexOf("_")))
-	console.log(r);
-	console.log(event.target.value)
 	var c = "#FFFFFF";
 	switch(parseInt(event.target.value)){
 	case 1: 
@@ -19,7 +17,5 @@ function update(){
 	default:
 		break;
 	}
-	console.log(c);
 	r.bgColor = c;
-	console.log(r);
 }

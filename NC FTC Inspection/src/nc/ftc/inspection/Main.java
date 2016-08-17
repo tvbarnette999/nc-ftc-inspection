@@ -295,7 +295,7 @@ public class Main extends JFrame {
 		public void append(String t) {
 			text += t;
 			setText("<html><body>" + text + "</body></html>");
-			System.out.println(getText());
+			//System.out.println(getText());
 			//			Document d = getDocument();
 			//			try {
 			//				d.insertString(d.getLength(), t, null);
@@ -347,7 +347,6 @@ public class Main extends JFrame {
 				//				System.out.println("ANSWER: " + answer);
 				if (answer == JOptionPane.YES_OPTION) {
 					Server.stopServer();
-					//TODO a thread keeps running. we need to find it and make it interruptible or daemon
 					setVisible(false);
 					dispose();
 					System.exit(0);

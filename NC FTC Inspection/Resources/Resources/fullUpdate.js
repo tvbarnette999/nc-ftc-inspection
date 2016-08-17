@@ -1,7 +1,27 @@
 function update(){
 	var xhttp = new XMLHttpRequest();
+	document.getElementById("BG"+event.target.name).bgColor = "#000000";
+	//response text should be BG+id=v
+	xhttp.onreadystatechange = function() {
+		 if (xhttp.readyState == 4 && xhttp.status == 200){
+			  var resp = xhttp.responseText;
+			  console.log(resp)
+			  var ind =  resp.indexOf("=");
+			  var id = resp.substring(0,ind);
+			  var v = resp.substring(ind + 1);
+			  console.log(id);
+			  console.log(id.substring(2));
+			  console.log(v);
+			  console.log(document.getElementsByName(id.substring(2))[0].checked)
+			  if(eval(v) == document.getElementsByName(id.substring(2))[0].checked){
+				  document.getElementById(id).bgColor = "#00FF00";
+			  
+			  }
+		}
+	};
 	xhttp.open("POST", "../fullupdate?team="+event.target.name+"&value="+event.target.checked, true);
 	xhttp.send();
+	
 }
 
 function fullpass(){

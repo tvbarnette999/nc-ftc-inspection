@@ -43,6 +43,8 @@ public class Server {
 	public static final int LOG=11;
 	public static final int H204=10;
 	public static final int CUBE_INDEX_PAGE=12;
+	/**Use this to send just the first element of the Object[] as the content*/
+	public static final int SEND_RESPONSE = 13;
 	public static final int GAME_FORUM=20;
 	public static final int MECHANICAL_FORUM=21;
 	public static final int ELECTRICAL_FORUM=22;
@@ -55,7 +57,7 @@ public class Server {
 	
 	//These parameters are set to determine whether a given event will show status for that stage and do paperless inspection.
 	
-	
+	//These are public because getters/setters for this with GUI would be way too much code.
 	public static boolean trackCheckIn=true;
 	public static boolean trackCube=true;
 	public static boolean separateCube=true;//only relevant if trackCube
@@ -151,7 +153,8 @@ public class Server {
 		return hashedPassString.equals(checkPass);
 	}
 	/**
-	 * Determines how to send the requested page and calls appropriate method
+	 * Determines how to send the requested page and calls appropriate method.
+	 * IF sending a response, extras must be null or it breaks.
 	 * @param sock
 	 * @param i
 	 * @param extras
@@ -188,7 +191,7 @@ public class Server {
 			extras = "";
 		}
 		pw.println(extras);
-		
+		System.out.println(extras);
 		switch(i){
 			case 0:sendStatusPage(pw);break;
 			case 1:sendPage(pw,"inspectorLogin.php");break;
@@ -235,7 +238,7 @@ public class Server {
 				pw.println((separateCube && fullHardware )?Team.CUBE_INDEX:-1);
 				break;
 			
-			//TODO add forums. s
+			
 			case MANUAL1:sendDocument(pw,out,"manual1.pdf");break;
 			case MANUAL2:sendDocument(pw,out,"manual2.pdf");break;
 			case 100:sendDocument(pw,out,"firstfavicon.ico");break;
@@ -244,6 +247,10 @@ public class Server {
 				break;
 			case KAMEN:
 				sendDocument(pw, out, "DeanKamen.jpg");
+				break;
+				//breaks if extras is not null
+			case SEND_RESPONSE:
+				pw.println(other[0]);
 				break;
 			default:
 				//404
@@ -341,6 +348,7 @@ public class Server {
 	public void post(String req, String data,Socket sock) throws IOException{
 		int pageID=0;
 		boolean valid=false;
+		String response = "";
 		String extras = "";
 //		System.out.println("POST: \n"+req+"\nData:\n"+data);
 		/*
@@ -404,7 +412,9 @@ public class Server {
 				String v=s.substring(s.indexOf("=")+1);
 				v=v.substring(0, v.indexOf(" "));
 				getTeam(t).setInspectionIndex(type,index,Boolean.parseBoolean(v));
-				pageID=H204;
+				//send conf wth id of td containing the checkbox and the data we received(v)
+				response="BG"+t+"_"+type+index+"="+v;
+				pageID=SEND_RESPONSE;
 			}
 			else if(req.startsWith("note?")){
 				String s=req.substring(req.indexOf("=")+1);
@@ -430,7 +440,7 @@ public class Server {
 				pageID=1;
 			}
 		}
-		sendPage(sock,pageID, extras, valid);	
+		sendPage(sock,pageID, extras, valid, response);	
 	}
 	
 	
@@ -543,7 +553,7 @@ public class Server {
 		try {
 			sendPage(pw, "konami.js");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		
 			e.printStackTrace();
 		}
 		pw.println("</script>");
@@ -641,9 +651,9 @@ public class Server {
 	public void sendInspectionTeamSelect(PrintWriter pw, int i){
 		String type="";
 		switch(i){
-			case HARDWARE:type="hardware";break;
-			case SOFTWARE:type="software";break;
-			case FIELD: type="field";break;
+			case HARDWARE: type="hardware";break;
+			case SOFTWARE: type="software";break;
+			case FIELD:    type="field";break;
 			default:return;//TODO something else here?
 		}
 		pw.println("<html><body><h1>");
@@ -714,7 +724,7 @@ public class Server {
 			//if(separateCube && ind == Team.CUBE_INDEX)continue;//remove cube from full hw
 			
 			String s=form.get(ind);
-			pw.print("<tr><td><label>");
+			pw.print("<tr><td id=BG"+extras+type+j+"><label>");
 			pw.println("<input type=\"checkbox\" name=\""+extras+type+j+"\" "+(team.get(i,j)?"checked=\"checked\"":"")+" onclick=\"update()\"/>");
 			pw.println("</label></td><td>"+s+"</td></tr>");
 			j++;
