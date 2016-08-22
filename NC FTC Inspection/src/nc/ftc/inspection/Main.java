@@ -5,27 +5,17 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -34,28 +24,22 @@ import java.util.Collections;
 
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.Timer;
 import java.util.Vector;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
 import javax.imageio.ImageIO;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.TitledBorder;
@@ -63,13 +47,13 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.plaf.IconUIResource;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 
 
 public class Main extends JFrame {
 
+	/**
+	 * Mapping of all NC team numbers to names.
+	 */
 	public static HashMap<Integer,String> teamData=new HashMap<Integer,String>();
 
 
@@ -105,6 +89,8 @@ public class Main extends JFrame {
 	 *TODO save which to track? save in server.config in root?
 	 *
 	 *TODO Some GUI easy way to select root save dir.
+	 *
+	 *
 	 *
 	 *
 	 */
@@ -178,6 +164,13 @@ public class Main extends JFrame {
 	private JPanel statusPanel = new JPanel();
 	private JPanel topStatusPanel = new JPanel();
 	private JPanel trackingPanel = new JPanel();
+	private JPanel eventPanel = new JPanel();
+	private JPanel teamPanel = new JPanel();
+	private JPanel teamButtons = new JPanel();
+	private JButton addTeam = new JButton("Add Team");
+	private JButton removeTeam = new JButton("Remove Team");
+	private JButton editTeam = new JButton("Edit Team");
+	private JList<Team> teamList = new JList<Team>();
 	private static final String COOKIE_LABEL_STRING = "Cookies Issued: ";
 	
 	
@@ -469,31 +462,32 @@ public class Main extends JFrame {
 		tabbedPane.addTab(EVENT_SETTINGS, ftcIcon, eventSettingsPanel, EVENT_SETTINGS);
 		trackingPanel.setOpaque(true);
 		trackingPanel.setBorder(new TitledBorder("Tracking Option"));
-		trackingPanel.setPreferredSize(new Dimension(300, 300));
+		trackingPanel.setPreferredSize(new Dimension(260, 300));
 		trackingPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		trackingPanel.add(trackCheckIn);
 		trackingPanel.add(Box.createHorizontalStrut(150));
 		trackingPanel.add(trackCube);
 
-		trackingPanel.add(Box.createHorizontalStrut(150));
+		trackingPanel.add(Box.createHorizontalStrut(100));
 //		trackingPanel.add(new J);
 
 		trackingPanel.add(Box.createHorizontalStrut(INDENT));
 		trackingPanel.add(separateCube);
+		
 		trackingPanel.add(trackHardware);
 
-		trackingPanel.add(Box.createHorizontalStrut(150));
+		trackingPanel.add(Box.createHorizontalStrut(120));
 		trackingPanel.add(Box.createHorizontalStrut(INDENT));
 		trackingPanel.add(fullHardware);
 		trackingPanel.add(Box.createHorizontalStrut(50));
 		trackingPanel.add(trackSoftware);
-		trackingPanel.add(Box.createHorizontalStrut(250));
+		trackingPanel.add(Box.createHorizontalStrut(120));
 		trackingPanel.add(Box.createHorizontalStrut(INDENT));
 		trackingPanel.add(fullSoftware);
-		trackingPanel.add(Box.createHorizontalStrut(100));
+		trackingPanel.add(Box.createHorizontalStrut(50));
 		trackingPanel.add(trackField);
 
-		trackingPanel.add(Box.createHorizontalStrut(250));
+		trackingPanel.add(Box.createHorizontalStrut(150));
 		trackingPanel.add(Box.createHorizontalStrut(INDENT));
 		trackingPanel.add(fullField);
 		
@@ -507,10 +501,44 @@ public class Main extends JFrame {
 		fullSoftware.addActionListener(trackListener);
 		fullField.addActionListener(trackListener);
 		
-
+		/*
+		 * To right of tracking panel:
+		 * Current event name & code
+		 * button to edit event info
+		 * button to changes event
+		 * 
+		 * current root directory (save)
+		 * button to change root directory
+		 * 
+		 * team list
+		 * use JList:
+		 * button to edit team info
+		 * button to add new team
+		 * 	-brings up list of all teams, which has an option to add new team
+		 * button to remove team
+		 * 
+		 * update resource button: manual, forum.
+		 */
+		eventPanel.setOpaque(true);
+		eventPanel.setBorder(new TitledBorder("Current Event"));
+		eventPanel.setPreferredSize(new Dimension(300, 100));
+		teamPanel.setOpaque(true);
+		teamPanel.setBorder(new TitledBorder("Team Information"));
+		//teamPanel.setPreferredSize(new Dimension(300, 300));
+		teamList = new JList<Team>(Server.theServer.teams);
+		teamList.setOpaque(false);
+		teamButtons.setPreferredSize(new Dimension(350,50));
+		teamButtons.add(editTeam);
+		teamButtons.add(removeTeam);
+		teamButtons.add(addTeam);
+		teamPanel.setLayout(new BorderLayout());
+		teamPanel.add(teamButtons, BorderLayout.SOUTH);
+		teamPanel.add(teamList, BorderLayout.CENTER);
 		
 		eventSettingsPanel.setLayout(new BorderLayout());
 		eventSettingsPanel.add(trackingPanel, BorderLayout.WEST);
+		eventSettingsPanel.add(teamPanel, BorderLayout.EAST);
+		eventSettingsPanel.add(eventPanel,BorderLayout.CENTER);
 				
 		//listener to update graphics when tab changed
 		tabbedPane.addChangeListener(new ChangeListener(){
@@ -738,7 +766,7 @@ public class Main extends JFrame {
 							return;
 						}
 						catch(Exception e){
-							append("USAGE: LIST STATUS <number>");
+							append("USAGE: LIST STATUS &lt;number&gt;");
 							return;
 						}
 					}
@@ -759,13 +787,13 @@ public class Main extends JFrame {
 								success=changeEvent(args[2]);
 							}
 						}else{
-							append("USAGE: CHANGE [EVENT] <code>");
+							append("USAGE: CHANGE [EVENT] &lt;code&gt;");
 							return;
 						}
 					}
 				}
 				else{
-					append("USAGE: CHANGE [EVENT] <code>");
+					append("USAGE: CHANGE [EVENT] &lt;code&gt;");
 					return;
 				}
 			}
@@ -787,7 +815,7 @@ public class Main extends JFrame {
 							success &= Resources.saveEventFile();
 							Server.save();
 						}catch(Exception e){
-							append("FAILED: USAGE: ADD TEAM <number>");
+							append("FAILED: USAGE: ADD TEAM &lt;number&gt;");
 							return;
 						}
 					}
@@ -803,12 +831,12 @@ public class Main extends JFrame {
 								success=Resources.saveEventsList();
 							}
 						}else{
-							append("USAGE: ADD [EVENT] <code> <name>");
+							append("USAGE: ADD [EVENT] &lt;code&gt; &lt;name&gt;");
 							return;
 						}
 					}
 				}else{
-					append("USAGE: ADD [TEAM | EVENT] <number | code> <name>");//also least team #s for event
+					append("USAGE: ADD [TEAM | EVENT] &lt;number | code> &lt;name&gt;");//also least team #s for event
 					return;
 				}
 			}
@@ -825,12 +853,12 @@ public class Main extends JFrame {
 							success &= Resources.saveEventFile();//save removal
 						}
 					}catch(Exception e){
-						append("USAGE: REMOVE TEAM <number>");
+						append("USAGE: REMOVE TEAM &lt;number&gt;");
 						return;
 					}
 				}
 				else{
-					append("USAGE: REMOVE TEAM <number>");
+					append("USAGE: REMOVE TEAM &lt;number&gt;");
 					return;
 				}
 
@@ -859,9 +887,9 @@ public class Main extends JFrame {
 							}
 						}
 						else{
-							append("USAGE: SET STATUS <number> <type> <status>");
-							append("<type= CI | SC | HW | SW | FD>");
-							append("<status= 0 | 1 | 2 | 3 | NO_DATA | FAIL | PROGRESS | PASS>");
+							append("USAGE: SET STATUS &lt;number&gt; &lt;type&gt; &lt;status&gt;");
+							append("&lt;type= CI | SC | HW | SW | FD&gt;");
+							append("&lt;status= 0 | 1 | 2 | 3 | NO_DATA | FAIL | PROGRESS | PASS&gt;");
 							return;
 						}
 					}
@@ -870,7 +898,7 @@ public class Main extends JFrame {
 							autoSave=Long.parseLong(args[2])*1000;
 							success=true;
 						}catch(Exception e){
-							append("USAGE: SET AUTOSAVE <time (s)>");
+							append("USAGE: SET AUTOSAVE &lt;time (s)&gt;");
 							return;
 						}
 					}
@@ -887,12 +915,12 @@ public class Main extends JFrame {
 							teamData.put(number, name);
 							Resources.saveTeamList();
 						}catch(Exception e){
-							append("USAGE: SET TEAMNAME <number> <name>");
+							append("USAGE: SET TEAMNAME &lt;number&gt; &lt;name&gt;");
 						}
 					}
 				}
 				else{
-					append("USAGE: SET [STATUS | PASSWORD | ROOT | AUTOSAVE | TEAMNAME | EVENT [NAME | CODE] ] <value>");
+					append("USAGE: SET [STATUS | PASSWORD | ROOT | AUTOSAVE | TEAMNAME | EVENT [NAME | CODE] ] &lt;value&gt;");
 					return;
 				}
 			}
@@ -925,6 +953,18 @@ public class Main extends JFrame {
 				} catch (UnknownHostException e) {
 					
 				}
+				
+			}
+			else if(args[0].equals("HELP")){
+				append("Available commands: (Attempt use for more help)");
+				append("\tLIST [EVENTS | TEAMS | STATUS]");
+				append("\tADD [TEAM | EVENT]");
+				append("\tREMOVE TEAM");
+				append("\tSET [...]");
+				append("\tCHANGE EVENT");
+				append("\tSELECT EVENT");
+				append("\tIP");
+				append("\tSAVE");
 				
 			}
 			else{

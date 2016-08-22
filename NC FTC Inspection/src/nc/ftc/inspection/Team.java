@@ -227,6 +227,9 @@ public class Team implements Comparable{
 			this.name=name;
 			
 		}
+		public String toString(){
+			return number+"  "+name;
+		}
 
 		
 }

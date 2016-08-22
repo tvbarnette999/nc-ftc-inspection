@@ -1,6 +1,6 @@
 function update(){
 	var xhttp = new XMLHttpRequest();
-	document.getElementById("BG"+event.target.name).bgColor = "#000000";
+	document.getElementById("BG"+event.target.name).bgColor = "#FF0000";
 	//response text should be BG+id=v
 	xhttp.onreadystatechange = function() {
 		 if (xhttp.readyState == 4 && xhttp.status == 200){
@@ -14,7 +14,7 @@ function update(){
 			  console.log(v);
 			  console.log(document.getElementsByName(id.substring(2))[0].checked)
 			  if(eval(v) == document.getElementsByName(id.substring(2))[0].checked){
-				  document.getElementById(id).bgColor = "#00FF00";
+				  document.getElementById(id).bgColor = "#FFFFFF";
 			  
 			  }
 		}
@@ -72,6 +72,8 @@ function fullpass(){
 		xhttp = new XMLHttpRequest();
 		xhttp.open("POST", "../update?team="+event.target.name+"&value=3", true);
 		xhttp.send();
+		
+		window.location.reload(true);
 	}else{
 		window.alert("Not all items have passed!");
 	}
