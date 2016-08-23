@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Vector;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -42,6 +43,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -314,8 +316,10 @@ public class Main extends JFrame {
 		setCheckBoxes();
 		if (NIMBUS) {
 			try {
+//				System.out.println(UIManager.getInstalledLookAndFeels().length);
 				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-					if ("Nimbus".equals(info.getName())) {
+					System.out.println(info.toString());
+					if ("Nimbus".equalsIgnoreCase(info.getName())) {
 						UIManager.setLookAndFeel(info.getClassName());
 						break;
 					}
@@ -526,7 +530,9 @@ public class Main extends JFrame {
 		teamPanel.setBorder(new TitledBorder("Team Information"));
 		//teamPanel.setPreferredSize(new Dimension(300, 300));
 		teamList = new JList<Team>(Server.theServer.teams);
-		teamList.setOpaque(false);
+		teamList.setBackground(Color.decode("#EEEEEE"));//"#F2F2F2"));
+		teamList.setOpaque(true);
+	//	teamList.setBorder(BorderFactory.createSoftBevelBorder(BevelBorder.RAISED));
 		teamButtons.setPreferredSize(new Dimension(350,50));
 		teamButtons.add(editTeam);
 		teamButtons.add(removeTeam);
@@ -588,6 +594,7 @@ public class Main extends JFrame {
 		};
 		graphics.setDaemon(true);
 		graphics.start();
+
 //		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		//		this.pack();
 
