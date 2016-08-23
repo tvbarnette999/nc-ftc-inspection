@@ -923,6 +923,7 @@ public class Main extends JFrame {
 							Resources.saveTeamList();
 						}catch(Exception e){
 							append("USAGE: SET TEAMNAME &lt;number&gt; &lt;name&gt;");
+							return;
 						}
 					}
 				}
@@ -960,7 +961,7 @@ public class Main extends JFrame {
 				} catch (UnknownHostException e) {
 					
 				}
-				
+				return;
 			}
 			else if(args[0].equals("HELP")){
 				append("Available commands: (Attempt use for more help)");
@@ -972,13 +973,13 @@ public class Main extends JFrame {
 				append("\tSELECT EVENT");
 				append("\tIP");
 				append("\tSAVE");
-				
+				return;
 			}
 			else{
 				error("UNKNOW COMMAND: "+args[0]);
 				return;
 			}
-			consoleTextArea.append((success?"SUCCESS":"FAILED")+"\n");
+			append((success?"SUCCESS":"FAILED"));
 		}
 	}
 
