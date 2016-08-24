@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
-import java.util.Set;
 
 /**A class with static methods for accessing Resources. The root directory is specified at runtime or in configuration, and 
  * is where the data is saved. It defaults to "NC Inspection" adjacent to .jar. It is the first place checked for any 

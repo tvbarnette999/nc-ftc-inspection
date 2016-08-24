@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Vector;
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -43,7 +42,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -52,6 +50,12 @@ import javax.swing.event.DocumentListener;
 
 
 public class Main extends JFrame {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2371487851745548963L;
+
 
 	/**
 	 * Mapping of all NC team numbers to names.
@@ -244,6 +248,11 @@ public class Main extends JFrame {
 	private String trafficString = "Traffic (15s bin): ";
 	private JLabel trafficLabel = new JLabel(trafficString);
 	private JPanel trafficPanel = new JPanel() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 6310389226347369367L;
+
 		@Override
 		public void paint(Graphics g) {
 			
@@ -279,6 +288,10 @@ public class Main extends JFrame {
 	private JPanel consolePanel = new JPanel();
 	FTCEditorPane consoleTextArea = new FTCEditorPane();
 	public class FTCEditorPane extends JEditorPane {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 602436360740296867L;
 		String text = "";
 		public FTCEditorPane() {
 			setContentType("text/html");
@@ -572,7 +585,6 @@ public class Main extends JFrame {
 		});
 		trafficPanel.setOpaque(true);
 		
-		boolean running=true;
 		graphics = new Thread("Graphics Thread") {
 			@Override
 			public void run() {
@@ -688,7 +700,6 @@ public class Main extends JFrame {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public void handleCommand(String command){
 		//TODO implement commands
 

@@ -1,7 +1,6 @@
 package nc.ftc.inspection;
-import java.util.Scanner;
 
-public class Team implements Comparable{
+public class Team implements Comparable<Team> {
 		int number;
 		String name;
 		
@@ -157,7 +156,7 @@ public class Team implements Comparable{
 		}
 		
 		@Override
-		public int compareTo(Object o) {
+		public int compareTo(Team o) {
 			if(o instanceof Team){
 				return number-((Team)o).number;
 			}
