@@ -241,6 +241,19 @@ public class Main extends JFrame {
 			Server.theServer.saveConfig();
 		}
 	};
+	private ActionListener teamEditListener= new ActionListener(){
+		public void actionPerformed(ActionEvent e){
+			Object src = e.getSource();
+			if(src == editTeam){
+				//popup to edit
+			} else if(src == addTeam){
+				//popup with master list
+			} else if(src == removeTeam){
+				//popop to confirm
+				JOptionPane.showConfirmDialog(Main.this, "Remove team "+teamList.getSelectedValue().toString()+"?");
+			}
+		}		
+	};
 
 	private static final String SERVER_SETTINGS = "Server Settings";
 	private static final String EVENT_SETTINGS = "Event Settings";
@@ -546,6 +559,9 @@ public class Main extends JFrame {
 		teamList.setBackground(Color.decode("#EEEEEE"));//"#F2F2F2"));
 		teamList.setOpaque(true);
 	//	teamList.setBorder(BorderFactory.createSoftBevelBorder(BevelBorder.RAISED));
+		editTeam.addActionListener(teamEditListener);
+		addTeam.addActionListener(teamEditListener);
+		removeTeam.addActionListener(teamEditListener);
 		teamButtons.setPreferredSize(new Dimension(350,50));
 		teamButtons.add(editTeam);
 		teamButtons.add(removeTeam);
