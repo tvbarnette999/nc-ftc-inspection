@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -338,6 +339,8 @@ public class Main extends JFrame {
 
 	private Thread graphics;
 	private int[] traffic = new int[50];
+	private ArrayList<String> commands = new ArrayList<String>();
+	private int command;
 	private void initGUI() {
 		setCheckBoxes();
 		if (NIMBUS) {
@@ -593,9 +596,23 @@ public class Main extends JFrame {
 		this.setLocationRelativeTo(null);
 		consoleField.addKeyListener(new KeyAdapter(){
 			public void keyReleased(KeyEvent e){
-				if(e.getKeyCode()==KeyEvent.VK_ENTER){
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_ENTER:
 					handleCommand(consoleField.getText());
-					consoleField.setText("");
+					commands.add(consoleField.getText());
+					command = commands.size();
+					consoleField.setText("");	
+					break;
+				case KeyEvent.VK_UP:
+					command-=2;
+				case KeyEvent.VK_DOWN:
+					command++;
+					command = Math.min(Math.max(0, command), commands.size());
+					if (command < commands.size()) {
+						consoleField.setText(commands.get(command));
+					} else {
+						consoleField.setText("");
+					}
 				}
 			}
 		});
