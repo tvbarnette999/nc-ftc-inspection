@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -30,6 +31,7 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -246,11 +248,53 @@ public class Main extends JFrame {
 			Object src = e.getSource();
 			if(src == editTeam){
 				//popup to edit
+				Team t = teamList.getSelectedValue();
+				
+				JTextField field1 = new JTextField(""+t.number);
+				JTextField field2 = new JTextField(t.name);
+				Object[] message = {
+				    "Team Number:", field1,
+				    "Team Name:", field2,
+				};
+				boolean ok = false;
+				while(!ok){
+					int option = JOptionPane.showConfirmDialog(Main.this, message, "Enter Team Info", JOptionPane.OK_CANCEL_OPTION);
+					if (option == JOptionPane.OK_OPTION){
+					    try{
+					    	int num = Integer.parseInt(field1.getText());
+					    	if(num != t.number){
+						    	if(teamData.containsKey(num)){
+							    	JOptionPane.showMessageDialog(Main.this, "Team already exists: "+num, null, JOptionPane.ERROR_MESSAGE);	
+							    	continue;
+						    	}
+						    	teamData.remove(t.number);
+						    	t.number = num;
+					    	}
+					    	ok = true;
+					    } catch(NumberFormatException e1){
+					    	JOptionPane.showMessageDialog(Main.this, "Invalid team number: "+field1.getText(), "", JOptionPane.ERROR_MESSAGE);	
+					    	continue;
+					    }
+					    t.name = field2.getText();
+					    teamData.put(t.number, t.name);
+					    Server.save();
+					    Resources.saveTeamList();
+					    ok = true;
+					} else{
+						break;
+					}
+				}
+				Server.save();
+				
 			} else if(src == addTeam){
 				//popup with master list
 			} else if(src == removeTeam){
 				//popop to confirm
-				JOptionPane.showConfirmDialog(Main.this, "Remove team "+teamList.getSelectedValue().toString()+"?");
+				int c = JOptionPane.showConfirmDialog(Main.this, "Remove team "+teamList.getSelectedValue().toString()+"?");
+				if(c == JOptionPane.OK_OPTION){
+					Server.theServer.teams.remove(teamList.getSelectedValue());
+					Server.save();
+				}
 			}
 		}		
 	};

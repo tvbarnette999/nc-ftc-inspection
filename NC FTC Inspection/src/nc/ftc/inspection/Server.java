@@ -54,6 +54,10 @@ public class Server {
 	public static final int MANUAL1=98;
 	public static final int MANUAL2=99;
 	public static final int KAMEN = 80;
+	/*
+	
+	UHM PROBLEM! CMD HW DOESNT OVERRIDE FULL INSPECTION!!!!
+	*/
 	
 	//These parameters are set to determine whether a given event will show status for that stage and do paperless inspection.
 	
@@ -638,7 +642,7 @@ public class Server {
 	 */
 	public Team getTeam(int num){
 		for(int i=0;i<teams.size();i++){
-			if(teams.get(i).number==num)return teams.get(i);
+			if(teams.get(i).number == num)return teams.get(i);
 		}
 		return null;
 	}
