@@ -168,7 +168,11 @@ public class Main extends JFrame {
 	private JPasswordField pw2 = new JPasswordField(15);
 	private JLabel pw1Label = new JLabel("Please enter a password");
 	private JLabel pw2Label = new JLabel("Re-enter the password");
-	private JLabel pwStatus = new JLabel("");
+	private static final String DEFAULT_PW_TEXT = "<html>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+			+ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+			+ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+			+ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</html>";
+	private JLabel pwStatus = new JLabel(DEFAULT_PW_TEXT);
 	private JButton pwEnter = new JButton("Set Password");
 	private JPanel statusPanel = new JPanel();
 	private JPanel topStatusPanel = new JPanel();
@@ -247,9 +251,13 @@ public class Main extends JFrame {
 	private ActionListener teamEditListener= new ActionListener(){
 		public void actionPerformed(ActionEvent e){
 			Object src = e.getSource();
+			Team t = teamList.getSelectedValue();
+			if (t == null && (src == editTeam || src == removeTeam)) {
+				JOptionPane.showMessageDialog(Main.this, "Please select a team");
+				return;
+			}
 			if(src == editTeam){
 				//popup to edit
-				Team t = teamList.getSelectedValue();
 				
 				JTextField field1 = new JTextField(""+t.number);
 				JTextField field2 = new JTextField(t.name);
@@ -461,11 +469,11 @@ public class Main extends JFrame {
 				if (!enabled) {
 					pwStatus.setText("Passwords do not match");
 				} else {
-					pwStatus.setText("Passwords match");
+					pwStatus.setText("Passwords match       ");
 				}
 				if (one.length == 0) {
 					enabled = false;
-					pwStatus.setText("");
+					pwStatus.setText(DEFAULT_PW_TEXT);
 				}
 				pwEnter.setEnabled(enabled);
 				pack();
@@ -638,6 +646,8 @@ public class Main extends JFrame {
 		pack();
 		this.setVisible(true);
 		this.setLocationRelativeTo(null);
+		
+		pwStatus.setPreferredSize(pwStatus.getSize());
 		consoleField.addKeyListener(new KeyAdapter(){
 			public void keyReleased(KeyEvent e){
 				switch (e.getKeyCode()) {
