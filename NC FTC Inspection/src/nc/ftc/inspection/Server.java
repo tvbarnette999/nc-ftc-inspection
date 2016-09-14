@@ -404,7 +404,7 @@ public class Server {
 				String type=s.substring(s.indexOf("_")+1,s.indexOf("&"));
 				String v=s.substring(s.indexOf("=")+1);
 				v=v.substring(0, v.indexOf(" "));
-				getTeam(t).set(type,Integer.parseInt(v));
+				getTeam(t).setStatus(type,Integer.parseInt(v));
 				pageID=H204;
 			}
 			else if(req.startsWith("fullupdate?")){//full inspection state change
@@ -599,7 +599,7 @@ public class Server {
 		}
 		pw.println("</h1><table cellspacing=\"10\">");
 		for(Team t:teams){
-			pw.println("<tr><td id=\"R"+t.number+"\" bgcolor="+getColor(t.get(i))+">"+t.number+"</td><td>");
+			pw.println("<tr><td id=\"R"+t.number+"\" bgcolor="+getColor(t.getStatus(i))+">"+t.number+"</td><td>");
 			/* radio button code (OLD)
 			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+PASS+"\" "+(t.get(i)==PASS?"checked=\"checked\"":"")+" onclick=\"update()\"/>Pass</label></td>");
 			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+FAIL+"\" "+(t.get(i)==FAIL?"checked=\"checked\"":"")+" onclick=\"update()\"/>Fail</label></td>");
@@ -608,10 +608,10 @@ public class Server {
 			*/
 			//ComboBox code:
 			pw.println("<select onchange=\"update()\" name=\""+ t.number + type + "\""+">");
-			pw.println("<option value=\"" + PASS     + "\"" + (t.get(i) == PASS?"selected":"")     + ">PASS</option>");
-			pw.println("<option value=\"" + FAIL     + "\"" + (t.get(i) == FAIL?"selected":"")     + ">FAIL</option>");
-			pw.println("<option value=\"" + PROGRESS + "\"" + (t.get(i) == PROGRESS?"selected":"") + ">IN PROGRESS</option>");
-			pw.println("<option value=\"" + NO_DATA  + "\"" + (t.get(i) == NO_DATA?"selected":"")  + ">NONE</option>");
+			pw.println("<option value=\"" + PASS     + "\"" + (t.getStatus(i) == PASS?"selected":"")     + ">PASS</option>");
+			pw.println("<option value=\"" + FAIL     + "\"" + (t.getStatus(i) == FAIL?"selected":"")     + ">FAIL</option>");
+			pw.println("<option value=\"" + PROGRESS + "\"" + (t.getStatus(i) == PROGRESS?"selected":"") + ">IN PROGRESS</option>");
+			pw.println("<option value=\"" + NO_DATA  + "\"" + (t.getStatus(i) == NO_DATA?"selected":"")  + ">NONE</option>");
 			pw.print("</select>");
 			pw.println("</tr>");
 		}
@@ -668,7 +668,7 @@ public class Server {
 		}
 		pw.println("</h1><br><table cellspacing=\"10\"><tr><th>Team #</th><th>Link</th></tr>");
 		for(Team t:teams){
-			pw.println("<tr><td bgcolor="+getColor(t.get(i))+">"+t.number+"</td><td><a href=\"/"+type+"/"+t.number+"\">Inspect</a></td></tr>");
+			pw.println("<tr><td bgcolor="+getColor(t.getStatus(i))+">"+t.number+"</td><td><a href=\"/"+type+"/"+t.number+"\">Inspect</a></td></tr>");
 		}
 		pw.println("</table></body></html>");
 		pw.flush();
@@ -729,7 +729,7 @@ public class Server {
 			
 			String s=form.get(ind);
 			pw.print("<tr><td id=BG"+extras+type+j+"><label>");
-			pw.println("<input type=\"checkbox\" name=\""+extras+type+j+"\" "+(team.get(i,j)?"checked=\"checked\"":"")+" onclick=\"update()\"/>");
+			pw.println("<input type=\"checkbox\" name=\""+extras+type+j+"\" "+(team.getStatus(i,j)?"checked=\"checked\"":"")+" onclick=\"update()\"/>");
 			pw.println("</label></td><td>"+s+"</td></tr>");
 			j++;
 		}
@@ -860,7 +860,7 @@ public class Server {
 		}
 		scan.close();
 		for(int i:nums){
-			teams.add(new Team(i));
+			teams.add(Team.getTeam(i));
 		}
 		addLogEntry("Loaded event: "+fullEventName);
 		Collections.sort(teams);
@@ -870,18 +870,19 @@ public class Server {
 		if(scan==null)return;//were done here- no data
 		String[] line;
 		while(scan.hasNextLine()){
-			line=scan.nextLine().split(",");
-			if(line.length<1)continue;
-			try{
-				Team t=getTeam(Integer.parseInt(line[0]));
-				t.checkedIn=Boolean.parseBoolean(line[1]);
-				t.cube=Integer.parseInt(line[2]);
-				t.hardware=Integer.parseInt(line[3]);;
-				t.software=Integer.parseInt(line[4]);
-				t.field=Integer.parseInt(line[5]);
-			}catch(Exception e){
-				
-			}			
+			Team.loadDataFromString(scan.nextLine());
+//			line=scan.nextLine().split(",");
+//			if(line.length<1)continue;
+//			try{
+//				Team t=getTeam(Integer.parseInt(line[0]));
+//				t.checkedIn=Boolean.parseBoolean(line[1]);
+//				t.cube=Integer.parseInt(line[2]);
+//				t.hardware=Integer.parseInt(line[3]);;
+//				t.software=Integer.parseInt(line[4]);
+//				t.field=Integer.parseInt(line[5]);
+//			}catch(Exception e){
+//				
+//			}			
 		}
 		scan.close();
 		
@@ -1016,6 +1017,7 @@ public class Server {
 	 * @return
 	 */
 	public static boolean save(){
+		Resources.saveEventFile();
 		theServer.saveConfig();
 		PrintWriter pw=Resources.getStatusWriter();
 		if(pw==null)return false;
@@ -1026,10 +1028,12 @@ public class Server {
 		pw.close();
 		
 		for(Team t:theServer.teams){
+			System.out.println("Saving "+t.number);
 			//hardware
 			pw=Resources.getHardwareWriter(t.number);
 			for(boolean b:t.hw){
 				pw.println(b);
+				System.out.println("B");
 			}
 			pw.println(t.hwTeamSig);
 			pw.println(t.hwInspSig);

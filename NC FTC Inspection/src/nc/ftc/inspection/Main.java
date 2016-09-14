@@ -63,7 +63,7 @@ public class Main extends JFrame {
 	/**
 	 * Mapping of all NC team numbers to names.
 	 */
-	public static HashMap<Integer,String> teamData=new HashMap<Integer,String>();
+//	public static HashMap<Integer,String> teamData=new HashMap<Integer,String>();
 
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("[hh:mm:ss] ");
@@ -280,12 +280,11 @@ public class Main extends JFrame {
 					    try{
 					    	int num = Integer.parseInt(field1.getText());
 					    	if(num != t.number){
-						    	if(teamData.containsKey(num)){
-							    	JOptionPane.showMessageDialog(Main.this, "Team already exists: "+num, null, JOptionPane.ERROR_MESSAGE);	
+						    	if(Team.doesTeamExist(num)){
+							    	JOptionPane.showMessageDialog(Main.this, "Team already exists: "+num+" "+ Team.getTeam(num).name, null, JOptionPane.ERROR_MESSAGE);	
 							    	continue;
 						    	}
-						    	teamData.remove(t.number);
-						    	t.number = num;
+						    	Team.changeNumber(t, num);
 					    	}
 					    	ok = true;
 					    } catch(NumberFormatException e1){
@@ -293,7 +292,6 @@ public class Main extends JFrame {
 					    	continue;
 					    }
 					    t.name = field2.getText();
-					    teamData.put(t.number, t.name);
 					    Server.save();
 					    Resources.saveTeamList();
 					    ok = true;
@@ -319,6 +317,7 @@ public class Main extends JFrame {
 				//popop to confirm
 				int c = JOptionPane.showConfirmDialog(Main.this, "Remove team "+teamList.getSelectedValue().toString()+"?");
 				if(c == JOptionPane.OK_OPTION){
+					Server.save();
 					Server.theServer.teams.remove(teamList.getSelectedValue());
 					Server.save();
 				}
@@ -737,23 +736,25 @@ public class Main extends JFrame {
 	private static void loadFiles() {
 		//load team data- numbers and names for all teams in NC
 		Scanner scan = null;
-		try {
-			scan =Resources.getScanner("teamdata.dat");
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
-		while(scan.hasNextLine()){
-			try{
-				String line=scan.nextLine();
-				//System.out.println(line);
-				int num=Integer.parseInt(line.substring(0, line.indexOf(":")));
-				String name=line.substring(line.indexOf(":")+1);
-				teamData.put(num, name);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-		}	
-		if(scan!=null)scan.close();
+		
+		
+//		try {
+//			scan =Resources.getScanner("teamdata.dat");
+//		} catch (FileNotFoundException e1) {
+//			e1.printStackTrace();
+//		}
+//		while(scan.hasNextLine()){
+//			try{
+//				String line=scan.nextLine();
+//				//System.out.println(line);
+//				int num=Integer.parseInt(line.substring(0, line.indexOf(":")));
+//				String name=line.substring(line.indexOf(":")+1);
+//				teamData.put(num, name);
+//			}catch(Exception e){
+//				e.printStackTrace();
+//			}
+//		}	
+//		if(scan!=null)scan.close();
 
 		//TODO need to do something if any of these throw an exception?
 		try {
@@ -777,6 +778,13 @@ public class Main extends JFrame {
 			JOptionPane.showMessageDialog(null, "Unable to load Field Inspection form!");
 		}
 
+		try {
+			Resources.loadTeamList();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		
 		try {
 			scan=Resources.getScanner("events.dat");
 			while(scan.hasNextLine()){
@@ -864,10 +872,10 @@ public class Main extends JFrame {
 					else if(args[1].equals("TEAMS")){
 						if(args.length>2 && args[2].toUpperCase().equals("-A")){
 							//list all nc teams in order
-							Integer[] copy=teamData.keySet().toArray(new Integer[1]);
+							Integer[] copy=Team.masterList.keySet().toArray(new Integer[1]);
 							Arrays.sort(copy);
 							for(Integer num:copy){
-								append(num+": "+teamData.get(num));
+								append(num+": "+ Team.masterList.get(num).name);
 							}
 							return;
 						}
@@ -884,7 +892,7 @@ public class Main extends JFrame {
 							int num=Integer.parseInt(args[2]);
 							Team t=Server.theServer.getTeam(num);
 							if(t==null){
-								if(teamData.containsKey(num))append(num+" "+teamData.get(num)+" is not in this event.");
+								if(Team.masterList.containsKey(num))append(num+" "+Team.masterList.get(num)+" is not in this event.");
 								else append("Unrecognized team #: "+num);
 								return;
 							}
@@ -937,11 +945,13 @@ public class Main extends JFrame {
 								append("Team "+num+" already in event");
 								return;
 							}
-							success=Server.theServer.teams.add(new Team(num));
-							if(!teamData.containsKey(num)){
-								teamData.put(num, null);
+							
+							if(!Team.doesTeamExist(num)){
+								Team.registerTeam(num, null);
+								append("Use \"SET TEAMNAME "+num +" <NAME>\" to set team name.");
+								Resources.saveTeamList();
 							}
-							Resources.saveTeamList();
+							success = Server.theServer.teams.add(Team.getTeam(num));							
 							Collections.sort(Server.theServer.teams);
 							success &= Resources.saveEventFile();
 							Server.save();
@@ -1003,13 +1013,13 @@ public class Main extends JFrame {
 							String type=args[3];
 							try{
 								int stat=Integer.parseInt(args[4]);
-								Server.theServer.getTeam(num).set(type, stat);
+								Server.theServer.getTeam(num).setStatus(type, stat);
 								success=true;
 							}catch(Exception e){
 								//not numbe status
 								try {
 									int stat=Server.class.getDeclaredField(args[4]).getInt(null);
-									Server.theServer.getTeam(num).set(type, stat);
+									Server.theServer.getTeam(num).setStatus(type, stat);
 									success=true;
 								} catch (Exception e1) {
 									e1.printStackTrace();
@@ -1043,7 +1053,7 @@ public class Main extends JFrame {
 							}
 							String name = args[3];
 							t.setName(name);
-							teamData.put(number, name);
+							Team.setTeamName(number, name);
 							Resources.saveTeamList();
 						}catch(Exception e){
 							append("USAGE: SET TEAMNAME &lt;number&gt; &lt;name&gt;");

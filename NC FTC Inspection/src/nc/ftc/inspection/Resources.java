@@ -53,7 +53,7 @@ public class Resources {
 	 * @throws FileNotFoundException if the file is not found
 	 */
 	public static Scanner getScanner(String name) throws FileNotFoundException{
-		return new Scanner(getInputStream(name));
+		return new Scanner(getInputStream(name), "UTF-8");
 	}
 	
 	/**
@@ -397,11 +397,11 @@ public class Resources {
 			}
 		}
 		try{
-			PrintWriter pw=new PrintWriter(f);
-			ArrayList<Integer> nums=new ArrayList<Integer>(Main.teamData.keySet());
+			PrintWriter pw = new PrintWriter(f);
+			ArrayList<Integer> nums = new ArrayList<Integer>(Team.masterList.keySet());
 			Collections.sort(nums);
-			for(int num:nums){
-				pw.println(num+":"+Main.teamData.get(num));
+			for(int num : nums){
+				pw.println(num + ":" + Team.masterList.get(num));
 			}
 			pw.flush();
 			pw.close();
@@ -411,5 +411,25 @@ public class Resources {
 		}	
 		
 		return false;
+	}
+	
+	public static void loadTeamList() throws IOException{
+		
+		checkRoot();
+		Scanner scan = getScanner("teamdata.dat");
+	
+		while(scan.hasNextLine()){
+			try{
+				String line=scan.nextLine();
+				//System.out.println(line);
+				int num=Integer.parseInt(line.substring(0, line.indexOf(":")));
+				String name=line.substring(line.indexOf(":")+1);
+				Team.registerTeam(num, name);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}	
+		
+		if(scan!=null)scan.close();
 	}
 }

@@ -1,8 +1,15 @@
 package nc.ftc.inspection;
 
+import java.util.HashMap;
+
 public class Team implements Comparable<Team> {
 		int number;
 		String name;
+		
+		/**
+		 * The master list of all registered teams.
+		 */
+		public static HashMap<Integer, Team> masterList = new HashMap<Integer, Team>();
 		
 		/**The index of the cube boolean in the fullHW boolean[]*/
 		public static int CUBE_INDEX=2;
@@ -32,21 +39,76 @@ public class Team implements Comparable<Team> {
 		boolean[] hw;
 		boolean[] sw;
 		boolean[] fd;
-		public Team(int n){
+		private Team(int n, String name){
 			number=n;
-			name=Main.teamData.get(number);
+//			name=Main.teamData.get(number);
+			//TODO move the arrays elsewhere for memory? (teams not in event dont need arrays in RAM until added to event)
+			this.name = name;
+			System.out.println(Server.HWForm.size());
 			hw=new boolean[Server.HWForm.size()];
 			sw=new boolean[Server.SWForm.size()];
 			fd=new boolean[Server.FDForm.size()];
+
+		}
 		
+		/**
+		 * Adds the given team to the master list
+		 * @param number
+		 * @param name
+		 */
+		public static void registerTeam(int number, String name){
+			if(masterList.containsKey(number)){
+				throw new RuntimeException("Double Teams!");
+			}
+			masterList.put(number, new Team(number, name));
+		}
+		
+		public static Team getTeam(int number){
+			return masterList.get(number);
+		}
+		
+		public static boolean doesTeamExist(int number){
+			return masterList.containsKey(number);
 		}
 
+
+		public static Team loadDataFromString(String data){
+			String[] dat=data.split(",");
+			try{
+				Team t=getTeam(Integer.parseInt(dat[0]));
+				t.checkedIn=Boolean.parseBoolean(dat[1]);
+				t.cube=Integer.parseInt(dat[2]);
+				t.hardware=Integer.parseInt(dat[3]);
+				t.software=Integer.parseInt(dat[4]);
+				t.field=Integer.parseInt(dat[5]);
+				return t;
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			return null;
+		}
+		
+		public static void changeNumber(Team t, int newNum){
+			if(doesTeamExist(newNum)){
+				throw new IllegalArgumentException("Can't renumber! Team "+newNum+" already exists!" );
+			}
+			masterList.remove(t.number);
+			t.number = newNum;
+			masterList.put(newNum, t);
+		}
+		
+		public static void setTeamName(int number, String newName){
+			if(doesTeamExist(number)){
+				masterList.get(number).name = newName;
+			}
+		}
+		
 		/**
 		 * Returns the Team's status for the given level of Inspection
 		 * @param i
 		 * @return
 		 */
-		public int get(int i){
+		public int getStatus(int i){
 			switch(i){
 				case Server.CHECKIN:return checkedIn?Server.PASS:0;
 				case Server.CUBE:return cube;
@@ -63,7 +125,7 @@ public class Team implements Comparable<Team> {
 		 * @param index
 		 * @return
 		 */
-		public boolean get(int type, int index){
+		public boolean getStatus(int type, int index){
 			switch(type){
 				case Server.HARDWARE:return hw[index];
 				case Server.SOFTWARE:return sw[index];
@@ -77,7 +139,7 @@ public class Team implements Comparable<Team> {
 		 * @param type
 		 * @param i
 		 */
-		public void set(String type, int i) {
+		public void setStatus(String type, int i) {
 			if(type.equals("CI"))this.checkedIn = i==3?true:false;
 			if(type.equals("SC")){
 				this.cube = i;
@@ -140,18 +202,18 @@ public class Team implements Comparable<Team> {
 			if(type.equals("HW")){
 				hw[index]=status;				
 				//TODO pass hw and fail cube when not separate? Or not, cuz they have technically failed HW at that point. consider sigs for hw and how that affect this
-				if(this.get(Server.HARDWARE)!=Server.PROGRESS)this.set(type, Server.PROGRESS);//dont set if we dont have to cuz status log
+				if(this.getStatus(Server.HARDWARE)!=Server.PROGRESS)this.setStatus(type, Server.PROGRESS);//dont set if we dont have to cuz status log
 				if(index == CUBE_INDEX && Server.trackCube && !Server.separateCube){
-					set("SC",status?Server.PASS:Server.FAIL);
+					setStatus("SC",status?Server.PASS:Server.FAIL);
 				}
 			}
 			if(type.equals("SW")){
 				sw[index]=status;			
-				if(this.get(Server.SOFTWARE)!=Server.PROGRESS)this.set(type, Server.PROGRESS);
+				if(this.getStatus(Server.SOFTWARE)!=Server.PROGRESS)this.setStatus(type, Server.PROGRESS);
 			}
 			if(type.equals("FD")){
 				fd[index]=status;			
-				if(this.get(Server.FIELD)!=Server.PROGRESS)this.set(type, Server.PROGRESS);
+				if(this.getStatus(Server.FIELD)!=Server.PROGRESS)this.setStatus(type, Server.PROGRESS);
 			}
 		}
 		
@@ -177,21 +239,6 @@ public class Team implements Comparable<Team> {
 			return number+","+checkedIn+","+cube+","+hardware+","+software+","+field;
 		}
 		
-		public static Team loadFromString(String data){
-			String[] dat=data.split(",");
-			try{
-				Team t=new Team(Integer.parseInt(dat[0]));
-				t.checkedIn=Boolean.parseBoolean(dat[1]);
-				t.cube=Integer.parseInt(dat[2]);
-				t.hardware=Integer.parseInt(dat[3]);
-				t.software=Integer.parseInt(dat[4]);
-				t.field=Integer.parseInt(dat[5]);
-				return t;
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-			return null;
-		}
 
 		public void setSignature(String type, String teamSig, String inpSig) {
 			if(type.equals("HW")){
