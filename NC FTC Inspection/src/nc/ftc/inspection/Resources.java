@@ -401,7 +401,7 @@ public class Resources {
 			ArrayList<Integer> nums = new ArrayList<Integer>(Team.masterList.keySet());
 			Collections.sort(nums);
 			for(int num : nums){
-				pw.println(num + ":" + Team.masterList.get(num));
+				pw.println(Team.getSaveString(num));
 			}
 			pw.flush();
 			pw.close();

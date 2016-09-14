@@ -184,13 +184,14 @@ public class Main extends JFrame {
 	private JButton removeTeam = new JButton("Remove Team");
 	private JButton editTeam = new JButton("Edit Team");
 	private JList<Team> teamList = new JList<Team>();
+	private JScrollPane teamScrollPane = new JScrollPane(teamList);
 	
 	private JDialog dialog = new JDialog();
 	private JButton addSelectedTeam = new JButton("Add Selected Team");
 	private JButton newTeam = new JButton("New Team");
 	private JPanel dialogBottom = new JPanel();
-	private JList<String> masterList = new JList<String>();
-	
+	private JList<Team> masterList = new JList<Team>();
+	private JScrollPane masterScrollPane = new JScrollPane(masterList);
 	
 	private static final String COOKIE_LABEL_STRING = "Cookies Issued: ";
 	
@@ -294,6 +295,7 @@ public class Main extends JFrame {
 					    t.name = field2.getText();
 					    Server.save();
 					    Resources.saveTeamList();
+					    refreshTeamList();
 					    ok = true;
 					} else{
 						break;
@@ -312,14 +314,17 @@ public class Main extends JFrame {
 				dialog.pack();
 				dialog.setLocationRelativeTo(Main.this);
 				dialog.setVisible(true);
+				//XXX HANGING ON EDT
+				teamList.setListData(Server.theServer.teams);
 				
 			} else if(src == removeTeam){
 				//popop to confirm
 				int c = JOptionPane.showConfirmDialog(Main.this, "Remove team "+teamList.getSelectedValue().toString()+"?");
 				if(c == JOptionPane.OK_OPTION){
-					Server.save();
+					Server.save(); //save the team's data just in case 
 					Server.theServer.teams.remove(teamList.getSelectedValue());
 					Server.save();
+					refreshTeamList();
 				}
 			}
 		}		
@@ -627,9 +632,10 @@ public class Main extends JFrame {
 		teamPanel.setOpaque(true);
 		teamPanel.setBorder(new TitledBorder("Team Information"));
 		//teamPanel.setPreferredSize(new Dimension(300, 300));
-		teamList = new JList<Team>(Server.theServer.teams);
+		teamList.setListData(Server.theServer.teams);
 		teamList.setBackground(Color.decode("#EEEEEE"));//"#F2F2F2"));
 		teamList.setOpaque(true);
+		
 	//	teamList.setBorder(BorderFactory.createSoftBevelBorder(BevelBorder.RAISED));
 		editTeam.addActionListener(teamEditListener);
 		addTeam.addActionListener(teamEditListener);
@@ -640,7 +646,7 @@ public class Main extends JFrame {
 		teamButtons.add(addTeam);
 		teamPanel.setLayout(new BorderLayout());
 		teamPanel.add(teamButtons, BorderLayout.SOUTH);
-		teamPanel.add(teamList, BorderLayout.CENTER);
+		teamPanel.add(teamScrollPane, BorderLayout.CENTER);
 		
 		eventSettingsPanel.setLayout(new BorderLayout());
 		eventSettingsPanel.add(trackingPanel, BorderLayout.WEST);
@@ -655,6 +661,9 @@ public class Main extends JFrame {
 				if(tabbedPane.getSelectedIndex() == 0){
 					updateServerGraphics();
 				}
+				if(tabbedPane.getSelectedIndex() == 1){
+					refreshTeamList();
+				}
 				
 			}
 			
@@ -663,6 +672,12 @@ public class Main extends JFrame {
 		pack();
 		this.setVisible(true);
 		this.setLocationRelativeTo(null);
+		
+		
+		Team[] master = new Team[Team.masterList.values().size()];
+		Team.masterList.values().toArray(master);
+		Arrays.sort(master);
+		masterList.setListData(master);
 		
 		dialog.setLayout(new BorderLayout());
 		dialogBottom.setPreferredSize(new Dimension(350, 50));
@@ -723,6 +738,10 @@ public class Main extends JFrame {
 		//		this.pack();
 
 	}
+	private void refreshTeamList(){
+		teamList.setListData(Server.theServer.teams);
+	}
+	
 	private void updateServerGraphics(){
 		cookieLabel.setText(COOKIE_LABEL_STRING + Server.theServer.getCookieCount() + "");
 		System.arraycopy(traffic, 1, traffic, 0, traffic.length - 1); // shift array 1 left
@@ -875,7 +894,7 @@ public class Main extends JFrame {
 							Integer[] copy=Team.masterList.keySet().toArray(new Integer[1]);
 							Arrays.sort(copy);
 							for(Integer num:copy){
-								append(num+": "+ Team.masterList.get(num).name);
+								append(Team.getSaveString(num));
 							}
 							return;
 						}

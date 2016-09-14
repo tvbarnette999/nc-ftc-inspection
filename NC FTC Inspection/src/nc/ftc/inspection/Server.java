@@ -1028,12 +1028,10 @@ public class Server {
 		pw.close();
 		
 		for(Team t:theServer.teams){
-			System.out.println("Saving "+t.number);
 			//hardware
 			pw=Resources.getHardwareWriter(t.number);
 			for(boolean b:t.hw){
 				pw.println(b);
-				System.out.println("B");
 			}
 			pw.println(t.hwTeamSig);
 			pw.println(t.hwInspSig);

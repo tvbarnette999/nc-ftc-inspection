@@ -103,6 +103,9 @@ public class Team implements Comparable<Team> {
 			}
 		}
 		
+		public static String getSaveString(int num){
+			return num + ":" + masterList.get(num).name;
+		}
 		/**
 		 * Returns the Team's status for the given level of Inspection
 		 * @param i
@@ -270,9 +273,11 @@ public class Team implements Comparable<Team> {
 		}
 		
 		public void setName(String name){
-			this.name=name;
+			this.name = name;
 			
 		}
+		
+		
 		public String toString(){
 			return number+"  "+name;
 		}
