@@ -184,6 +184,14 @@ public class Main extends JFrame {
 	private JButton removeTeam = new JButton("Remove Team");
 	private JButton editTeam = new JButton("Edit Team");
 	private JList<Team> teamList = new JList<Team>();
+	
+	private JDialog dialog = new JDialog();
+	private JButton addSelectedTeam = new JButton("Add Selected Team");
+	private JButton newTeam = new JButton("New Team");
+	private JPanel dialogBottom = new JPanel();
+	private JList<String> masterList = new JList<String>();
+	
+	
 	private static final String COOKIE_LABEL_STRING = "Cookies Issued: ";
 	
 	
@@ -297,6 +305,16 @@ public class Main extends JFrame {
 				
 			} else if(src == addTeam){
 				//popup with master list
+				//masterList.setListData(teamData.);
+				/*TODO
+				*
+				 * Need to go through and clean up Team object structure. Create master HashSet of teams by number, instead of string. preload Team objects, then add to server when needed. Move Hashmap c
+				 * creation to Team to ensure 
+				 */
+				dialog.pack();
+				dialog.setLocationRelativeTo(Main.this);
+				dialog.setVisible(true);
+				
 			} else if(src == removeTeam){
 				//popop to confirm
 				int c = JOptionPane.showConfirmDialog(Main.this, "Remove team "+teamList.getSelectedValue().toString()+"?");
@@ -646,6 +664,14 @@ public class Main extends JFrame {
 		pack();
 		this.setVisible(true);
 		this.setLocationRelativeTo(null);
+		
+		dialog.setLayout(new BorderLayout());
+		dialogBottom.setPreferredSize(new Dimension(350, 50));
+		
+		dialog.add(dialogBottom, BorderLayout.SOUTH);
+		dialog.add(masterList, BorderLayout.CENTER);
+		
+		
 		
 		pwStatus.setPreferredSize(pwStatus.getSize());
 		consoleField.addKeyListener(new KeyAdapter(){
