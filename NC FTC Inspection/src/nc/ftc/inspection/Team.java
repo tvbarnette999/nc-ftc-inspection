@@ -44,7 +44,6 @@ public class Team implements Comparable<Team> {
 //			name=Main.teamData.get(number);
 			//TODO move the arrays elsewhere for memory? (teams not in event dont need arrays in RAM until added to event)
 			this.name = name;
-			System.out.println(Server.HWForm.size());
 			hw=new boolean[Server.HWForm.size()];
 			sw=new boolean[Server.SWForm.size()];
 			fd=new boolean[Server.FDForm.size()];

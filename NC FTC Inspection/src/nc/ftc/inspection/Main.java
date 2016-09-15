@@ -1,17 +1,7 @@
 package nc.ftc.inspection;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 
 import java.io.FileNotFoundException;
 
@@ -19,37 +9,12 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-
-import java.util.HashMap;
-import java.util.Scanner;
-import java.util.Vector;
+import java.util.*;
 import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.event.*;
 
 
 public class Main extends JFrame {
@@ -155,6 +120,9 @@ public class Main extends JFrame {
 		autoSaveThread.start();
 
 	}
+	
+	private static Color BACKGROUND = Color.decode("#EEEEEE");
+	
 	private ImageIcon ftcIcon;
 	private JTabbedPane tabbedPane = new JTabbedPane();
 	private JPanel eventSettingsPanel = new JPanel();
@@ -186,7 +154,7 @@ public class Main extends JFrame {
 	private JList<Team> teamList = new JList<Team>();
 	private JScrollPane teamScrollPane = new JScrollPane(teamList);
 	
-	private JDialog dialog = new JDialog();
+	private JDialog dialog = new JDialog(this, "Add team to event");
 	private JButton addSelectedTeam = new JButton("Add Selected Team");
 	private JButton newTeam = new JButton("New Team");
 	private JPanel dialogBottom = new JPanel();
@@ -311,7 +279,8 @@ public class Main extends JFrame {
 				 * Need to go through and clean up Team object structure. Create master HashSet of teams by number, instead of string. preload Team objects, then add to server when needed. Move Hashmap c
 				 * creation to Team to ensure 
 				 */
-				dialog.pack();
+//				dialog.pack();
+				refreshMasterList();
 				dialog.setLocationRelativeTo(Main.this);
 				dialog.setVisible(true);
 				//XXX HANGING ON EDT
@@ -326,6 +295,10 @@ public class Main extends JFrame {
 					Server.save();
 					refreshTeamList();
 				}
+			} else if(src == addSelectedTeam){
+				
+			} else if(src == newTeam){
+				
 			}
 		}		
 	};
@@ -415,6 +388,11 @@ public class Main extends JFrame {
 	private int[] traffic = new int[50];
 	private ArrayList<String> commands = new ArrayList<String>();
 	private int command;
+	
+	/*
+	 * TODO divide this method into more moethods? Move each tab init to each own method? Move annonymous definitions outside method?
+	 * Basically this method is waaaay to long.
+	 */
 	private void initGUI() {
 		setCheckBoxes();
 		if (NIMBUS) {
@@ -608,7 +586,7 @@ public class Main extends JFrame {
 		fullSoftware.addActionListener(trackListener);
 		fullField.addActionListener(trackListener);
 		
-		/*
+		/*TODO GUI Features:
 		 * To right of tracking panel:
 		 * Current event name & code
 		 * button to edit event info
@@ -633,7 +611,7 @@ public class Main extends JFrame {
 		teamPanel.setBorder(new TitledBorder("Team Information"));
 		//teamPanel.setPreferredSize(new Dimension(300, 300));
 		teamList.setListData(Server.theServer.teams);
-		teamList.setBackground(Color.decode("#EEEEEE"));//"#F2F2F2"));
+		teamList.setBackground(BACKGROUND);//"#F2F2F2"));
 		teamList.setOpaque(true);
 		
 	//	teamList.setBorder(BorderFactory.createSoftBevelBorder(BevelBorder.RAISED));
@@ -674,16 +652,23 @@ public class Main extends JFrame {
 		this.setLocationRelativeTo(null);
 		
 		
-		Team[] master = new Team[Team.masterList.values().size()];
-		Team.masterList.values().toArray(master);
-		Arrays.sort(master);
-		masterList.setListData(master);
+		refreshMasterList();
+		
+		masterList.setBackground(BACKGROUND);
 		
 		dialog.setLayout(new BorderLayout());
 		dialogBottom.setPreferredSize(new Dimension(350, 50));
 		
+		addSelectedTeam.addActionListener(teamEditListener);
+		newTeam.addActionListener(teamEditListener);
+		
+		dialogBottom.add(addSelectedTeam);
+		dialogBottom.add(newTeam);
+		
 		dialog.add(dialogBottom, BorderLayout.SOUTH);
-		dialog.add(masterList, BorderLayout.CENTER);
+		dialog.add(masterScrollPane, BorderLayout.CENTER);
+		dialog.setSize(350, this.getHeight());
+		
 		
 		
 		
@@ -742,6 +727,14 @@ public class Main extends JFrame {
 		teamList.setListData(Server.theServer.teams);
 	}
 	
+	private void refreshMasterList(){
+		Vector<Team> v = new Vector<Team>(Team.masterList.values());
+		v.removeAll(Server.theServer.teams);
+		Collections.sort(v);
+		masterList.setListData(v);
+	}
+	
+	
 	private void updateServerGraphics(){
 		cookieLabel.setText(COOKIE_LABEL_STRING + Server.theServer.getCookieCount() + "");
 		System.arraycopy(traffic, 1, traffic, 0, traffic.length - 1); // shift array 1 left
@@ -756,25 +749,6 @@ public class Main extends JFrame {
 		//load team data- numbers and names for all teams in NC
 		Scanner scan = null;
 		
-		
-//		try {
-//			scan =Resources.getScanner("teamdata.dat");
-//		} catch (FileNotFoundException e1) {
-//			e1.printStackTrace();
-//		}
-//		while(scan.hasNextLine()){
-//			try{
-//				String line=scan.nextLine();
-//				//System.out.println(line);
-//				int num=Integer.parseInt(line.substring(0, line.indexOf(":")));
-//				String name=line.substring(line.indexOf(":")+1);
-//				teamData.put(num, name);
-//			}catch(Exception e){
-//				e.printStackTrace();
-//			}
-//		}	
-//		if(scan!=null)scan.close();
-
 		//TODO need to do something if any of these throw an exception?
 		try {
 			loadInspectionForm("hwform.dat",Server.HWForm);
