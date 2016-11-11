@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -532,7 +533,6 @@ public class Server {
 	 * @param pw
 	 */
 	public void sendStatusPage(PrintWriter pw){
-		//TODO do we want to have an overall inspection progress bar across the top? like its 100% when every team is fully through, etc..
 		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\"><table border=\"3\"><tr>");
 		if(trackCheckIn)pw.println("<th>CI</th>");
 		if(trackCube)pw.println("<th>SC</th>");
@@ -805,7 +805,7 @@ public class Server {
 				try {
 					ServerSocket server=new ServerSocket(port);
 					server.setSoTimeout(1000);
-					addLogEntry("Server ready.");
+					addLogEntry("Server ready at " + InetAddress.getLocalHost().getHostAddress());
 					while(!done){
 						try{
 							threadPool.execute(new Handler(server.accept()));
@@ -888,8 +888,8 @@ public class Server {
 		
 		for(Team t:teams){
 			scan= Resources.getHardwareScanner(t.number);
-			for(int i=0;i<t.hw.length;i++){
-				t.hw[i]=scan.nextBoolean();
+			for(int i=0;i<t.hwData.length;i++){
+				t.hwData[i]=scan.nextBoolean();
 			}
 			scan.nextLine();
 			t.hwTeamSig=scan.nextLine();
@@ -900,8 +900,8 @@ public class Server {
 			scan.close();
 			
 			scan= Resources.getSoftwareScanner(t.number);
-			for(int i=0;i<t.sw.length;i++){
-				t.sw[i]=scan.nextBoolean();
+			for(int i=0;i<t.swData.length;i++){
+				t.swData[i]=scan.nextBoolean();
 			}
 			scan.nextLine();
 			t.swTeamSig=scan.nextLine();
@@ -912,8 +912,8 @@ public class Server {
 			scan.close();
 			
 			scan= Resources.getFieldScanner(t.number);
-			for(int i=0;i<t.fd.length;i++){
-				t.fd[i]=scan.nextBoolean();
+			for(int i=0;i<t.fdData.length;i++){
+				t.fdData[i]=scan.nextBoolean();
 			}
 			scan.nextLine();
 			t.fdTeamSig=scan.nextLine();
@@ -1005,7 +1005,9 @@ public class Server {
 			theServer.loadEvent(name);
 			return true;
 		} catch (FileNotFoundException e) {
+			System.err.println("Error opening "+name+".event");
 			e.printStackTrace();
+			
 			addErrorEntry(e);
 		}		
 		return false;
@@ -1030,7 +1032,7 @@ public class Server {
 		for(Team t:theServer.teams){
 			//hardware
 			pw=Resources.getHardwareWriter(t.number);
-			for(boolean b:t.hw){
+			for(boolean b:t.hwData){
 				pw.println(b);
 			}
 			pw.println(t.hwTeamSig);
@@ -1041,7 +1043,7 @@ public class Server {
 			
 			//software
 			pw=Resources.getSoftwareWriter(t.number);
-			for(boolean b:t.sw){
+			for(boolean b:t.swData){
 				pw.println(b);
 			}
 			pw.println(t.swTeamSig);
@@ -1052,7 +1054,7 @@ public class Server {
 			
 			//field
 			pw=Resources.getFieldWriter(t.number);
-			for(boolean b:t.fd){
+			for(boolean b:t.fdData){
 				pw.println(b);
 			}
 			pw.println(t.fdTeamSig);
@@ -1127,6 +1129,22 @@ public class Server {
 	 */
 	public static boolean clearData(){
 		//TODO implement
+		return false;
+	}
+	
+	public static boolean addTeam(Team t){
+		boolean b = theServer.teams.add(t);
+		Collections.sort(theServer.teams);
+		return b;
+	}
+	public static boolean track(int i) {
+		switch(i){
+			case CHECKIN: return trackCheckIn;
+			case FIELD: return trackField;
+			case HARDWARE: return trackHardware;
+			case SOFTWARE: return trackSoftware;
+			case CUBE: return trackCube;
+		}
 		return false;
 	}
 	

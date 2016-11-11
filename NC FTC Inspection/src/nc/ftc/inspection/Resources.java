@@ -134,6 +134,14 @@ public class Resources {
 		}
 		return true;
 	}
+	/**
+	 * Returns true if the root directory exists
+	 * @return
+	 */
+	public static boolean rootExists(){
+		File f = new File(root);
+		return f.exists() && f.isDirectory();
+	}
 	
 	/**
 	 * Checks that the root directory exists.
@@ -165,7 +173,8 @@ public class Resources {
 			for(Team t:Server.theServer.teams){
 				s += t.number+",";
 			}
-			pw.print(s.substring(0,s.length()-1));//remove last comma
+			if(s.length() > 0)s = s.substring(0,s.length()-1);
+			pw.print(s);//remove last comma
 			pw.flush();
 			pw.close();
 			return true;

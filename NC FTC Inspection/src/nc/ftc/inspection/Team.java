@@ -12,7 +12,7 @@ public class Team implements Comparable<Team> {
 		public static HashMap<Integer, Team> masterList = new HashMap<Integer, Team>();
 		
 		/**The index of the cube boolean in the fullHW boolean[]*/
-		public static int CUBE_INDEX=2;
+		public static int CUBE_INDEX=1;//2 in old form
 		
 		/*
 		 * TODO make it so that each event can configure which stages are tracked
@@ -36,17 +36,17 @@ public class Team implements Comparable<Team> {
 		String fdNote="",fdTeamSig="",fdInspSig="";
 		
 		//arrays for inspection
-		boolean[] hw;
-		boolean[] sw;
-		boolean[] fd;
+		boolean[] hwData;
+		boolean[] swData;
+		boolean[] fdData;
 		private Team(int n, String name){
 			number=n;
 //			name=Main.teamData.get(number);
 			//TODO move the arrays elsewhere for memory? (teams not in event dont need arrays in RAM until added to event)
 			this.name = name;
-			hw=new boolean[Server.HWForm.size()];
-			sw=new boolean[Server.SWForm.size()];
-			fd=new boolean[Server.FDForm.size()];
+			hwData=new boolean[Server.HWForm.size()];
+			swData=new boolean[Server.SWForm.size()];
+			fdData=new boolean[Server.FDForm.size()];
 
 		}
 		
@@ -112,15 +112,22 @@ public class Team implements Comparable<Team> {
 		 */
 		public int getStatus(int i){
 			switch(i){
-				case Server.CHECKIN:return checkedIn?Server.PASS:0;
-				case Server.CUBE:return cube;
-				case Server.HARDWARE:return hardware;
-				case Server.SOFTWARE:return software;
-				case Server.FIELD:return field;
+				case Server.CHECKIN:return checkedIn || Server.trackCheckIn?Server.PASS:0;
+				case Server.CUBE:return Server.trackCube ? cube : Server.PASS;
+				case Server.HARDWARE:return Server.trackHardware ? hardware : Server.PASS;
+				case Server.SOFTWARE:return Server.trackSoftware ? software : Server.PASS;
+				case Server.FIELD:return Server.trackField ? field : Server.PASS;
 			}
 			return 0;
 		}
-		
+		/**
+		 * Returns true if this team has passed the given level of inspection
+		 * @param i
+		 * @return
+		 */
+		public boolean passed(int i){
+			return !Server.track(i) || getStatus(i) == Server.PASS;
+		}
 		/**
 		 * Returns the Team's status for the inspection element at the specified index for the specified type.
 		 * @param type
@@ -129,9 +136,9 @@ public class Team implements Comparable<Team> {
 		 */
 		public boolean getStatus(int type, int index){
 			switch(type){
-				case Server.HARDWARE:return hw[index];
-				case Server.SOFTWARE:return sw[index];
-				case Server.FIELD:return fd[index];
+				case Server.HARDWARE:return hwData[index];
+				case Server.SOFTWARE:return swData[index];
+				case Server.FIELD:return fdData[index];
 				default: throw new IllegalArgumentException("Invalid inspection type");
 			}
 		}
@@ -146,7 +153,7 @@ public class Team implements Comparable<Team> {
 			if(type.equals("SC")){
 				this.cube = i;
 				if(this.cube ==  Server.PASS && !Server.separateCube){
-					hw[CUBE_INDEX] = true;
+					hwData[CUBE_INDEX] = true;
 				}
 			}
 			if(type.equals("HW"))this.hardware=i;
@@ -161,8 +168,10 @@ public class Team implements Comparable<Team> {
 				Server.addLogEntry(this.number+" "+type+" in progress");
 			}
 			else Server.addLogEntry(this.number+" has "+(i==Server.PASS?"passed ":"failed ")+type);
-			if(this.checkedIn && this.cube==Server.PASS && this.hardware==Server.PASS && this.software==Server.PASS && this.field==Server.PASS){
+			
+			if(passed(Server.CHECKIN) && passed(Server.CUBE) && passed(Server.HARDWARE) && passed(Server.SOFTWARE) && passed(Server.FIELD)){
 				ready=true;
+				System.out.println("READY");
 			}
 		}
 		public void setNote(String type, String note){
@@ -180,9 +189,9 @@ public class Team implements Comparable<Team> {
 			
 			boolean[] data;
 			switch(type){
-				case Server.HARDWARE:data=hw;break;
-				case Server.SOFTWARE:data=sw;break;
-				case Server.FIELD:data= fd;break;
+				case Server.HARDWARE:data=hwData;break;
+				case Server.SOFTWARE:data=swData;break;
+				case Server.FIELD:data= fdData;break;
 				default: throw new IllegalArgumentException("Invalid inspection type");
 			}
 			
@@ -200,9 +209,9 @@ public class Team implements Comparable<Team> {
 		 * @param status
 		 */
 		public void setInspectionIndex(String type, int index, boolean status) {
-			System.out.println("TEAM SET:"+hw+" "+index+" "+status);
+			System.out.println("TEAM SET:"+hwData+" "+index+" "+status);
 			if(type.equals("HW")){
-				hw[index]=status;				
+				hwData[index]=status;				
 				//TODO pass hw and fail cube when not separate? Or not, cuz they have technically failed HW at that point. consider sigs for hw and how that affect this
 				if(this.getStatus(Server.HARDWARE)!=Server.PROGRESS)this.setStatus(type, Server.PROGRESS);//dont set if we dont have to cuz status log
 				if(index == CUBE_INDEX && Server.trackCube && !Server.separateCube){
@@ -210,11 +219,11 @@ public class Team implements Comparable<Team> {
 				}
 			}
 			if(type.equals("SW")){
-				sw[index]=status;			
+				swData[index]=status;			
 				if(this.getStatus(Server.SOFTWARE)!=Server.PROGRESS)this.setStatus(type, Server.PROGRESS);
 			}
 			if(type.equals("FD")){
-				fd[index]=status;			
+				fdData[index]=status;			
 				if(this.getStatus(Server.FIELD)!=Server.PROGRESS)this.setStatus(type, Server.PROGRESS);
 			}
 		}

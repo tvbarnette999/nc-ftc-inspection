@@ -2,7 +2,7 @@ package nc.ftc.inspection;
 
 import java.awt.*;
 import java.awt.event.*;
-
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.io.IOException;
@@ -86,7 +86,31 @@ public class Main extends JFrame {
 				//TODO headless
 			}
 		}
-
+		//TODO popup for non existant root directory?
+//		if(!Resources.rootExists()){
+//			
+//			JTextField field = new JTextField(new File(Resources.root).getAbsolutePath());
+//			JButton browse = new JButton("Browse...");
+//			browse.addActionListener(new ActionListener(){
+//				public void actionPerformed(ActionEvent e){
+//					JFileChooser fc = new JFileChooser(Resources.root);
+//					fc.showOpenDialog(null);
+//					field.setText(fc.getCurrentDirectory().getAbsolutePath());
+//				}
+//			});
+//			JPanel p = new JPanel();
+//			p.setPreferredSize(new Dimension(300,23));
+//			p.setLayout(new BorderLayout());
+//			p.add(browse, BorderLayout.EAST);
+//			p.add(field, BorderLayout.CENTER);
+//			int choice = JOptionPane.showConfirmDialog(null, new Object[]{"Select Save Directory",p}, "Save", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, UIManager.getIcon("FileChooser.newFolderIcon"));
+//			if(choice == JOptionPane.OK_OPTION){
+//				Resources.root = field.getText();
+//			} else{
+//				return; //terminate
+//			}
+//			
+//		}
 		me = new Main();
 		loadFiles();
 		me.initGUI();
@@ -154,6 +178,13 @@ public class Main extends JFrame {
 	private JList<Team> teamList = new JList<Team>();
 	private JScrollPane teamScrollPane = new JScrollPane(teamList);
 	
+	private JPanel eventInfoPanel = new JPanel();
+	private JLabel eventNameLabel1 = new JLabel("Event Name:");
+	private JLabel eventNameLabel2 = new JLabel();
+	private JLabel eventCodeLabel1 = new JLabel("Event Code:");
+	private JLabel eventCodeLabel2 = new JLabel();
+	private JButton editEvent = new JButton();
+	private JButton changeEvent = new JButton();
 	private JDialog dialog = new JDialog(this, "Add team to event");
 	private JButton addSelectedTeam = new JButton("Add Selected Team");
 	private JButton newTeam = new JButton("New Team");
@@ -273,17 +304,10 @@ public class Main extends JFrame {
 				
 			} else if(src == addTeam){
 				//popup with master list
-				//masterList.setListData(teamData.);
-				/*TODO
-				*
-				 * Need to go through and clean up Team object structure. Create master HashSet of teams by number, instead of string. preload Team objects, then add to server when needed. Move Hashmap c
-				 * creation to Team to ensure 
-				 */
-//				dialog.pack();
+				
 				refreshMasterList();
 				dialog.setLocationRelativeTo(Main.this);
 				dialog.setVisible(true);
-				//XXX HANGING ON EDT
 				teamList.setListData(Server.theServer.teams);
 				
 			} else if(src == removeTeam){
@@ -297,8 +321,50 @@ public class Main extends JFrame {
 				}
 			} else if(src == addSelectedTeam){
 				
-			} else if(src == newTeam){
+				if(masterList.getSelectedValue() == null){
+					JOptionPane.showMessageDialog(Main.this, "Please select a team");
+					return;
+				} 
+				Server.addTeam(masterList.getSelectedValue());
+				refreshTeamList();
+				dialog.setVisible(false);
 				
+				
+			} else if(src == newTeam){
+				//popup to enter new team info
+				JTextField field1 = new JTextField();
+				JTextField field2 = new JTextField();
+				Object[] message = {
+				    "Team Number:", field1,
+				    "Team Name:", field2,
+				};
+				boolean ok = false;
+				while(!ok){
+					int num = 0;
+					String name = "";
+					int option = JOptionPane.showConfirmDialog(Main.this, message, "Enter Team Info", JOptionPane.OK_CANCEL_OPTION);
+					if (option == JOptionPane.OK_OPTION){
+					    try{
+					    	num = Integer.parseInt(field1.getText());
+					    	if(Team.doesTeamExist(num)){
+						    	JOptionPane.showMessageDialog(Main.this, "Team already exists: "+num+" "+ Team.getTeam(num).name, null, JOptionPane.ERROR_MESSAGE);	
+						    	continue;
+					    	}					
+					    	ok = true;
+					    } catch(NumberFormatException e1){
+					    	JOptionPane.showMessageDialog(Main.this, "Invalid team number: " + field1.getText(), "", JOptionPane.ERROR_MESSAGE);	
+					    	continue;
+					    }
+					    name = field2.getText();
+					    Team.registerTeam(num, name);
+					    Resources.saveTeamList();
+					    refreshMasterList();
+					    masterList.setSelectedValue(Team.getTeam(num), true);
+					    ok = true;
+					} else{
+						break;
+					}
+				}
 			}
 		}		
 	};
@@ -388,6 +454,23 @@ public class Main extends JFrame {
 	private int[] traffic = new int[50];
 	private ArrayList<String> commands = new ArrayList<String>();
 	private int command;
+	
+	/*TODO GUI Features:
+	 * To right of tracking panel:
+	 * Current event name & code
+	 * button to edit event info
+	 * button to changes event
+	 * 
+	 * current root directory (save)
+	 * button to change root directory
+	 * 
+	 * button to compress event data?
+	 * button to view inspection forms/print?
+	 * ^^instead, button to generate html folder of all inspection forms.
+	 * 
+	 * update resource button: manual, forum.
+	 */
+	
 	
 	/*
 	 * TODO divide this method into more moethods? Move each tab init to each own method? Move annonymous definitions outside method?
@@ -586,27 +669,18 @@ public class Main extends JFrame {
 		fullSoftware.addActionListener(trackListener);
 		fullField.addActionListener(trackListener);
 		
-		/*TODO GUI Features:
-		 * To right of tracking panel:
-		 * Current event name & code
-		 * button to edit event info
-		 * button to changes event
-		 * 
-		 * current root directory (save)
-		 * button to change root directory
-		 * 
-		 * team list
-		 * use JList:
-		 * button to edit team info
-		 * button to add new team
-		 * 	-brings up list of all teams, which has an option to add new team
-		 * button to remove team
-		 * 
-		 * update resource button: manual, forum.
-		 */
+		
 		eventPanel.setOpaque(true);
 		eventPanel.setBorder(new TitledBorder("Current Event"));
 		eventPanel.setPreferredSize(new Dimension(300, 100));
+		
+		
+		
+		
+		
+		
+		
+		
 		teamPanel.setOpaque(true);
 		teamPanel.setBorder(new TitledBorder("Team Information"));
 		//teamPanel.setPreferredSize(new Dimension(300, 300));
@@ -774,7 +848,6 @@ public class Main extends JFrame {
 		try {
 			Resources.loadTeamList();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
 		
@@ -805,7 +878,7 @@ public class Main extends JFrame {
 				String line=scan.nextLine();
 				line=line.replaceAll("<","&lt;");
 				line=line.replaceAll(">","&gt;");
-				line=line.replaceAll(":", "</td><td>");
+				line=line.replaceAll("::", "</td><td>");
 				target.add(line);
 			}catch(Exception e){
 				e.printStackTrace();
@@ -957,8 +1030,8 @@ public class Main extends JFrame {
 						if(args.length>3){
 							String name="";
 							if(args.length>3)name=args[3];
-							for(int i=4;i<args.length;i++){
-								name+=" "+args[i];
+							for(int i = 4; i<args.length; i++){
+								name += " " + args[i];
 							}
 							if(Resources.createEventFile(args[2],name)){ 
 								events.add(args[2]);
@@ -1084,7 +1157,7 @@ public class Main extends JFrame {
 			}
 			else if(args[0].equals("IP")){
 				try {
-					append("Server IP: "+InetAddress.getLocalHost().getHostAddress());
+					append("Server IP: " + InetAddress.getLocalHost().getHostAddress());
 				} catch (UnknownHostException e) {
 					
 				}
