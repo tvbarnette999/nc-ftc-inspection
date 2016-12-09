@@ -41,6 +41,11 @@ public class Main extends JFrame {
 	 * Premake team list for each event 
 	 * or select teams during setup?
 	 * 
+	 * Add search bar for adding team
+	 * 
+	 * Handle inability to load event
+	 * Handle incorrect inspection form (form vs team file mismatch)
+	 * 
 	 * teamdata.dat will have team # and name for each NC team (can make from data on FIRST's website- maybe make a script for that)
 	 * add team location?
 	 * 
@@ -185,6 +190,7 @@ public class Main extends JFrame {
 	private JLabel eventCodeLabel2 = new JLabel();
 	private JButton editEvent = new JButton();
 	private JButton changeEvent = new JButton();
+	
 	private JDialog dialog = new JDialog(this, "Add team to event");
 	private JButton addSelectedTeam = new JButton("Add Selected Team");
 	private JButton newTeam = new JButton("New Team");
@@ -674,6 +680,9 @@ public class Main extends JFrame {
 		eventPanel.setBorder(new TitledBorder("Current Event"));
 		eventPanel.setPreferredSize(new Dimension(300, 100));
 		
+		
+		eventInfoPanel.setOpaque(true);
+		//event
 		
 		
 		

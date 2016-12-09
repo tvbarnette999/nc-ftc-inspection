@@ -355,7 +355,7 @@ public class Server {
 		boolean valid=false;
 		String response = "";
 		String extras = "";
-//		System.out.println("POST: \n"+req+"\nData:\n"+data);
+		System.out.println("POST: \n"+req+"\nData:\n"+data);
 		/*
 		 * if the data contains a password, its from the login page.
 		 * That means we can send it a secured page.
@@ -572,7 +572,7 @@ public class Server {
 	public void sendInspectionEditPage(PrintWriter pw, int i) throws IOException{
 		
 		/*
-		 * TODO Check if doing a full inspection for that type
+		 * Check if doing a full inspection for that type
 		 * 				-if so, send list of teams and button to inspect them, which loads /hardware/#####
 		 *              -if not, check if tracking
 		 *              		-if so, send old page
