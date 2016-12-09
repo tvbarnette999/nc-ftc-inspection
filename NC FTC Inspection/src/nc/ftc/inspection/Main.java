@@ -180,6 +180,7 @@ public class Main extends JFrame {
 	private JButton addTeam = new JButton("Add Team");
 	private JButton removeTeam = new JButton("Remove Team");
 	private JButton editTeam = new JButton("Edit Team");
+	private JTextField searchTeam = new JTextField();
 	private JList<Team> teamList = new JList<Team>();
 	private JScrollPane teamScrollPane = new JScrollPane(teamList);
 	
@@ -749,10 +750,24 @@ public class Main extends JFrame {
 		dialogBottom.add(newTeam);
 		
 		dialog.add(dialogBottom, BorderLayout.SOUTH);
+		dialog.add(searchTeam, BorderLayout.NORTH);
 		dialog.add(masterScrollPane, BorderLayout.CENTER);
 		dialog.setSize(350, this.getHeight());
 		
-		
+		//filter list as you type
+		searchTeam.getDocument().addDocumentListener(new DocumentListener(){
+			@Override
+			public void changedUpdate(DocumentEvent arg0) {
+			}
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				refreshMasterList();
+			}
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				refreshMasterList();
+			}
+		});
 		
 		
 		pwStatus.setPreferredSize(pwStatus.getSize());
@@ -813,6 +828,14 @@ public class Main extends JFrame {
 	private void refreshMasterList(){
 		Vector<Team> v = new Vector<Team>(Team.masterList.values());
 		v.removeAll(Server.theServer.teams);
+		String filter = searchTeam.getText();
+		if(!filter.isEmpty()){
+			if(Character.isDigit(filter.charAt(0))){
+				v.removeIf(a -> !Integer.toString(a.number).startsWith(searchTeam.getText()));
+			} else{
+				v.removeIf(a -> !a.name.toLowerCase().startsWith(searchTeam.getText().toLowerCase()));
+			}
+		}
 		Collections.sort(v);
 		masterList.setListData(v);
 	}
