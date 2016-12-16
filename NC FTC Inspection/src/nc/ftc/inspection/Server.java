@@ -355,7 +355,7 @@ public class Server {
 		boolean valid=false;
 		String response = "";
 		String extras = "";
-		System.out.println("POST: \n"+req+"\nData:\n"+data);
+//		System.out.println("POST: \n"+req+"\nData:\n"+data);
 		/*
 		 * if the data contains a password, its from the login page.
 		 * That means we can send it a secured page.
@@ -666,7 +666,7 @@ public class Server {
 			case SOFTWARE:pw.println("Software Inspection");break;
 			case FIELD:pw.println("Field Inspection");break;
 		}
-		pw.println("</h1><br><table cellspacing=\"10\"><tr><th>Team #</th><th>Link</th></tr>");
+		pw.println("</h1><a href=\"/home\">Home</a><br><table cellspacing=\"10\"><tr><th>Team #</th><th>Link</th></tr>");
 		for(Team t:teams){
 			pw.println("<tr><td bgcolor="+getColor(t.getStatus(i))+">"+t.number+"</td><td><a href=\"/"+type+"/"+t.number+"\">Inspect</a></td></tr>");
 		}
@@ -677,8 +677,8 @@ public class Server {
 	/**
 	 * Sends the full inspection page for the given team.
 	 * @param pw
-	 * @param i
-	 * @param extras
+	 * @param i The inspection type (FD, HW, SW)
+	 * @param extras The team number being inspected
 	 */
 	public void sendFullInspectionPage(PrintWriter pw, int i, String extras){
 		
@@ -696,18 +696,19 @@ public class Server {
 		
 		Vector<String> form;
 //		System.out.println("full: "+i);
-		String type="";
-		String note="";
-		String head="Appendix ";
+		String type = "";
+		String note = "";
+		String head = "Appendix ";
+		String back = "";
 		switch(i){
-			case HARDWARE: form=HWForm; type="_HW"; note=team.hwNote;break;
-			case SOFTWARE: form=SWForm; type="_SW"; note= team.swNote;break;
-			case FIELD: form=FDForm; type="_FD";note=team.fdNote;break;
+			case HARDWARE: form = HWForm; type = "_HW"; note = team.hwNote; back = "/hardware"; break;
+			case SOFTWARE: form = SWForm; type = "_SW"; note = team.swNote; back = "/software"; break;
+			case FIELD:    form = FDForm; type = "_FD"; note = team.fdNote; back = "/field";    break;
 			default: throw new IllegalArgumentException("Full inspection not supported");
 		}
-		if(type.contains("W")) head+="A: Robot Inspection Checklist";
-		else head+="B: Field Inspection Checklist";
-		pw.println("<html><head><h2>"+head+"</h2><hr style=\"border: 3px solid #943634\" /><h3>Team Number: "+extras+"</h3></head>");
+		if(type.contains("W")) head += "A: Robot Inspection Checklist";
+		else head += "B: Field Inspection Checklist";
+		pw.println("<html><head><h2>" + head + "</h2><hr style=\"border: 3px solid #943634\" /><h3>Team Number: " + extras + "</h3></head>");
 		//TODO adjust table size so it is useable on phone.
 		pw.println("<body><table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;\">");
 		pw.println("<tr bgcolor=\"#E6B222\" ><th>Insp.</th><th>Inspection Rule</th><th>Rule #</th></tr>");
@@ -737,6 +738,7 @@ public class Server {
 				+ "ls=\"100\">"+note+"</textarea>");
 		pw.println("<br><br><button type=\"button\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
 		pw.println("<button type=\"button\" name=\""+extras+type+"\" onclick=\"fullfail()\">Fail</button>");
+		pw.println("<br><br><a href=\"" + back + "\">Back</a>");
 		
 		String[] sigs=team.getSigs(type.substring(1));
 		if(sigs.length>0){

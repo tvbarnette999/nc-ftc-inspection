@@ -830,6 +830,7 @@ public class Main extends JFrame {
 		v.removeAll(Server.theServer.teams);
 		String filter = searchTeam.getText();
 		if(!filter.isEmpty()){
+			while(!filter.isEmpty() && Character.isWhitespace(filter.charAt(0))) filter = filter.substring(1);
 			if(Character.isDigit(filter.charAt(0))){
 				v.removeIf(a -> !Integer.toString(a.number).startsWith(searchTeam.getText()));
 			} else{
@@ -890,7 +891,7 @@ public class Main extends JFrame {
 			}
 			Server.theServer.loadConfig();
 			if(!events.contains(Server.event)){
-				if(events.size()>0)Server.event=events.get(0);
+				if(events.size() > 0) Server.event = events.get(0);
 				else Server.event=null;
 			}
 			Server.theServer.loadEvent(Server.event);
