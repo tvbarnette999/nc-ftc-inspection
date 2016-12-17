@@ -858,7 +858,7 @@ public class Main extends JFrame {
 		
 		//TODO need to do something if any of these throw an exception?
 		try {
-			loadInspectionForm("hwform.dat",Server.HWForm);
+			loadInspectionForm("hwform.dat",Server.hardwareForm);
 		} catch (FileNotFoundException e1) {
 			
 			e1.printStackTrace();
@@ -885,15 +885,17 @@ public class Main extends JFrame {
 		}
 		
 		try {
-			scan=Resources.getScanner("events.dat");
+			scan = Resources.getScanner("events.dat");
 			while(scan.hasNextLine()){
 				events.add(scan.nextLine());
 			}
 			Server.theServer.loadConfig();
-			if(!events.contains(Server.event)){
-				if(events.size() > 0) Server.event = events.get(0);
-				else Server.event=null;
-			}
+			//FIXME address this
+//			if(!events.contains(Server.event)){
+//				if(events.size() > 0) Server.event = events.get(0);
+//				else Server.event=null;
+//			}
+			System.out.println(Server.event);
 			Server.theServer.loadEvent(Server.event);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -904,14 +906,13 @@ public class Main extends JFrame {
 
 
 	public static void loadInspectionForm(String srcFile, Vector<String> target) throws FileNotFoundException{
-
 		Scanner scan=Resources.getScanner(srcFile);			
 		while(scan.hasNextLine()){
 			try{
 				String line=scan.nextLine();
 				line=line.replaceAll("<","&lt;");
 				line=line.replaceAll(">","&gt;");
-				line=line.replaceAll("::", "</td><td>");
+//				line=line.replaceAll("::", "</td><td>");
 				target.add(line);
 			}catch(Exception e){
 				e.printStackTrace();
@@ -920,6 +921,22 @@ public class Main extends JFrame {
 
 	}
 
+	public static void loadInspectionForm(String srcFile, InspectionForm target) throws FileNotFoundException{
+		
+		Scanner scan=Resources.getScanner(srcFile);			
+		while(scan.hasNextLine()){
+			try{
+				String line=scan.nextLine();
+				line=line.replaceAll("<","&lt;");
+				line=line.replaceAll(">","&gt;");
+				target.addRow(line);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+
+	}
+	
 	public void handleCommand(String command){
 		//TODO implement commands
 
@@ -1212,7 +1229,7 @@ public class Main extends JFrame {
 				error("UNKNOW COMMAND: "+args[0]);
 				return;
 			}
-			append((success?"SUCCESS":"FAILED"));
+			append((success ? "SUCCESS" : "FAILED"));
 		}
 	}
 

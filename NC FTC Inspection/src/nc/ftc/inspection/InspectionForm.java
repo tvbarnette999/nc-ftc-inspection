@@ -1,0 +1,140 @@
+package nc.ftc.inspection;
+
+import java.util.ArrayList;
+import static java.lang.Math.max;
+
+public class InspectionForm {
+	public static final int OPIONAL = 1;
+	public static final int NA = -1;
+	public static final int REQUIRED = 0;
+	
+	ArrayList<Row> rows = new ArrayList<Row>();
+	int cbTotal;
+	int widestRow;
+	
+	int type; 
+	
+	static class Row{
+		int cbCount;
+		int[] param;
+		String explain;
+		String rule;
+		
+		/**
+		 * Takes the string from the save file split by :: and parses it into a Row object
+		 * @param raw
+		 */
+		public Row(String[] raw){
+			cbCount = Integer.parseInt(raw[0]);
+			param = new int[cbCount];
+			for(int i = 0; i < cbCount; i++){
+				param[i] = Integer.parseInt(raw[1 + i]);
+			}
+			explain = raw[cbCount + 1];
+			rule = raw[cbCount + 2];
+		}
+		
+		//only HeaderRow can get to this
+		private Row(){
+			
+		}
+	}
+	
+	
+	static class HeaderRow extends Row{
+		String[] titles;
+		
+		public HeaderRow(String[] raw){
+			cbCount = Integer.parseInt(raw[1]);
+			titles = new String[cbCount];
+			for(int i = 0; i < cbCount; i++){
+				titles[i] = raw[2 + i];
+			}
+			explain = raw[cbCount + 2];
+			rule = raw[cbCount + 3];
+		}
+		
+	}
+	
+	public InspectionForm(int type){
+		this.type = type;
+	}
+	
+	public void addRow(String row){
+		System.out.println("Adding row: "+row);
+		try{
+		String[] split = row.split("::");
+		if(split[0].startsWith("H")){
+			Row r = new HeaderRow(split);
+			rows.add(r);
+			widestRow = max(widestRow, r.cbCount);
+		}
+		else{
+			Row r = new Row(split);
+			rows.add(r);
+			cbTotal += r.cbCount;
+			widestRow = max(widestRow, r.cbCount);			
+		}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Returns the table part of the inspection form
+	 * @return
+	 */
+	public String getFormTable(Team team){
+		String type = null;
+		switch(this.type){
+			case Server.HARDWARE: type = "_HW"; break;
+			case Server.SOFTWARE: type = "_SW"; break;
+			case Server.FIELD:    type = "_FD"; break;
+		}
+		StringBuffer table = new StringBuffer();
+		table.append("<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;\">");
+		int cbIndex = 0;
+		for(Row r : rows){
+			int span = widestRow / r.cbCount;
+			if(r instanceof HeaderRow){
+				//TODO LCM of table widths
+				table.append("<tr bgcolor=\"#E6B222\">");
+				for(String title : ((HeaderRow)r).titles){
+					table.append("<th colspan=\"" + span + "\">");
+					table.append(title);
+					table.append("</th>");
+				}
+				table.append("<th>" + r.explain + "</th>");
+				table.append("<th>" + r.rule + "</th>");
+			}
+			else{
+				table.append("<tr bgcolor=\"#FFFFFF\">");
+				for(int param : r.param){
+					table.append("<td");
+					if(param == NA){
+						table.append(">NA");						
+					} else{
+						table.append(" id=BG" + team.number + type + cbIndex);
+						table.append(" colspan=\"" + span + "\"><label>");
+						table.append("<input type=\"checkbox\"");
+						table.append("name=\"" + team.number + type + cbIndex + "\" ");
+						table.append(/*team.getStatus(this.type,cbIndex)*/false ? "checked=\"checked\"" : "");
+						table.append("onclick=\"update()\"/>");
+						table.append("</label>");
+						cbIndex++;
+					}
+
+					table.append("</td>");
+					
+				}
+				table.append("<td>" + r.explain + "</td>");
+				table.append("<td>" + r.rule + "</td>");
+			}
+			table.append("</tr>");
+		}
+		table.append("</table>");
+		return table.toString();
+	}
+	
+	
+}

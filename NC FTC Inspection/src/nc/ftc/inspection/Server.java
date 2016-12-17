@@ -81,6 +81,8 @@ public class Server {
 	public static Vector<String> SWForm=new Vector<String>();
 	public static Vector<String> FDForm=new Vector<String>();
 	
+	public static InspectionForm hardwareForm = new InspectionForm(HARDWARE);
+	
 	
 	
 
@@ -685,10 +687,11 @@ public class Server {
 		//when submit button clicked, send note and thats how you know IP->fail (or pass)
 		//note beng reason for failure as prescribed 
 		//TODO do we want to be able to print an inspection sheet for a team if they ask? IE print job? -Nah scoring pc can just connect and print webpage
-		Team team=null;
+		Team team = null;
 		try{
-			team=getTeam(Integer.parseInt(extras));
-			if(team==null) throw new IllegalArgumentException("Invalid team #: "+extras);
+			team = 
+					getTeam(Integer.parseInt(extras));
+			if(team == null) throw new IllegalArgumentException("Invalid team #: "+extras);
 		}catch(Exception e){
 			//TODO send error page. 404? some better way to do this?
 			return;
@@ -710,31 +713,37 @@ public class Server {
 		else head += "B: Field Inspection Checklist";
 		pw.println("<html><head><h2>" + head + "</h2><hr style=\"border: 3px solid #943634\" /><h3>Team Number: " + extras + "</h3></head>");
 		//TODO adjust table size so it is useable on phone.
-		pw.println("<body><table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;\">");
-		pw.println("<tr bgcolor=\"#E6B222\" ><th>Insp.</th><th>Inspection Rule</th><th>Rule #</th></tr>");
-		
-		int j=0;
-		/*
-		 * 
-		 * pass: check all boxes are checked.
-		 *       popup for "signature"? like NobleHour did?
-		 * fail: dont need to check (could fail for safety)
-		 * both: send comments 
-		 *       send status update (pass only when signed)-DONE(no sign for pass yet)
-		 *       
-		 * remove auto check for pass when all checked? (forces signature) -DONE
-		 * 
-		 */
-		for(int ind=0;ind<form.size();ind++){
-			//if(separateCube && ind == Team.CUBE_INDEX)continue;//remove cube from full hw
+		pw.println("<body>");//<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;\">");
+		if(i == HARDWARE){
+			pw.println(hardwareForm.getFormTable(team));
+		} else{
 			
-			String s=form.get(ind);
-			pw.print("<tr><td id=BG"+extras+type+j+"><label>");
-			pw.println("<input type=\"checkbox\" name=\""+extras+type+j+"\" "+(team.getStatus(i,j)?"checked=\"checked\"":"")+" onclick=\"update()\"/>");
-			pw.println("</label></td><td>"+s+"</td></tr>");
-			j++;
+			pw.println("<tr bgcolor=\"#E6B222\" ><th>Insp.</th><th>Inspection Rule</th><th>Rule #</th></tr>");
+			
+			int j=0;
+			/*
+			 * 
+			 * pass: check all boxes are checked.
+			 *       popup for "signature"? like NobleHour did?
+			 * fail: dont need to check (could fail for safety)
+			 * both: send comments 
+			 *       send status update (pass only when signed)-DONE(no sign for pass yet)
+			 *       
+			 * remove auto check for pass when all checked? (forces signature) -DONE
+			 * 
+			 */
+			for(int ind=0;ind<form.size();ind++){
+				//if(separateCube && ind == Team.CUBE_INDEX)continue;//remove cube from full hw
+				
+				String s=form.get(ind);
+				pw.print("<tr><td id=BG"+extras+type+j+"><label>");
+				pw.println("<input type=\"checkbox\" name=\""+extras+type+j+"\" "+(team.getStatus(i,j)?"checked=\"checked\"":"")+" onclick=\"update()\"/>");
+				pw.println("</label></td><td>"+s+"</td></tr>");
+				j++;
+			}
+			pw.println("</table>");
 		}
-		pw.println("</table><br><b>General Comments or Reasons for Failure:</b><br><textarea name="+extras+type+" id=\"note\" rows=\"4\" co"
+		pw.println("<br><b>General Comments or Reasons for Failure:</b><br><textarea name="+extras+type+" id=\"note\" rows=\"4\" co"
 				+ "ls=\"100\">"+note+"</textarea>");
 		pw.println("<br><br><button type=\"button\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
 		pw.println("<button type=\"button\" name=\""+extras+type+"\" onclick=\"fullfail()\">Fail</button>");
@@ -851,8 +860,8 @@ public class Server {
 	public void loadEvent(String event) throws FileNotFoundException{
 		if(event == null)return;//Do not attempt to load null event.
 		Scanner scan=Resources.getScanner(event+".event");//new Scanner(new File("Resources/"+event));
-		Server.event=event;//if finds file, set Server event to the new one.
-		fullEventName=scan.nextLine();
+		Server.event = event;//if finds file, set Server event to the new one.
+		fullEventName = scan.nextLine();
 		Vector<Integer> nums=new Vector<Integer>();
 		scan.useDelimiter(",| |\\n");
 		while(scan.hasNext()){
@@ -890,8 +899,8 @@ public class Server {
 		
 		for(Team t:teams){
 			scan= Resources.getHardwareScanner(t.number);
-			for(int i=0;i<t.hwData.length;i++){
-				t.hwData[i]=scan.nextBoolean();
+			for(int i = 0; i < t.hwData.length; i++){
+				t.hwData[i] = scan.nextBoolean();
 			}
 			scan.nextLine();
 			t.hwTeamSig=scan.nextLine();
@@ -1097,10 +1106,13 @@ public class Server {
 	 */
 	public void loadConfig(){
 		Scanner scan = Resources.getConfigScanner();
-		if(scan == null)return;
+		if(scan == null) return;
 		String event = scan.nextLine();
-		if(Main.events.contains(event)){
+		if(event != "null" && Main.events.contains(event)){
 			Server.event = event;
+		} else{
+			Server.event = null;
+			Server.addLogEntry("No Event Loaded");
 		}
 		hashedPassString=scan.nextLine();
 		//TODO call whatever is needed for the password
