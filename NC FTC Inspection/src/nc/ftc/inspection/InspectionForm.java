@@ -8,6 +8,8 @@ public class InspectionForm {
 	public static final int NA = -1;
 	public static final int REQUIRED = 0;
 	
+	//TODO SIZING CUBE INDEX TO AUTOFIL FROM SEPARATE CUBE
+	
 	ArrayList<Row> rows = new ArrayList<Row>();
 	int cbTotal;
 	int widestRow;

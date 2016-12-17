@@ -82,6 +82,8 @@ public class Server {
 	public static Vector<String> FDForm=new Vector<String>();
 	
 	public static InspectionForm hardwareForm = new InspectionForm(HARDWARE);
+	public static InspectionForm softwareForm = new InspectionForm(SOFTWARE);
+	public static InspectionForm fieldForm = new InspectionForm(FIELD);
 	
 	
 	
@@ -689,24 +691,23 @@ public class Server {
 		//TODO do we want to be able to print an inspection sheet for a team if they ask? IE print job? -Nah scoring pc can just connect and print webpage
 		Team team = null;
 		try{
-			team = 
-					getTeam(Integer.parseInt(extras));
+			team = getTeam(Integer.parseInt(extras));
 			if(team == null) throw new IllegalArgumentException("Invalid team #: "+extras);
 		}catch(Exception e){
 			//TODO send error page. 404? some better way to do this?
 			return;
 		}
 		
-		Vector<String> form;
+		InspectionForm form;
 //		System.out.println("full: "+i);
 		String type = "";
 		String note = "";
 		String head = "Appendix ";
 		String back = "";
 		switch(i){
-			case HARDWARE: form = HWForm; type = "_HW"; note = team.hwNote; back = "/hardware"; break;
-			case SOFTWARE: form = SWForm; type = "_SW"; note = team.swNote; back = "/software"; break;
-			case FIELD:    form = FDForm; type = "_FD"; note = team.fdNote; back = "/field";    break;
+			case HARDWARE: form = hardwareForm; type = "_HW"; note = team.hwNote; back = "/hardware"; break;
+			case SOFTWARE: form = softwareForm; type = "_SW"; note = team.swNote; back = "/software"; break;
+			case FIELD:    form = fieldForm; type = "_FD"; note = team.fdNote; back = "/field";    break;
 			default: throw new IllegalArgumentException("Full inspection not supported");
 		}
 		if(type.contains("W")) head += "A: Robot Inspection Checklist";
@@ -714,35 +715,35 @@ public class Server {
 		pw.println("<html><head><h2>" + head + "</h2><hr style=\"border: 3px solid #943634\" /><h3>Team Number: " + extras + "</h3></head>");
 		//TODO adjust table size so it is useable on phone.
 		pw.println("<body>");//<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;\">");
-		if(i == HARDWARE){
+		//if(i == HARDWARE){
 			pw.println(hardwareForm.getFormTable(team));
-		} else{
+	//	} else{
 			
-			pw.println("<tr bgcolor=\"#E6B222\" ><th>Insp.</th><th>Inspection Rule</th><th>Rule #</th></tr>");
-			
-			int j=0;
-			/*
-			 * 
-			 * pass: check all boxes are checked.
-			 *       popup for "signature"? like NobleHour did?
-			 * fail: dont need to check (could fail for safety)
-			 * both: send comments 
-			 *       send status update (pass only when signed)-DONE(no sign for pass yet)
-			 *       
-			 * remove auto check for pass when all checked? (forces signature) -DONE
-			 * 
-			 */
-			for(int ind=0;ind<form.size();ind++){
-				//if(separateCube && ind == Team.CUBE_INDEX)continue;//remove cube from full hw
-				
-				String s=form.get(ind);
-				pw.print("<tr><td id=BG"+extras+type+j+"><label>");
-				pw.println("<input type=\"checkbox\" name=\""+extras+type+j+"\" "+(team.getStatus(i,j)?"checked=\"checked\"":"")+" onclick=\"update()\"/>");
-				pw.println("</label></td><td>"+s+"</td></tr>");
-				j++;
-			}
-			pw.println("</table>");
-		}
+//			pw.println("<tr bgcolor=\"#E6B222\" ><th>Insp.</th><th>Inspection Rule</th><th>Rule #</th></tr>");
+//			
+//			int j=0;
+//			/*
+//			 * 
+//			 * pass: check all boxes are checked.
+//			 *       popup for "signature"? like NobleHour did?
+//			 * fail: dont need to check (could fail for safety)
+//			 * both: send comments 
+//			 *       send status update (pass only when signed)-DONE(no sign for pass yet)
+//			 *       
+//			 * remove auto check for pass when all checked? (forces signature) -DONE
+//			 * 
+//			 */
+//			for(int ind=0;ind<form.size();ind++){
+//				//if(separateCube && ind == Team.CUBE_INDEX)continue;//remove cube from full hw
+//				
+//				String s=form.get(ind);
+//				pw.print("<tr><td id=BG"+extras+type+j+"><label>");
+//				pw.println("<input type=\"checkbox\" name=\""+extras+type+j+"\" "+(team.getStatus(i,j)?"checked=\"checked\"":"")+" onclick=\"update()\"/>");
+//				pw.println("</label></td><td>"+s+"</td></tr>");
+//				j++;
+//			}
+//			pw.println("</table>");
+		//}
 		pw.println("<br><b>General Comments or Reasons for Failure:</b><br><textarea name="+extras+type+" id=\"note\" rows=\"4\" co"
 				+ "ls=\"100\">"+note+"</textarea>");
 		pw.println("<br><br><button type=\"button\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
@@ -898,39 +899,53 @@ public class Server {
 		scan.close();
 		
 		for(Team t:teams){
-			scan= Resources.getHardwareScanner(t.number);
-			for(int i = 0; i < t.hwData.length; i++){
-				t.hwData[i] = scan.nextBoolean();
-			}
-			scan.nextLine();
-			t.hwTeamSig=scan.nextLine();
-			t.hwInspSig=scan.nextLine();
-			while(scan.hasNextLine()){
-				t.hwNote+=scan.nextLine()+"\n";
+			scan = Resources.getHardwareScanner(t.number);
+			try{
+				for(int i = 0; i < t.hwData.length; i++){
+					t.hwData[i] = scan.nextBoolean();
+				}
+				scan.nextLine();
+				t.hwTeamSig = scan.nextLine();
+				t.hwInspSig = scan.nextLine();
+				while(scan.hasNextLine()){
+					t.hwNote += scan.nextLine()+"\n";
+				}
+			}catch(Exception e){
+				//This means that the size of the form did not match the number of entries
+				//in the team's .ins file
+				addErrorEntry("Inspection File Mismatch: " + t.number + "HW");
 			}
 			scan.close();
 			
 			scan= Resources.getSoftwareScanner(t.number);
-			for(int i=0;i<t.swData.length;i++){
-				t.swData[i]=scan.nextBoolean();
-			}
-			scan.nextLine();
-			t.swTeamSig=scan.nextLine();
-			t.swInspSig=scan.nextLine();
-			while(scan.hasNextLine()){
-				t.swNote+=scan.nextLine()+"\n";
+			try{
+				for(int i = 0; i < t.swData.length; i++){
+					t.swData[i] = scan.nextBoolean();
+				}
+				scan.nextLine();
+				t.swTeamSig = scan.nextLine();
+				t.swInspSig = scan.nextLine();
+				while(scan.hasNextLine()){
+					t.swNote += scan.nextLine() + "\n";
+				}
+			}catch(Exception e){
+				addErrorEntry("Inspection File Mismatch: " + t.number + "HW");
 			}
 			scan.close();
 			
 			scan= Resources.getFieldScanner(t.number);
-			for(int i=0;i<t.fdData.length;i++){
-				t.fdData[i]=scan.nextBoolean();
-			}
-			scan.nextLine();
-			t.fdTeamSig=scan.nextLine();
-			t.fdInspSig=scan.nextLine();
-			while(scan.hasNextLine()){
-				t.fdNote+=scan.nextLine()+"\n";
+			try{
+				for(int i = 0; i < t.fdData.length; i++){
+					t.fdData[i] = scan.nextBoolean();
+				}
+				scan.nextLine();
+				t.fdTeamSig = scan.nextLine();
+				t.fdInspSig = scan.nextLine();
+				while(scan.hasNextLine()){
+					t.fdNote += scan.nextLine()+"\n";
+				}
+			}catch(Exception e){
+				addErrorEntry("Inspection File Mismatch: " + t.number + "HW");
 			}
 			scan.close();
 		}

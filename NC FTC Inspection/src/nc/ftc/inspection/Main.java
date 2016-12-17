@@ -865,14 +865,14 @@ public class Main extends JFrame {
 			JOptionPane.showMessageDialog(null, "Unable to load Hardware Inspection form!");
 		}
 		try {
-			loadInspectionForm("swform.dat",Server.SWForm);
+			loadInspectionForm("swform.dat",Server.softwareForm);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Unable to load Software Inspection form!");
 		}
 
 		try {
-			loadInspectionForm("fdform.dat",Server.FDForm);
+			loadInspectionForm("fdform.dat",Server.fieldForm);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Unable to load Field Inspection form!");
