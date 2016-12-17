@@ -156,6 +156,7 @@ public class Main extends JFrame {
 	private JTabbedPane tabbedPane = new JTabbedPane();
 	private JPanel eventSettingsPanel = new JPanel();
 	private JPanel serverSettingsPanel = new JPanel();
+	private JPanel resourceManagerPanel = new JPanel();
 	private JPanel leftPanel = new JPanel();
 	private JPanel pwPanel = new JPanel();
 	private JPanel pwSub1 = new JPanel();
@@ -191,6 +192,28 @@ public class Main extends JFrame {
 	private JLabel eventCodeLabel2 = new JLabel();
 	private JButton editEvent = new JButton();
 	private JButton changeEvent = new JButton();
+	
+	private JPanel inspectionPanel = new JPanel();
+	private JPanel referencePanel = new JPanel();
+	private JPanel formEditPanel = new JPanel();
+//	private JList<EditRow> formEditList = new JList<EditForm>();
+//	private JScrollPane formScrollPane = new JScrollPane(formEditList);
+	private JPanel hardwarePanel = new JPanel();
+	private JPanel softwarePanel = new JPanel();
+	private JPanel fieldPanel = new JPanel();
+	private JButton hardwareEdit = new JButton("Edit");
+	private JButton softwareEdit = new JButton("Edit");
+	private JButton fieldEdit = new JButton("Edit");
+	private JButton hardwareRestore = new JButton("Restore Default");
+	private JButton softwareRestore = new JButton("Restore Default");
+	private JButton fieldRestore = new JButton("Restore Default");
+	private JButton hardwareSelect = new JButton("Select File");
+	private JButton softwareSelect = new JButton("Select File");
+	private JButton fieldSelect = new JButton("Select File");
+	
+	
+	
+	
 	
 	private JDialog dialog = new JDialog(this, "Add team to event");
 	private JButton addSelectedTeam = new JButton("Add Selected Team");
