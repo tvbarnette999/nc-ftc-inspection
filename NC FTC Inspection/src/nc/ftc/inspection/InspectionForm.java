@@ -62,10 +62,10 @@ public class InspectionForm {
 		this.type = type;
 	}
 	
-	public void addRow(String row){
+	public void addRow(String row, String delimiter){
 		System.out.println("Adding row: "+row);
 		try{
-		String[] split = row.split("::");
+		String[] split = row.split(delimiter);
 		if(split[0].startsWith("H")){
 			Row r = new HeaderRow(split);
 			rows.add(r);

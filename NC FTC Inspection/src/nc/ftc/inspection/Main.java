@@ -196,8 +196,8 @@ public class Main extends JFrame {
 	private JPanel inspectionPanel = new JPanel();
 	private JPanel referencePanel = new JPanel();
 	private JPanel formEditPanel = new JPanel();
-//	private JList<EditRow> formEditList = new JList<EditForm>();
-//	private JScrollPane formScrollPane = new JScrollPane(formEditList);
+	private JList<EditRow> formEditList = new JList<EditRow>();
+	private JScrollPane formScrollPane = new JScrollPane(formEditList);
 	private JPanel hardwarePanel = new JPanel();
 	private JPanel softwarePanel = new JPanel();
 	private JPanel fieldPanel = new JPanel();
@@ -235,6 +235,30 @@ public class Main extends JFrame {
 	private JCheckBox trackField = new JCheckBox("Field",true);
 	private JCheckBox fullField = new JCheckBox("Full Field",true);
 	private static final int INDENT = 50;
+	private ActionListener formListener = new ActionListener(){
+		public void actionPerformed(ActionEvent e){
+			JButton source = (JButton) e.getSource();
+			if(source == hardwareEdit){
+				
+			} else if(source == softwareEdit){
+				
+			} else if(source == fieldEdit){
+				
+			} else if(source == hardwareRestore){
+				
+			} else if(source == softwareRestore){
+				
+			} else if(source == fieldRestore){
+				
+			} else if(source == hardwareSelect){
+				
+			} else if(source == softwareSelect){
+				
+			} else if(source == fieldSelect){
+				
+			}
+		}
+	};
 	private ActionListener trackListener = new ActionListener(){
 		public void actionPerformed(ActionEvent e){
 			Server.trackCheckIn = trackCheckIn.isSelected();
@@ -946,13 +970,14 @@ public class Main extends JFrame {
 
 	public static void loadInspectionForm(String srcFile, InspectionForm target) throws FileNotFoundException{
 		
-		Scanner scan=Resources.getScanner(srcFile);			
+		Scanner scan = Resources.getScanner(srcFile);	//The first line is the delimiter
+		String delimiter = scan.nextLine();
 		while(scan.hasNextLine()){
 			try{
 				String line=scan.nextLine();
 				line=line.replaceAll("<","&lt;");
 				line=line.replaceAll(">","&gt;");
-				target.addRow(line);
+				target.addRow(line, delimiter);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
