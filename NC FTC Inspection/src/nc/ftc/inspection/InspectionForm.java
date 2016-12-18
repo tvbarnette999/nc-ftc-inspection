@@ -36,6 +36,17 @@ public class InspectionForm {
 			rule = raw[cbCount + 2];
 		}
 		
+		
+		@Override
+		protected Object clone() throws CloneNotSupportedException {
+			Row r = new Row();
+			r.cbCount = cbCount;
+			r.explain = explain;
+			r.param = param.clone();			
+			return r;
+		}
+
+
 		//only HeaderRow can get to this
 		private Row(){
 			
@@ -54,6 +65,17 @@ public class InspectionForm {
 			}
 			explain = raw[cbCount + 2];
 			rule = raw[cbCount + 3];
+		}
+		private HeaderRow(){
+			
+		}
+		@Override
+		protected Object clone() throws CloneNotSupportedException {
+			HeaderRow r = new HeaderRow();
+			r.cbCount = cbCount;
+			r.explain = explain;
+			r.titles = titles.clone();
+			return r;
 		}
 		
 	}

@@ -3,3 +3,4 @@ H::1::CB::1 Width Test::Rule
 1::0::Sample explanation::Harsh Rule
 H::2::A::B::2 Width test::Rule
 2::0::0::ex 2:: Rule 7
+2::-1::1::Should be NA then Optional::Stupid Rule

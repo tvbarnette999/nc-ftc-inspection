@@ -15,6 +15,13 @@ import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
+
+import nc.ftc.inspection.InspectionForm.Row;
 
 
 public class Main extends JFrame {
@@ -65,9 +72,10 @@ public class Main extends JFrame {
 	 *
 	 *TODO capability to run headless. just in case
 	 *
-	 *TODO save which to track? save in server.config in root?
 	 *
 	 *TODO Some GUI easy way to select root save dir.
+	 *
+	 *TODO static import constants where used multiple times (ie Server.HARDWARE)
 	 *
 	 *
 	 *
@@ -196,11 +204,27 @@ public class Main extends JFrame {
 	private JPanel inspectionPanel = new JPanel();
 	private JPanel referencePanel = new JPanel();
 	private JPanel formEditPanel = new JPanel();
-	private JList<EditRow> formEditList = new JList<EditRow>();
-	private JScrollPane formScrollPane = new JScrollPane(formEditList);
+	private JList<Row> formEditList = new JList<Row>();
+	private JTable formEditTable = new JTable(){
+		RowRenderer renderer = new RowRenderer();
+		public TableCellRenderer getCellRenderer(int row, int columm){
+			return renderer;
+		}
+	};
+	private FormEditor formEdit = new FormEditor();
+	private JScrollPane formScrollPane = new JScrollPane(formEdit);//List);
 	private JPanel hardwarePanel = new JPanel();
 	private JPanel softwarePanel = new JPanel();
 	private JPanel fieldPanel = new JPanel();
+
+	JLabel hardware1 = new JLabel("Hardware:");
+	JLabel software1 = new JLabel("Software:");
+	JLabel field1 = new JLabel("Field:");
+	private static final String DEFAULT = "Default";
+	private static final String CUSTOM = "Custom";
+	private JLabel hardwareLabel = new JLabel(DEFAULT);
+	private JLabel softwareLabel = new JLabel(DEFAULT);
+	private JLabel fieldLabel    = new JLabel(DEFAULT);
 	private JButton hardwareEdit = new JButton("Edit");
 	private JButton softwareEdit = new JButton("Edit");
 	private JButton fieldEdit = new JButton("Edit");
@@ -235,15 +259,73 @@ public class Main extends JFrame {
 	private JCheckBox trackField = new JCheckBox("Field",true);
 	private JCheckBox fullField = new JCheckBox("Full Field",true);
 	private static final int INDENT = 50;
+	private Vector<Row> form = new Vector<Row>();
+	private InspectionForm editingForm = null;
+	
+	class Model extends AbstractTableModel{
+
+		public Vector<Row> data;
+		
+		
+		@Override
+		public int getColumnCount() {
+			// TODO Auto-generated method stub
+			return 1;
+		}
+
+		@Override
+		public int getRowCount() {
+			// TODO Auto-generated method stub
+			return data.size();
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			if(columnIndex != 0) return null;
+			return data.get(rowIndex);
+		}
+		public boolean isCellEditable(int ow, int col){
+			return true;
+		}
+		
+	};
+	private void editForm(InspectionForm f){
+//		editingForm = f;
+//		form.clear();
+//		for(Row r : f.rows){
+//			try {
+//				form.add((Row)r.clone());
+//			} catch (CloneNotSupportedException e) {
+//				//Why is this even a thing?
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//		Model model = new Model();
+//		model.data = form;
+//		formEditTable.setModel(model);
+//		formEditTable.setTableHeader(null);
+//		formEditTable.setCellEditor( (TableCellEditor) new RowEditor());
+//		formEditList.setListData(form);
+		formEdit.setForm(f);
+		this.formScrollPane.repaint();
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(this.formEdit.list.get(1).getComponent(0));
+	}
 	private ActionListener formListener = new ActionListener(){
 		public void actionPerformed(ActionEvent e){
 			JButton source = (JButton) e.getSource();
 			if(source == hardwareEdit){
-				
+				editForm(Server.hardwareForm);
 			} else if(source == softwareEdit){
-				
+				editForm(Server.softwareForm);
 			} else if(source == fieldEdit){
-				
+				editForm(Server.fieldForm);
 			} else if(source == hardwareRestore){
 				
 			} else if(source == softwareRestore){
@@ -425,6 +507,7 @@ public class Main extends JFrame {
 
 	private static final String SERVER_SETTINGS = "Server Settings";
 	private static final String EVENT_SETTINGS = "Event Settings";
+	private static final String RESOURCE_MANAGER = "Resource Manager";
 	private JLabel cookieLabel = new JLabel(COOKIE_LABEL_STRING);
 	private String trafficString = "Traffic (15s bin): ";
 	private JLabel trafficLabel = new JLabel(trafficString);
@@ -682,6 +765,8 @@ public class Main extends JFrame {
 
 		tabbedPane.addTab(SERVER_SETTINGS, UIManager.getIcon("FileChooser.hardDriveIcon"), serverSettingsPanel, SERVER_SETTINGS);
 		tabbedPane.addTab(EVENT_SETTINGS, ftcIcon, eventSettingsPanel, EVENT_SETTINGS);
+		tabbedPane.addTab(RESOURCE_MANAGER, ftcIcon, resourceManagerPanel, RESOURCE_MANAGER);
+		
 		trackingPanel.setOpaque(true);
 		trackingPanel.setBorder(new TitledBorder("Tracking Option"));
 		trackingPanel.setPreferredSize(new Dimension(260, 300));
@@ -761,6 +846,76 @@ public class Main extends JFrame {
 		eventSettingsPanel.add(trackingPanel, BorderLayout.WEST);
 		eventSettingsPanel.add(teamPanel, BorderLayout.EAST);
 		eventSettingsPanel.add(eventPanel,BorderLayout.CENTER);
+		
+		//Resource Manager Tab
+		
+		hardwareEdit.addActionListener(formListener);
+		hardwareRestore.addActionListener(formListener);
+		hardwareSelect.addActionListener(formListener);
+		
+		FlowLayout flow = new FlowLayout(FlowLayout.LEFT);
+		hardware1.setPreferredSize(new Dimension(70,20));
+		hardwarePanel.setLayout(flow);		
+		hardwareLabel.setPreferredSize(new Dimension(70,20));
+		hardwarePanel.add(hardware1);
+		hardwarePanel.add(hardwareLabel);
+		hardwarePanel.add(hardwareEdit);
+		hardwarePanel.add(hardwareRestore);
+		hardwarePanel.add(hardwareSelect);
+		
+		softwareEdit.addActionListener(formListener);
+		softwareRestore.addActionListener(formListener);
+		softwareSelect.addActionListener(formListener);
+		
+		FlowLayout flow2 = new FlowLayout(FlowLayout.LEFT);
+		software1.setPreferredSize(new Dimension(70,20));
+		softwarePanel.setLayout(flow2);
+		softwareLabel.setPreferredSize(new Dimension(70,20));
+		softwarePanel.add(software1);
+		softwarePanel.add(softwareLabel);
+		softwarePanel.add(softwareEdit);
+		softwarePanel.add(softwareRestore);
+		softwarePanel.add(softwareSelect);
+		
+		fieldEdit.addActionListener(formListener);
+		fieldRestore.addActionListener(formListener);
+		fieldSelect.addActionListener(formListener);
+		
+		FlowLayout flow3 = new FlowLayout(FlowLayout.LEFT);
+		field1.setPreferredSize(new Dimension(70,20));
+		fieldPanel.setLayout(flow3);
+		fieldLabel.setPreferredSize(new Dimension(70,20));
+		fieldPanel.add(field1);
+		fieldPanel.add(fieldLabel);
+		fieldPanel.add(fieldEdit);
+		fieldPanel.add(fieldRestore);
+		fieldPanel.add(fieldSelect);
+		
+		
+		
+		inspectionPanel.setPreferredSize(new Dimension(450,200));
+		inspectionPanel.setBorder(new TitledBorder("Inspection Forms"));
+		inspectionPanel.add(hardwarePanel);
+		inspectionPanel.add(softwarePanel);
+		inspectionPanel.add(fieldPanel);
+		
+//		formEditTable.set
+		
+		formEditPanel.setBorder(new TitledBorder("Form Edit"));
+		formEditPanel.setLayout(new BorderLayout());
+		formEditPanel.add(formScrollPane, BorderLayout.CENTER);
+		
+		
+		
+		
+		resourceManagerPanel.setLayout(new BorderLayout());
+		resourceManagerPanel.add(inspectionPanel, BorderLayout.WEST);
+		resourceManagerPanel.add(formEditPanel, BorderLayout.CENTER);
+		
+		
+		
+		
+		
 				
 		//listener to update graphics when tab changed
 		tabbedPane.addChangeListener(new ChangeListener(){
@@ -888,6 +1043,9 @@ public class Main extends JFrame {
 		masterList.setListData(v);
 	}
 	
+	private void refreshFormStatus(){
+		//TODO change to CUSTOM if 
+	}
 	
 	private void updateServerGraphics(){
 		cookieLabel.setText(COOKIE_LABEL_STRING + Server.theServer.getCookieCount() + "");
