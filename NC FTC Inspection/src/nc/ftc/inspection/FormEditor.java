@@ -169,6 +169,9 @@ public class FormEditor extends JPanel implements Scrollable {
 		}
 
 
+		int getIndex(){
+			return list.indexOf(this);
+		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			JComponent src = (JComponent) e.getSource();
@@ -196,6 +199,15 @@ public class FormEditor extends JPanel implements Scrollable {
 					left.add(combo, row.cbCount - 1);
 				}
 			} else if(src == addAbove){
+				//yes this is wasteful cuz its about to be cloned and gc'd but oh well
+				Row row = new Row(new String[]{"0", "", ""});
+				int ind = getIndex();
+				System.out.println(list.size());
+				RowEdit edit = new RowEdit(row);
+				list.add(ind, edit);
+				this.revalidate();
+				this.repaint();
+				System.out.println(list.size());
 				
 			} else if(src == addHeaderAbove){
 				

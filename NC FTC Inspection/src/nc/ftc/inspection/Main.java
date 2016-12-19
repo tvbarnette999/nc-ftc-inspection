@@ -205,12 +205,12 @@ public class Main extends JFrame {
 	private JPanel referencePanel = new JPanel();
 	private JPanel formEditPanel = new JPanel();
 	private JList<Row> formEditList = new JList<Row>();
-	private JTable formEditTable = new JTable(){
-		RowRenderer renderer = new RowRenderer();
-		public TableCellRenderer getCellRenderer(int row, int columm){
-			return renderer;
-		}
-	};
+//	private JTable formEditTable = new JTable(){
+//		RowRenderer renderer = new RowRenderer();
+//		public TableCellRenderer getCellRenderer(int row, int columm){
+//			return renderer;
+//		}
+//	};
 	private FormEditor formEdit = new FormEditor();
 	private JScrollPane formScrollPane = new JScrollPane(formEdit);//List);
 	private JPanel hardwarePanel = new JPanel();
