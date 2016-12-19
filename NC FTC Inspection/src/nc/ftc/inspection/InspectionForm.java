@@ -1,6 +1,8 @@
 package nc.ftc.inspection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import static java.lang.Math.max;
 
 public class InspectionForm {
@@ -13,8 +15,9 @@ public class InspectionForm {
 	ArrayList<Row> rows = new ArrayList<Row>();
 	int cbTotal;
 	int widestRow;
-	
 	int type; 
+	String delimiter;
+	
 	
 	static class Row{
 		int cbCount;
@@ -51,6 +54,7 @@ public class InspectionForm {
 		private Row(){
 			
 		}
+		
 	}
 	
 	
@@ -79,12 +83,16 @@ public class InspectionForm {
 		}
 		
 	}
+	public void setDelimiter(String del){
+		delimiter = del;
+	}
 	
 	public InspectionForm(int type){
 		this.type = type;
 	}
 	
-	public void addRow(String row, String delimiter){
+	public void addRow(String row){
+//		this.delim = delimiter;
 		System.out.println("Adding row: "+row);
 		try{
 		String[] split = row.split(delimiter);

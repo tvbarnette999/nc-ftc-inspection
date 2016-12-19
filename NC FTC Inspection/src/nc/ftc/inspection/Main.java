@@ -91,6 +91,7 @@ public class Main extends JFrame {
 	public static Vector<String> events=new Vector<String>();
 	public static Thread autoSaveThread;
 	public static void main(String[] args) {
+		
 		for(String s:args){
 			if(s.startsWith("root=")){
 				//TODO set root
@@ -204,15 +205,8 @@ public class Main extends JFrame {
 	private JPanel inspectionPanel = new JPanel();
 	private JPanel referencePanel = new JPanel();
 	private JPanel formEditPanel = new JPanel();
-	private JList<Row> formEditList = new JList<Row>();
-//	private JTable formEditTable = new JTable(){
-//		RowRenderer renderer = new RowRenderer();
-//		public TableCellRenderer getCellRenderer(int row, int columm){
-//			return renderer;
-//		}
-//	};
 	private FormEditor formEdit = new FormEditor();
-	private JScrollPane formScrollPane = new JScrollPane(formEdit);//List);
+	private JScrollPane formScrollPane = new JScrollPane(formEdit);
 	private JPanel hardwarePanel = new JPanel();
 	private JPanel softwarePanel = new JPanel();
 	private JPanel fieldPanel = new JPanel();
@@ -262,60 +256,9 @@ public class Main extends JFrame {
 	private Vector<Row> form = new Vector<Row>();
 	private InspectionForm editingForm = null;
 	
-	class Model extends AbstractTableModel{
-
-		public Vector<Row> data;
-		
-		
-		@Override
-		public int getColumnCount() {
-			// TODO Auto-generated method stub
-			return 1;
-		}
-
-		@Override
-		public int getRowCount() {
-			// TODO Auto-generated method stub
-			return data.size();
-		}
-
-		@Override
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			if(columnIndex != 0) return null;
-			return data.get(rowIndex);
-		}
-		public boolean isCellEditable(int ow, int col){
-			return true;
-		}
-		
-	};
 	private void editForm(InspectionForm f){
-//		editingForm = f;
-//		form.clear();
-//		for(Row r : f.rows){
-//			try {
-//				form.add((Row)r.clone());
-//			} catch (CloneNotSupportedException e) {
-//				//Why is this even a thing?
-//				e.printStackTrace();
-//			}
-//		}
-//		
-//		Model model = new Model();
-//		model.data = form;
-//		formEditTable.setModel(model);
-//		formEditTable.setTableHeader(null);
-//		formEditTable.setCellEditor( (TableCellEditor) new RowEditor());
-//		formEditList.setListData(form);
 		formEdit.setForm(f);
 		this.formScrollPane.repaint();
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println(this.formEdit.list.get(1).getComponent(0));
 	}
 	private ActionListener formListener = new ActionListener(){
 		public void actionPerformed(ActionEvent e){
@@ -1130,12 +1073,13 @@ public class Main extends JFrame {
 		
 		Scanner scan = Resources.getScanner(srcFile);	//The first line is the delimiter
 		String delimiter = scan.nextLine();
+		target.setDelimiter(delimiter);
 		while(scan.hasNextLine()){
 			try{
 				String line=scan.nextLine();
 				line=line.replaceAll("<","&lt;");
 				line=line.replaceAll(">","&gt;");
-				target.addRow(line, delimiter);
+				target.addRow(line);
 			}catch(Exception e){
 				e.printStackTrace();
 			}

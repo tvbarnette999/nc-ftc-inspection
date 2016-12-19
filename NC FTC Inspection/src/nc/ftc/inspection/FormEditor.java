@@ -97,7 +97,7 @@ public class FormEditor extends JPanel implements Scrollable {
 					JTextArea label = new JTextArea(s);	
 					boxes.addElement(label);
 				}
-				this.setBackground(Color.orange);
+				this.setBackground(Color.orange);//TODO use the real color
 			} else{
 				for(int i : row.param){
 					JComboBox<String> combo = getComboBox();
@@ -169,8 +169,12 @@ public class FormEditor extends JPanel implements Scrollable {
 		}
 
 
-		int getIndex(){
-			return list.indexOf(this);
+		public void addRow(Row r, int ind){
+			RowEdit edit = new RowEdit(r);
+			list.add(ind, edit);
+			FormEditor.this.add(edit, ind);
+			this.revalidate();
+			this.repaint();
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -200,25 +204,61 @@ public class FormEditor extends JPanel implements Scrollable {
 				}
 			} else if(src == addAbove){
 				//yes this is wasteful cuz its about to be cloned and gc'd but oh well
-				Row row = new Row(new String[]{"0", "", ""});
-				int ind = getIndex();
-				System.out.println(list.size());
-				RowEdit edit = new RowEdit(row);
-				list.add(ind, edit);
-				this.revalidate();
-				this.repaint();
-				System.out.println(list.size());
+				addRow(new Row(new String[]{"0", "", ""}), list.indexOf(this));
 				
 			} else if(src == addHeaderAbove){
+				addRow(new HeaderRow(new String[]{"H","0", "", ""}), list.indexOf(this));
 				
 			} else if(src == addBelow){
+				addRow(new Row(new String[]{"0", "", ""}), list.indexOf(this) + 1);
 				
 			} else if(src == addHeaderBelow){
+				addRow(new HeaderRow(new String[]{"H","0", "", ""}), list.indexOf(this) + 1);
 				
 			} else if(src == convert){
+				if(row instanceof HeaderRow){
+					String[] raw = new String[row.cbCount + 3];
+					raw[0] = Integer.toString(row.cbCount);
+					for(int i = 0; i < row.cbCount; i++){
+						raw[i + 1] = Integer.toString(InspectionForm.REQUIRED);
+					}
+					raw[row.cbCount + 1] = this.explain.getText();
+					raw[row.cbCount + 2] = this.rule.getText();
+//					System.out.println(raw[row.cbCount + 2] + " , "+ this.rule.getText() + " , " + row.rule);
+					Row replacement = new Row(raw);
+					row = replacement;
+					RowEdit edit = new RowEdit(row);
+//					System.out.println(edit.rule.getText()+" , " + row.rule);
+					int ind = list.indexOf(this);
+					FormEditor.this.remove(ind);
+					FormEditor.this.add(edit, ind);
+					list.set(ind, edit);
+				} else {
+					String[] raw = new String[row.cbCount + 4];
+					raw[0] = "H";
+					raw[1] = Integer.toString(row.cbCount);
+					for(int i = 0; i < row.cbCount; i++){
+						raw[i + 2] = "";
+					}
+					raw[row.cbCount + 2] = this.explain.getText();
+					raw[row.cbCount + 3] = this.rule.getText();
+					HeaderRow head = new HeaderRow(raw);
+					row = head;
+					RowEdit edit = new RowEdit(row);
+					int ind = list.indexOf(this);
+					FormEditor.this.remove(ind);
+					FormEditor.this.add(edit, ind);
+					list.set(ind, edit);
+					edit.revalidate();
+					edit.repaint();
+					
+				}
 				
 			} else if(src == delete){
-				
+				FormEditor.this.remove(list.indexOf(this));
+				list.remove(this);
+				FormEditor.this.revalidate();
+				FormEditor.this.repaint();
 			}
 		}
 	}
