@@ -35,6 +35,7 @@ public class FormEditor extends JPanel implements Scrollable {
 	//maybe store as \r,  otherwise, dont allow new lines, or just replace them with whitespace see what trey thinks
 	InspectionForm form;
 	Vector<RowEdit> list = new Vector<RowEdit>();
+	String newDelimiter;
 	public FormEditor(){
 		
 	}
@@ -44,6 +45,7 @@ public class FormEditor extends JPanel implements Scrollable {
 	
 	public void setForm(InspectionForm form){
 		this.form = form;
+		this.newDelimiter = form.delimiter;
 		list.clear();
 		this.removeAll();
 		for(Row r : form.rows){
@@ -68,7 +70,7 @@ public class FormEditor extends JPanel implements Scrollable {
 		JMenuItem addHeaderAbove = new JMenuItem("Add Header Above");
 		JMenuItem addBelow = new JMenuItem("Add Row Below");
 		JMenuItem addHeaderBelow = new JMenuItem("Add Header Below");
-		JMenuItem convert = new JMenuItem("Convert to Header");
+		JMenuItem convert;
 		JMenuItem delete = new JMenuItem("Delete");
 		JButton add = new JButton("+");
 		JButton more = new JButton("...");
@@ -93,12 +95,14 @@ public class FormEditor extends JPanel implements Scrollable {
 				e.printStackTrace();
 			}
 			if(row instanceof HeaderRow){
+				convert = new JMenuItem("Convert to Non-Header");
 				for(String s : ((HeaderRow) row).titles){
 					JTextArea label = new JTextArea(s);	
 					boxes.addElement(label);
 				}
 				this.setBackground(Color.orange);//TODO use the real color
 			} else{
+				convert = new JMenuItem("Convert to Header");
 				for(int i : row.param){
 					JComboBox<String> combo = getComboBox();
 					switch(i){
@@ -264,6 +268,12 @@ public class FormEditor extends JPanel implements Scrollable {
 	}
 	
 
+	public void setDelimiter(String del){
+		System.out.println("Delimiter set to " + del);
+		this.newDelimiter = del;
+	}
+	
+	
 	@Override
 	public Dimension getPreferredScrollableViewportSize() {
 		// TODO Auto-generated method stub

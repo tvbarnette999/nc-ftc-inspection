@@ -714,36 +714,10 @@ public class Server {
 		else head += "B: Field Inspection Checklist";
 		pw.println("<html><head><h2>" + head + "</h2><hr style=\"border: 3px solid #943634\" /><h3>Team Number: " + extras + "</h3></head>");
 		//TODO adjust table size so it is useable on phone.
-		pw.println("<body>");//<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;\">");
-		//if(i == HARDWARE){
-			pw.println(hardwareForm.getFormTable(team));
-	//	} else{
-			
-//			pw.println("<tr bgcolor=\"#E6B222\" ><th>Insp.</th><th>Inspection Rule</th><th>Rule #</th></tr>");
-//			
-//			int j=0;
-//			/*
-//			 * 
-//			 * pass: check all boxes are checked.
-//			 *       popup for "signature"? like NobleHour did?
-//			 * fail: dont need to check (could fail for safety)
-//			 * both: send comments 
-//			 *       send status update (pass only when signed)-DONE(no sign for pass yet)
-//			 *       
-//			 * remove auto check for pass when all checked? (forces signature) -DONE
-//			 * 
-//			 */
-//			for(int ind=0;ind<form.size();ind++){
-//				//if(separateCube && ind == Team.CUBE_INDEX)continue;//remove cube from full hw
-//				
-//				String s=form.get(ind);
-//				pw.print("<tr><td id=BG"+extras+type+j+"><label>");
-//				pw.println("<input type=\"checkbox\" name=\""+extras+type+j+"\" "+(team.getStatus(i,j)?"checked=\"checked\"":"")+" onclick=\"update()\"/>");
-//				pw.println("</label></td><td>"+s+"</td></tr>");
-//				j++;
-//			}
-//			pw.println("</table>");
-		//}
+		pw.println("<body>");
+		
+		pw.println(form.getFormTable(team));
+		
 		pw.println("<br><b>General Comments or Reasons for Failure:</b><br><textarea name="+extras+type+" id=\"note\" rows=\"4\" co"
 				+ "ls=\"100\">"+note+"</textarea>");
 		pw.println("<br><br><button type=\"button\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");

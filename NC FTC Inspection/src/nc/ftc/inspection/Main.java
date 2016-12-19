@@ -2,10 +2,12 @@ package nc.ftc.inspection;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -15,12 +17,6 @@ import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
-
 import nc.ftc.inspection.InspectionForm.Row;
 
 
@@ -91,6 +87,7 @@ public class Main extends JFrame {
 	public static Vector<String> events=new Vector<String>();
 	public static Thread autoSaveThread;
 	public static void main(String[] args) {
+		
 		
 		for(String s:args){
 			if(s.startsWith("root=")){
@@ -210,15 +207,27 @@ public class Main extends JFrame {
 	private JPanel hardwarePanel = new JPanel();
 	private JPanel softwarePanel = new JPanel();
 	private JPanel fieldPanel = new JPanel();
+	JPanel formBottomPanel = new JPanel();
+	JTextField delimiter = new JTextField(){
+		private static final long serialVersionUID = -3943675988999287631L;
+
+		public Dimension getPreferredSize(){
+			Dimension d = super.getPreferredSize();
+			if(d.width < 100) d.width = 100;
+			return d;
+		}
+	};
+	JLabel delimiterLabel = new JLabel("Delimiter:");
+	JButton saveForm = new JButton("Save");
+	JButton resetForm = new JButton("Revert Changes");
+	JButton cancelForm = new JButton("Cancel");
 
 	JLabel hardware1 = new JLabel("Hardware:");
 	JLabel software1 = new JLabel("Software:");
 	JLabel field1 = new JLabel("Field:");
-	private static final String DEFAULT = "Default";
-	private static final String CUSTOM = "Custom";
-	private JLabel hardwareLabel = new JLabel(DEFAULT);
-	private JLabel softwareLabel = new JLabel(DEFAULT);
-	private JLabel fieldLabel    = new JLabel(DEFAULT);
+	private JLabel hardwareLabel = new JLabel(Resources.DEFAULT);
+	private JLabel softwareLabel = new JLabel(Resources.DEFAULT);
+	private JLabel fieldLabel    = new JLabel(Resources.DEFAULT);
 	private JButton hardwareEdit = new JButton("Edit");
 	private JButton softwareEdit = new JButton("Edit");
 	private JButton fieldEdit = new JButton("Edit");
@@ -253,11 +262,23 @@ public class Main extends JFrame {
 	private JCheckBox trackField = new JCheckBox("Field",true);
 	private JCheckBox fullField = new JCheckBox("Full Field",true);
 	private static final int INDENT = 50;
-	private Vector<Row> form = new Vector<Row>();
-	private InspectionForm editingForm = null;
 	
 	private void editForm(InspectionForm f){
 		formEdit.setForm(f);
+		delimiter.setText(f.delimiter);
+		delimiter.getDocument().addDocumentListener(new DocumentListener(){
+			@Override
+			public void changedUpdate(DocumentEvent arg0) {
+			}
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				formEdit.setDelimiter(delimiter.getText());
+			}
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				formEdit.setDelimiter(delimiter.getText());
+			}
+		});
 		this.formScrollPane.repaint();
 	}
 	private ActionListener formListener = new ActionListener(){
@@ -270,17 +291,68 @@ public class Main extends JFrame {
 			} else if(source == fieldEdit){
 				editForm(Server.fieldForm);
 			} else if(source == hardwareRestore){
+				//TODO, load the default one.
 				
 			} else if(source == softwareRestore){
 				
 			} else if(source == fieldRestore){
 				
 			} else if(source == hardwareSelect){
-				
+				//TODO, load file chooser
 			} else if(source == softwareSelect){
 				
 			} else if(source == fieldSelect){
 				
+			} else if(source == saveForm){
+				
+				String file = "";
+				switch(formEdit.form.type){
+					case Server.HARDWARE: file = "hwform.dat"; break;
+					case Server.SOFTWARE: file = "swform.dat"; break;
+					case Server.FIELD:    file = "fdform.dat"; break;
+				}
+				String status = Resources.getFileStatus(file);
+				String backup = Resources.getBackup(file);
+				
+				if(status == Resources.CUSTOM){
+					int choice = JOptionPane.showConfirmDialog(Main.this, "This will save as " + file + ",\n moving the old file to " + backup, "Save Custom Form", JOptionPane.OK_CANCEL_OPTION);
+					if(choice != JOptionPane.OK_OPTION) return;
+					try {
+						Resources.renameResource(file, backup);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(Main.this, "Failed to move old file! Aborting operation.");
+						return;
+					}
+				}
+				try {
+					Resources.saveForm(formEdit);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(Main.this, "Failed to save form! Aborting operation.");
+					return;
+				}
+				
+				try {
+					Main.loadInspectionForm(file, formEdit.form);
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				refreshFormStatus();
+				formEdit.form = null;
+				formEdit.list.clear();
+				formEdit.removeAll();
+				formEdit.revalidate();
+				formEdit.repaint();
+			} else if(source == resetForm){
+				editForm(formEdit.form);
+			} else if(source == cancelForm){
+				formEdit.form = null;
+				formEdit.list.clear();
+				formEdit.removeAll();
+				formEdit.revalidate();
+				formEdit.repaint();
 			}
 		}
 	};
@@ -841,13 +913,27 @@ public class Main extends JFrame {
 		inspectionPanel.add(hardwarePanel);
 		inspectionPanel.add(softwarePanel);
 		inspectionPanel.add(fieldPanel);
+
+		refreshFormStatus();
 		
 //		formEditTable.set
 		
 		formEditPanel.setBorder(new TitledBorder("Form Edit"));
 		formEditPanel.setLayout(new BorderLayout());
+		
+		
+		
+		formBottomPanel.add(delimiterLabel);
+		formBottomPanel.add(delimiter);
+		formBottomPanel.add(saveForm);
+		formBottomPanel.add(resetForm);
+		formBottomPanel.add(cancelForm);
+		formEditPanel.add(formBottomPanel, BorderLayout.SOUTH);
 		formEditPanel.add(formScrollPane, BorderLayout.CENTER);
 		
+		saveForm.addActionListener(formListener);
+		resetForm.addActionListener(formListener);
+		cancelForm.addActionListener(formListener);
 		
 		
 		
@@ -987,7 +1073,9 @@ public class Main extends JFrame {
 	}
 	
 	private void refreshFormStatus(){
-		//TODO change to CUSTOM if 
+		this.hardwareLabel.setText(Resources.getFileStatus("hwform.dat"));
+		this.softwareLabel.setText(Resources.getFileStatus("swform.dat"));
+		this.fieldLabel.setText(Resources.getFileStatus("fdform.dat"));
 	}
 	
 	private void updateServerGraphics(){
@@ -1066,11 +1154,14 @@ public class Main extends JFrame {
 				e.printStackTrace();
 			}
 		}
+		scan.close();
 
 	}
 
 	public static void loadInspectionForm(String srcFile, InspectionForm target) throws FileNotFoundException{
-		
+		target.cbTotal = 0;
+		target.rows.clear();
+		target.widestRow = 0;
 		Scanner scan = Resources.getScanner(srcFile);	//The first line is the delimiter
 		String delimiter = scan.nextLine();
 		target.setDelimiter(delimiter);
@@ -1084,6 +1175,7 @@ public class Main extends JFrame {
 				e.printStackTrace();
 			}
 		}
+		scan.close();
 
 	}
 	
