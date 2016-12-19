@@ -304,7 +304,7 @@ public class Server {
 				+ "\n}"
 				+ "\n}"
 				+ "\nxhttp.open(\"POST\",\"./admin?cmd=&&&\" + document.getElementById(\"admin\").value + \"&&&\" + document.cookie, true);"
-				+ "\nxhttp.send();"
+				+ "\nxhttp.send();" // instead of sending everything as part of the URL, we could use the send for the data like the other text areas do. But this works for now
 				+ "\n//window.location.reload(true);"
 				+ "\n}"
 				+ "\n</script>");
@@ -509,6 +509,15 @@ public class Server {
 		req = req.substring(1, req.indexOf("&&&"));
 		return req;
 	}
+	/**
+	 * This replaces any %dd with the character that corresponds to the hex value of dd. This is the standard escape sequence for URI.
+	 * NOTE: While this does check for %d and will not replace it, if there is a %dd it will be replaced. Apparently chrome will convert
+	 * special characters to the %dd sequence, but it will not escape a %dd that is already there, so if your message is "hi%20" then it
+	 * will be rendered as "hi " even if you type out the %20. If yo want to get around this, you could use %25, which is the hex code for
+	 * the percent sign. So to get a return value of "hi%20" you would need to pass in "hi%2520"
+	 * @param cmd The string to process
+	 * @return A string with %dd replaced with the hex character dd.
+	 */
 	public String fixURI(String cmd) {
 		String[] ss = cmd.split("%");
 		StringBuilder sb = new StringBuilder();
@@ -583,8 +592,9 @@ public class Server {
 	}
 	/**
 	 * returns the color used for the given integer representation of progress(PASS,FAIL,etc)
-	 * @param i
-	 * @return
+	 * This defaults to black
+	 * @param i The int to check for color
+	 * @return The color as a String
 	 */
 	public String getColor(int i){
 		switch(i){
