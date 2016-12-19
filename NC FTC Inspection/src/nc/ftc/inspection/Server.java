@@ -26,6 +26,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Server {
+	
+	public static boolean DEBUG = false;
+	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("[hh:mm:ss] ");
 	
 	public static final String RED="\"#FF0000\"";
@@ -155,6 +158,7 @@ public class Server {
 		return cookieCount;
 	}
 	public boolean checkHash(String checkPass) {
+		if (DEBUG) return true;
 		System.out.println("CHECKING HASH");
 		System.out.println();
 		System.out.println(checkPass);
