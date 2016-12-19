@@ -10,6 +10,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
@@ -20,6 +22,8 @@ import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Server {
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("[hh:mm:ss] ");
@@ -51,6 +55,7 @@ public class Server {
 	public static final int ELECTRICAL_FORUM=22;
 	public static final int TOURNAMENT_FORUM=23;
 	public static final int JUDGING_FORUM=24;
+	public static final int ADMIN = 25;
 	public static final int REFERENCE_HOME=8;
 	public static final int MANUAL1=98;
 	public static final int MANUAL2=99;
@@ -238,6 +243,9 @@ public class Server {
 			case JUDGING_FORUM:
 				sendPage(pw, "judgeForum.html");
 				break;
+			case ADMIN:
+				sendAdminPage(pw);
+				break;
 			case LOG:sendLogPage(pw);break;
 			case CUBE_INDEX_PAGE:
 				pw.println((separateCube && fullHardware )?Team.CUBE_INDEX:-1);
@@ -272,6 +280,35 @@ public class Server {
 		traffic++;
 	}
 
+	private void sendAdminPage(PrintWriter pw) {
+		pw.println("<html><body bgcolor=#000><div style=\" overflow-y: auto; overflow-x:auto;\">");
+		pw.println(Main.me.consoleTextArea.getPlainText());
+		pw.println("</div><br>");
+		pw.println("<script>"
+				+ "\nfunction test() {"
+				+ "\nif (window.event.keyCode == 13) {"
+				+ "\nsendAdmin();"
+				+ "\nreturn false;"
+				+ "\n} else return true;"
+				+ "\n}"
+				+ "\nfunction sendAdmin() {"
+				+ "\nvar xhttp = new XMLHttpRequest();"
+				+ "\nxhttp.onreadystatechange = function() {"
+				+ "\n    if (xhttp.readyState == XMLHttpRequest.DONE) {"
+				+ "\n        //alert(xhttp.responseText);    "
+				+ "\n		window.location.reload(true); //this means we have gotten a response back and processing is done"
+				+ "\n}"
+				+ "\n}"
+				+ "\nxhttp.open(\"POST\",\"./admin?cmd=&&&\" + document.getElementById(\"admin\").value + \"&&&\" + document.cookie, true);"
+				+ "\nxhttp.send();"
+				+ "\n//window.location.reload(true);"
+				+ "\n}"
+				+ "\n</script>");
+		pw.println("<textarea onkeypress=\"test();\" cols=\"100\" rows=\"1\" id=\"admin\" autofocus></textarea>");
+		pw.println("<button onclick=\"sendAdmin();\">Send</button>");
+		//TODO add text area to add input
+		pw.println("</body></html>");
+	}
 	/**
 	 * Handles GET requests.
 	 * @param req
@@ -285,7 +322,7 @@ public class Server {
 		boolean verified = false;
 		try {
 			check = check.substring(check.indexOf(cookieHeader) + cookieHeader.length() + 1);
-			check = check.substring(0, check.indexOf('\"')); // also take off [ ]
+			check = check.substring(check.indexOf("&&&") + 3, check.indexOf('\"')); // also take off [ ]
 			verified = checkHash(check);
 		} catch (Exception e) {
 			verified = false;
@@ -302,7 +339,7 @@ public class Server {
 		if(req.equals("checkin"))pageID=verified?CHECKIN:LOGIN;
 		if(req.equals("home"))pageID=verified?HOME:LOGIN;
 		if(req.equals("reference") || req.equals("forum"))pageID=REFERENCE_HOME;
-		
+		if(req.equals("admin"))pageID=verified?ADMIN:LOGIN;
 		
 		if(req.equals("log"))pageID=verified?LOG:LOGIN;
 		
@@ -355,7 +392,7 @@ public class Server {
 		boolean valid=false;
 		String response = "";
 		String extras = "";
-//		System.out.println("POST: \n"+req+"\nData:\n"+data);
+		System.out.println("POST: \n"+req+"\nData:\n"+data);
 		/*
 		 * if the data contains a password, its from the login page.
 		 * That means we can send it a secured page.
@@ -367,8 +404,7 @@ public class Server {
 //				OutputStream out=sock.getOutputStream();
 //				PrintWriter pw=new PrintWriter(out);
 //				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
-				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + hashedPassString + "\\\";path=/\";</script>";
-				cookieCount++;
+				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + cookieCount++ + "&&&" + hashedPassString + "\\\";path=/\";</script>";
 //				pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: " + cookieHeader + hashedPassString + "\"\n\n    \n");
 //				pw.flush();
 				valid=true;
@@ -441,14 +477,37 @@ public class Server {
 				getTeam(t).setSignature(type, teamSig, inpSig);
 				pageID=H204;
 			}
+			else if (req.startsWith("admin?")) {
+				req = fixURI(req);
+				String cmd = req.substring(req.indexOf("&&&") + 3);
+				cmd = cmd.substring(0, cmd.indexOf("&&&"));
+				System.out.println("CMD: " + cmd);
+				String who = req.substring(req.indexOf(cookieHeader) + cookieHeader.length());
+				who = who.substring(0, who.indexOf("&&&"));
+				System.out.println("WHO: " + who);
+				Main.me.handleCommand(cmd, who);
+				response = "HELLO THIS IS A RESPONSE";
+				pageID = SEND_RESPONSE;
+			}
 			else{
 				pageID=1;
 			}
 		}
 		sendPage(sock,pageID, extras, valid, response);	
 	}
-	
-	
+	public String fixURI(String cmd) {
+		String[] ss = cmd.split("%");
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < ss.length - 1; i++) {
+			sb.append(ss[i]);
+			if (Character.isDigit(ss[i + 1].charAt(0))) {
+				sb.append((char) Integer.parseInt(ss[i + 1].substring(0, 2), 16));
+				ss[i + 1] = ss[i + 1].substring(2);
+			}
+		}
+		sb.append(ss[ss.length - 1]);
+		return sb.toString();
+	}
 	/**
 	 * Use extras = generateExtrasPopup(popup) to render a javascript pop up on the page
 	 * @param popup The string to render
@@ -951,7 +1010,7 @@ public class Server {
 					String[] datarray=req.split("\n");
 					String data=datarray[datarray.length-1];
 					data=data.substring(data.indexOf("\n")+3);//why is this here? This is why we comment code.
-					post(req.substring(5,req.indexOf("\n")),data,sock);
+					post(req.substring(5,req.indexOf("\n")),data,sock);//yeah? well maybe I don't like your tone
 				}
 				sock.close();
 			}catch(Exception e){
@@ -965,7 +1024,7 @@ public class Server {
 	public static void addLogEntry(String s){
 		String time=DATE_FORMAT.format(Calendar.getInstance().getTime());
 		statusLog.add(time+s);
-		Main.me.append(s);
+		Main.me.append(s, null);
 		
 	}
 	
