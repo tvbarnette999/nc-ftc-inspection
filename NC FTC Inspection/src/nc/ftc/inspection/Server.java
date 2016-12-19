@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 public class Server {
 	
-	public static boolean DEBUG = false;
+	public static boolean DEBUG = true;
 	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("[hh:mm:ss] ");
 	
@@ -158,7 +158,6 @@ public class Server {
 		return cookieCount;
 	}
 	public boolean checkHash(String checkPass) {
-		if (DEBUG) return true;
 		System.out.println("CHECKING HASH");
 		System.out.println();
 		System.out.println(checkPass);
@@ -327,9 +326,9 @@ public class Server {
 		try {
 			check = check.substring(check.indexOf(cookieHeader) + cookieHeader.length() + 1);
 			check = check.substring(check.indexOf("&&&") + 3, check.indexOf('\"')); // also take off [ ]
-			verified = checkHash(check);
+			verified = checkHash(check) || DEBUG;
 		} catch (Exception e) {
-			verified = false;
+			verified = DEBUG;
 			//e.printStackTrace();
 			//we dont have the password
 		}
