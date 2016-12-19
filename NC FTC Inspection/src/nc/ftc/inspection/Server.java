@@ -837,7 +837,7 @@ public class Server {
 	
 	/**
 	 * Sends the inspection home page, which has a menu to choose inspection
-	 * @param pw
+	 * @param pw The writer to send to
 	 */
 	public void sendHomePage(PrintWriter pw){
 		//TODO make this page better
@@ -858,7 +858,10 @@ public class Server {
 		pw.println("</body></html>");
 		pw.flush();
 	}
-
+	/**
+	 * Sends the log page
+	 * @param pw The writer to send to
+	 */
 	public void sendLogPage(PrintWriter pw){
 		pw.println("<html><body>");
 		for(String s:statusLog){
@@ -921,6 +924,7 @@ public class Server {
 	 * Format:
 	 * line 1:Event Full name
 	 * line 2:Comma separated list of team #s
+	 * @param event The string of the event to load. Must correspond to a .event file
 	 * @throws FileNotFoundException
 	 */
 	public void loadEvent(String event) throws FileNotFoundException{
@@ -963,7 +967,7 @@ public class Server {
 		}
 		scan.close();
 		
-		for(Team t:teams){
+		for(Team t:teams){//can be converted to 1.6
 			scan= Resources.getHardwareScanner(t.number);
 			for(int i=0;i<t.hwData.length;i++){
 				t.hwData[i]=scan.nextBoolean();
@@ -1036,7 +1040,10 @@ public class Server {
 		}
 	}
 	
-	/**Adds a String to the Server's status log*/
+	/**
+	 * Adds a String to the Server's status log
+	 * @param s The string to add to the log
+	 */
 	public static void addLogEntry(String s){ //TODO add who
 		String time=DATE_FORMAT.format(Calendar.getInstance().getTime());
 		statusLog.add(time+s);
@@ -1044,14 +1051,20 @@ public class Server {
 		
 	}
 	
-	/**Adds a String to the Server's Error log*/
+	/**
+	 * Adds a String to the Server's Error log
+	 * @param s The string to add to the error log
+	 */
 	public static void addErrorEntry(String s) {
 		String time=DATE_FORMAT.format(Calendar.getInstance().getTime());
 		statusLog.add(time+s);
 		Main.me.error(s, null);
 	}
 	
-	/**Adds an exception to the Server's Error log*/
+	/**
+	 * Adds an exception to the Server's Error log
+	 * @param e The exception to log
+	 */ 
 	public static void addErrorEntry(Exception e) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		e.printStackTrace(new PrintStream(b));
