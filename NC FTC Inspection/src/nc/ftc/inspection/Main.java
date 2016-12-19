@@ -31,7 +31,7 @@ public class Main extends JFrame {
 //	public static HashMap<Integer,String> teamData=new HashMap<Integer,String>();
 
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("[hh:mm:ss] ");
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("hh:mm:ss");
 
 	public static final boolean NIMBUS = true;
 
@@ -140,7 +140,7 @@ public class Main extends JFrame {
 					}
 					catch(Exception e){
 						e.printStackTrace();
-						me.error(e.getLocalizedMessage());
+						me.error(e.getLocalizedMessage(), null);
 					}
 				}
 			}
@@ -1219,23 +1219,26 @@ public class Main extends JFrame {
 				kill(); //TODO (add confirmation?)
 			}
 			else{
-				error("UNKNOW COMMAND: "+args[0]);
+				error("UNKNOW COMMAND: "+args[0], who);
 				return;
 			}
 			append((success?"SUCCESS":"FAILED"), who);
 		}
 	}
 
-	private String[] colors = new String[] {"FF7F00", "#9400D3", "#00FF00", "#FF00FF", "#AAAAAA"};
+	private String[] colors = new String[] {"#FF7F00", "#9400D3", "#00FF00", "#FF00FF", "#AAAAAA"};
+	public static final String ERROR_STRING = "ERROR";
+	public static final String SERVER_STRING = "Server";
 	public void append(String s, String who) {
 		s = fixHTML(s);
-		String color = who == null ? "#888888" : colors[Math.abs(who.hashCode()) % colors.length];
-		String timeWho = "<font color=\"" + color + "\">" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + "</font>";
+		String color = who == null ? "#888888" : (who.startsWith(ERROR_STRING) ? "#FF0000" : colors[Math.abs(who.hashCode() - 1) % colors.length]);
+		String timeWho = "<font color=\"" + color + "\" face=\"lucida console\">[" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + " - " + (who == null ? SERVER_STRING : who.replaceAll(ERROR_STRING, "")) + "] </font>";
 		consoleTextArea.append(timeWho + "<font color=\"#ffffff\" face=\"lucida console\">" + s + "</font><br>");
 	}
-	public void error(String s) {
-		s = fixHTML(s);
-		consoleTextArea.append("<font color=\"#ff0000\">" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + "</font><font color=\"#ff0000\" face=\"lucida console\">" + s + "</font><br>"); 
+	public void error(String s, String who) {
+		append(s, ERROR_STRING + (who == null ? SERVER_STRING : who));
+//		s = fixHTML(s);
+//		consoleTextArea.append("<font color=\"#ff0000\">" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + "</font><font color=\"#ff0000\" face=\"lucida console\">" + s + "</font><br>"); 
 	}
 	public static String fixHTML(String s) {
 		return s.replaceAll("\n", "<br>").replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");

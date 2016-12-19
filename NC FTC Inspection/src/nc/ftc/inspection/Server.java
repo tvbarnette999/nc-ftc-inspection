@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Server {
 	
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("[hh:mm:ss] ");
 	
@@ -280,7 +280,10 @@ public class Server {
 		pw.close();
 		traffic++;
 	}
-
+	/**
+	 * Sends the admin page to the given printWriter
+	 * @param pw The PrintWriter to send to it
+	 */
 	private void sendAdminPage(PrintWriter pw) {
 		pw.println("<html><body bgcolor=#000><div style=\" overflow-y: auto; overflow-x:auto;\">");
 		pw.println(Main.me.consoleTextArea.getPlainText());
@@ -365,7 +368,6 @@ public class Server {
 			if(req.startsWith("judge"))pageID=JUDGING_FORUM;
 			if(req.startsWith("manual1"))pageID=MANUAL1;
 			if(req.startsWith("manual1"))pageID=MANUAL2;
-			
 		}
 		//these do not require login
 		if(req.equals("favicon.ico"))pageID=100;
@@ -417,6 +419,8 @@ public class Server {
 				if(req.equals("software"))pageID=SOFTWARE;
 				if(req.equals("cube"))pageID=CUBE;
 				if(req.equals("checkin"))pageID=CHECKIN;
+				
+				//FOR COMPLICATED SOCKET REASONS, YOU CANNOT AUTO-REDIRECT TO THE ADMIN PAGE
 				
 			} else {
 				pageID = 1;
@@ -1033,10 +1037,10 @@ public class Server {
 	}
 	
 	/**Adds a String to the Server's status log*/
-	public static void addLogEntry(String s){
+	public static void addLogEntry(String s){ //TODO add who
 		String time=DATE_FORMAT.format(Calendar.getInstance().getTime());
 		statusLog.add(time+s);
-		Main.me.append(s, null);
+		Main.me.append(s, null);//make this the who too
 		
 	}
 	
@@ -1044,7 +1048,7 @@ public class Server {
 	public static void addErrorEntry(String s) {
 		String time=DATE_FORMAT.format(Calendar.getInstance().getTime());
 		statusLog.add(time+s);
-		Main.me.error(s);
+		Main.me.error(s, null);
 	}
 	
 	/**Adds an exception to the Server's Error log*/
