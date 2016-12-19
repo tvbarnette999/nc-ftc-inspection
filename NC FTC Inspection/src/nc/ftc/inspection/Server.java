@@ -10,8 +10,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
@@ -22,8 +20,6 @@ import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Server {
 	
@@ -114,11 +110,13 @@ public class Server {
 	
 	private byte[] hashedPass;
 	private String hashedPassString;
+	private String currentPasswordPlaintext;
 	
 	private int cookieCount;
 	private int traffic;
 	
 	public void setPassword(String password) {
+		currentPasswordPlaintext = password;
 		cookieCount = 0;
 		SecureRandom rand = new SecureRandom();
 		ByteBuffer buff = ByteBuffer.allocate(Long.BYTES + password.getBytes().length);
@@ -309,7 +307,6 @@ public class Server {
 				+ "\n</script>");
 		pw.println("<textarea onkeypress=\"test();\" cols=\"100\" rows=\"1\" id=\"admin\" autofocus></textarea>");
 		pw.println("<button onclick=\"sendAdmin();\">Send</button>");
-		//TODO add text area to add input
 		pw.println("</body></html>");
 	}
 	/**
@@ -485,8 +482,7 @@ public class Server {
 				String cmd = req.substring(req.indexOf("&&&") + 3);
 				cmd = cmd.substring(0, cmd.indexOf("&&&"));
 				System.out.println("CMD: " + cmd);
-				String who = req.substring(req.indexOf(cookieHeader) + cookieHeader.length());
-				who = who.substring(0, who.indexOf("&&&"));
+				String who = getWho(req);
 				System.out.println("WHO: " + who);
 				Main.me.handleCommand(cmd, who);
 				response = "HELLO THIS IS A RESPONSE";
@@ -498,14 +494,27 @@ public class Server {
 		}
 		sendPage(sock,pageID, extras, valid, response);	
 	}
+	/**
+	 * Returns the number assigned to this user stored in the cookie
+	 * @param req the cookie header (or more, it will filter)
+	 * @return the number assigned to this user
+	 */
+	public String getWho(String req) {
+		req = fixURI(req);
+		req = req.substring(req.indexOf(cookieHeader) + cookieHeader.length());
+		req = req.substring(1, req.indexOf("&&&"));
+		return req;
+	}
 	public String fixURI(String cmd) {
 		String[] ss = cmd.split("%");
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < ss.length - 1; i++) {
 			sb.append(ss[i]);
-			if (Character.isDigit(ss[i + 1].charAt(0))) {
+			if (ss[i + 1].length() > 1 && Character.isDigit(ss[i + 1].charAt(0)) && Character.isDigit(ss[i + 1].charAt(1))) {
 				sb.append((char) Integer.parseInt(ss[i + 1].substring(0, 2), 16));
 				ss[i + 1] = ss[i + 1].substring(2);
+			} else {
+				ss[i + 1] = '%' + ss[i + 1]; // reconstruct the original with the percent
 			}
 		}
 		sb.append(ss[ss.length - 1]);
@@ -932,7 +941,7 @@ public class Server {
 		//load status data if exists
 		scan=Resources.getStatusScanner();
 		if(scan==null)return;//were done here- no data
-		String[] line;
+//		String[] line = null;
 		while(scan.hasNextLine()){
 			Team.loadDataFromString(scan.nextLine());
 //			line=scan.nextLine().split(",");
@@ -1139,7 +1148,7 @@ public class Server {
 		PrintWriter pw = Resources.getConfigWriter();
 		if(pw == null)return false;
 		pw.println(event);
-		pw.println(hashedPassString);
+		pw.println(currentPasswordPlaintext);
 		pw.println(trackCheckIn);
 		pw.println(trackCube);
 		pw.println(separateCube);
@@ -1164,8 +1173,7 @@ public class Server {
 		if(Main.events.contains(event)){
 			Server.event = event;
 		}
-		hashedPassString=scan.nextLine();
-		//TODO call whatever is needed for the password
+		this.setPassword(scan.nextLine());
 		trackCheckIn = scan.nextBoolean();
 		scan.nextLine();
 		trackCube = scan.nextBoolean();
