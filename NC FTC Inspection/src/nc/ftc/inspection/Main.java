@@ -88,15 +88,6 @@ public class Main extends JFrame {
 	public static Thread autoSaveThread;
 	public static void main(String[] args) {
 		
-		
-		for(String s:args){
-			if(s.startsWith("root=")){
-				//TODO set root
-			}
-			if(s.startsWith("headless")){
-				//TODO headless
-			}
-		}
 		//TODO popup for non existant root directory?
 //		if(!Resources.rootExists()){
 //			
@@ -1139,25 +1130,7 @@ public class Main extends JFrame {
 		if(scan!=null)scan.close();
 
 	}
-
-
-	public static void loadInspectionForm(String srcFile, Vector<String> target) throws FileNotFoundException{
-		Scanner scan=Resources.getScanner(srcFile);			
-		while(scan.hasNextLine()){
-			try{
-				String line=scan.nextLine();
-				line=line.replaceAll("<","&lt;");
-				line=line.replaceAll(">","&gt;");
-//				line=line.replaceAll("::", "</td><td>");
-				target.add(line);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-		}
-		scan.close();
-
-	}
-
+	
 	public static void loadInspectionForm(String srcFile, InspectionForm target) throws FileNotFoundException{
 		target.cbTotal = 0;
 		target.rows.clear();

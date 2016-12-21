@@ -71,22 +71,27 @@ public class Resources {
 	/**
 	 * Returns an InputStream for the given resource.
 	 * @param name the name of the resource
+	 * @param forceDefault Throw exception if not the default (in .jar) one
 	 * @return the InputStream
 	 * @throws FileNotFoundException if file cannot be found
 	 */
 	@SuppressWarnings("resource")
-	public static InputStream getInputStream(String name) throws FileNotFoundException{
+	public static InputStream getInputStream(String name, boolean forceDefault) throws FileNotFoundException{
 		InputStream in;
 		/*try root save directory first- if we need to change a file on the fly it loads that one first 
 		(also any mod like add team- rewrite new event data file there and its saved)
 		*/
 		try{
+			if(forceDefault)throw new Exception("Forcing Default");
 			in = new FileInputStream(root + "/" + name);
 			fileStatus.put(name, CUSTOM);
 		}catch(Exception e){
 			try{		
 				in = Resources.class.getResourceAsStream("/Resources/" + name);
-				if(in == null)throw new FileNotFoundException("Resource " + name + " not in save root");
+				if(in == null){
+					if(forceDefault) throw new FileNotFoundException("Unable to load default!");
+					throw new FileNotFoundException("Resource " + name + " not in save root");
+				}
 				fileStatus.put(name, DEFAULT);
 			}catch(FileNotFoundException e1){
 				System.err.println("Unable to load Resource: " + name);
@@ -95,6 +100,18 @@ public class Resources {
 		}
 		return in;
 	}
+	
+	/**
+	 * Returns an InputStream for the given resource.
+	 * @param name the name of the resource
+	 * @return the InputStream
+	 * @throws FileNotFoundException if file cannot be found
+	 */
+	public static InputStream getInputStream(String name) throws FileNotFoundException{
+		return getInputStream(name, false);
+	}
+	
+	
 	public static PrintWriter getWriter(String file) throws IOException{
 		File f = new File(root + "/" + file);
 		if(!f.exists())f.createNewFile();
@@ -477,15 +494,8 @@ public class Resources {
 		String name = file.substring(0, file.lastIndexOf('.'));
 		String ext = file.substring(file.lastIndexOf('.'));
 		int i = 1;
-		try {
-			InputStream in;
-			while((in = getInputStream(root + "/" + name + "_" + i + ext)) != null){
-				i++;
-				in.close();
-			}
-		} catch (IOException e) {
-//			e.printStackTrace(); THis is wat we want.
-		}
+		System.out.println(root + "/" + name + "_" + i + ext);
+		while(new File(root + "/" + name + "_" + i + ext).exists())i++;
 		return name + "_" + i + ext;
 	}
 
@@ -509,7 +519,7 @@ public class Resources {
 				pw.print("H" + form.newDelimiter);
 				pw.print(edit.row.cbCount + form.newDelimiter);
 				for(String t : ((HeaderRow)edit.row).titles){
-					pw.print(t + form.newDelimiter);
+					pw.print(t.replaceAll("\n", "<br>") + form.newDelimiter);
 				}
 			} else{
 				pw.print(edit.row.cbCount + form.newDelimiter);
@@ -518,8 +528,8 @@ public class Resources {
 				}
 			}
 
-			pw.print(edit.explain.getText() + form.newDelimiter);
-			pw.println(edit.rule.getText());
+			pw.print(edit.explain.getText().replaceAll("\n", "<br>") + form.newDelimiter);
+			pw.println(edit.rule.getText().replaceAll("\n", "<br>"));
 		}
 
 		pw.flush();

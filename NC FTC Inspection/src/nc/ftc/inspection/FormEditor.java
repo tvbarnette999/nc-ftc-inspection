@@ -97,7 +97,7 @@ public class FormEditor extends JPanel implements Scrollable {
 			if(row instanceof HeaderRow){
 				convert = new JMenuItem("Convert to Non-Header");
 				for(String s : ((HeaderRow) row).titles){
-					JTextArea label = new JTextArea(s);	
+					JTextArea label = new JTextArea(s.replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("<br>", "\n"));
 					boxes.addElement(label);
 				}
 				this.setBackground(Color.orange);//TODO use the real color
@@ -125,8 +125,8 @@ public class FormEditor extends JPanel implements Scrollable {
 			explain.setLineWrap(true);
 			rule.setLineWrap(true);
 			
-			explain.setText(r.explain);
-			rule.setText(r.rule);
+			explain.setText(r.explain.replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("<br>", "\n"));
+			rule.setText(r.rule.replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("<br>", "\n"));
 			
 			JPanel morePan = new JPanel();
 			morePan.add(more);

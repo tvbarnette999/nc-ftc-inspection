@@ -93,9 +93,9 @@ public class InspectionForm {
 	
 	public void addRow(String row){
 //		this.delim = delimiter;
-		System.out.println("Adding row: "+row);
+		System.out.println("Adding row: " + row);
 		try{
-		String[] split = row.split(delimiter);
+		String[] split = row.split(delimiter, -1); //negative number doesnt leave off trailing empty strings
 		if(split[0].startsWith("H")){
 			Row r = new HeaderRow(split);
 			rows.add(r);
@@ -127,7 +127,7 @@ public class InspectionForm {
 		table.append("<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;\">");
 		int cbIndex = 0;
 		for(Row r : rows){
-			int span = widestRow / r.cbCount;
+			int span = r.cbCount == 0 ? 0 : widestRow / r.cbCount;
 			if(r instanceof HeaderRow){
 				//TODO LCM of table widths
 				table.append("<tr bgcolor=\"#E6B222\">");
@@ -150,7 +150,7 @@ public class InspectionForm {
 						table.append(" colspan=\"" + span + "\"><label>");
 						table.append("<input type=\"checkbox\"");
 						table.append("name=\"" + team.number + type + cbIndex + "\" ");
-						table.append(/*team.getStatus(this.type,cbIndex)*/false ? "checked=\"checked\"" : "");
+						table.append(/*team.getStatus(this.type,cbIndex)*/false ? "checked=\"checked\"" : ""); //TODO FIXME Put this back in after fixing forms
 						table.append("onclick=\"update()\"/>");
 						table.append("</label>");
 						cbIndex++;
