@@ -6,9 +6,30 @@ import java.util.Arrays;
 import static java.lang.Math.max;
 
 public class InspectionForm {
-	public static final int OPIONAL = 1;
-	public static final int NA = -1;
-	public static final int REQUIRED = 0;
+	public enum CB_LEVEL{
+		REQUIRED  (0, "REQ"),
+		OPTIONAL (1, "OPT"),
+		NA (-1, "NA");
+		final int value;
+		final String abbrev;
+		private CB_LEVEL(int val, String abbrev){
+			this.value = val;
+			this.abbrev = abbrev;
+		}
+		
+		public String toString(){
+			return abbrev;
+		}
+		
+		static CB_LEVEL get(int i){
+			switch(i){
+				case 0: return REQUIRED;
+				case 1: return OPTIONAL;
+				case -1: return NA;
+			}
+			return null;
+		}
+	}
 	
 	//TODO SIZING CUBE INDEX TO AUTOFIL FROM SEPARATE CUBE
 	
@@ -143,7 +164,7 @@ public class InspectionForm {
 				table.append("<tr bgcolor=\"#FFFFFF\">");
 				for(int param : r.param){
 					table.append("<td");
-					if(param == NA){
+					if(param == CB_LEVEL.NA.value){
 						table.append(">NA");						
 					} else{
 						table.append(" id=BG" + team.number + type + cbIndex);

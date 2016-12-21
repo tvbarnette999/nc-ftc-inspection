@@ -13,7 +13,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import javax.swing.JComboBox;
+import javax.swing.JTextArea;
+
 import nc.ftc.inspection.FormEditor.RowEdit;
+import nc.ftc.inspection.InspectionForm.CB_LEVEL;
 import nc.ftc.inspection.InspectionForm.HeaderRow;
 
 /**A class with static methods for accessing Resources. The root directory is specified at runtime or in configuration, and 
@@ -504,6 +508,7 @@ public class Resources {
 	 * @param form
 	 * @throws IOException
 	 */
+	@SuppressWarnings("unchecked")
 	public static void saveForm(FormEditor form) throws IOException {
 		String file = "";
 		switch(form.form.type){
@@ -515,16 +520,16 @@ public class Resources {
 		pw.println(form.newDelimiter);
 		System.out.println(form.list.size());
 		for(RowEdit edit : form.list){
-			if(edit.row instanceof HeaderRow){
+			if(edit.header){
 				pw.print("H" + form.newDelimiter);
-				pw.print(edit.row.cbCount + form.newDelimiter);
-				for(String t : ((HeaderRow)edit.row).titles){
-					pw.print(t.replaceAll("\n", "<br>") + form.newDelimiter);
+				pw.print((edit.left.getComponentCount() - 1) + form.newDelimiter);
+				for(int i = 0; i < edit.left.getComponentCount() - 1; i ++){
+					pw.print(((JTextArea)edit.left.getComponent(i)).getText().replaceAll("\n", "<br>") + form.newDelimiter);
 				}
 			} else{
-				pw.print(edit.row.cbCount + form.newDelimiter);
-				for(int p : edit.row.param){
-					pw.print(p + form.newDelimiter);
+				pw.print((edit.left.getComponentCount() - 1) + form.newDelimiter);
+				for(int i = 0; i < edit.left.getComponentCount() - 1; i++){
+					pw.print(((CB_LEVEL)((JComboBox<CB_LEVEL>)edit.left.getComponent(i)).getSelectedItem()).value + form.newDelimiter);
 				}
 			}
 
