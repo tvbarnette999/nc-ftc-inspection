@@ -35,6 +35,7 @@ public class FormEditor extends JPanel implements Scrollable {
 	//TODO open pdf by running it as a command (either cmd xxx.pf or just .pdf) runtime.exec
 	//FIXME When saving, is there is a newline, replace it with <br>!!!!!! -oh no, wont work cuz it will get replaced with &lt whn loaded.... 
 	//maybe store as \r,  otherwise, dont allow new lines, or just replace them with whitespace see what trey thinks
+	//TODO When saving a file, if a change in # of CB occured, handle that with all Team Objects - resize arrays immediately. 
 	InspectionForm form;
 	Vector<RowEdit> list = new Vector<RowEdit>();
 	String newDelimiter;
@@ -274,14 +275,14 @@ public class FormEditor extends JPanel implements Scrollable {
 	
 	@Override
 	public Dimension getPreferredScrollableViewportSize() {
-		// TODO Auto-generated method stub
+		
 		
 		return getPreferredSize();
 	}
 
 	@Override
 	public int getScrollableBlockIncrement(Rectangle arg0, int arg1, int arg2) {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
@@ -297,7 +298,7 @@ public class FormEditor extends JPanel implements Scrollable {
 
 	@Override
 	public int getScrollableUnitIncrement(Rectangle arg0, int arg1, int arg2) {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 	

@@ -77,9 +77,9 @@ public class Server {
 	private boolean done=false;
 	
 	//TODO add sections to the form data to handle new one, accommodate for dual columned entries like new SW
-	public static Vector<String> HWForm=new Vector<String>();
-	public static Vector<String> SWForm=new Vector<String>();
-	public static Vector<String> FDForm=new Vector<String>();
+//	public static Vector<String> HWForm=new Vector<String>();
+//	public static Vector<String> SWForm=new Vector<String>();
+//	public static Vector<String> FDForm=new Vector<String>();
 	
 	public static InspectionForm hardwareForm = new InspectionForm(HARDWARE);
 	public static InspectionForm softwareForm = new InspectionForm(SOFTWARE);
@@ -834,7 +834,7 @@ public class Server {
 	 */
 	public void loadEvent(String event) throws FileNotFoundException{
 		if(event == null)return;//Do not attempt to load null event.
-		Scanner scan=Resources.getScanner(event+".event");//new Scanner(new File("Resources/"+event));
+		Scanner scan = Resources.getScanner(event+".event");//new Scanner(new File("Resources/"+event));
 		Server.event = event;//if finds file, set Server event to the new one.
 		fullEventName = scan.nextLine();
 		Vector<Integer> nums=new Vector<Integer>();
@@ -852,23 +852,11 @@ public class Server {
 		Collections.sort(teams);
 		
 		//load status data if exists
-		scan=Resources.getStatusScanner();
-		if(scan==null)return;//were done here- no data
+		scan = Resources.getStatusScanner();
+		if(scan == null)return;//were done here- no data
 		String[] line;
 		while(scan.hasNextLine()){
-			Team.loadDataFromString(scan.nextLine());
-//			line=scan.nextLine().split(",");
-//			if(line.length<1)continue;
-//			try{
-//				Team t=getTeam(Integer.parseInt(line[0]));
-//				t.checkedIn=Boolean.parseBoolean(line[1]);
-//				t.cube=Integer.parseInt(line[2]);
-//				t.hardware=Integer.parseInt(line[3]);;
-//				t.software=Integer.parseInt(line[4]);
-//				t.field=Integer.parseInt(line[5]);
-//			}catch(Exception e){
-//				
-//			}			
+			Team.loadDataFromString(scan.nextLine());		
 		}
 		scan.close();
 		
@@ -877,6 +865,10 @@ public class Server {
 			try{
 				for(int i = 0; i < t.hwData.length; i++){
 					t.hwData[i] = scan.nextBoolean();
+				}
+				if(scan.hasNextBoolean()){
+					addErrorEntry("Team file has more entries: " + t.number + " HW");
+					while(scan.hasNextBoolean()) scan.nextBoolean();
 				}
 				scan.nextLine();
 				t.hwTeamSig = scan.nextLine();
@@ -887,7 +879,7 @@ public class Server {
 			}catch(Exception e){
 				//This means that the size of the form did not match the number of entries
 				//in the team's .ins file
-				addErrorEntry("Inspection File Mismatch: " + t.number + "HW");
+				addErrorEntry("Inspection File Mismatch: " + t.number + " HW");
 			}
 			scan.close();
 			
@@ -895,6 +887,10 @@ public class Server {
 			try{
 				for(int i = 0; i < t.swData.length; i++){
 					t.swData[i] = scan.nextBoolean();
+				}
+				if(scan.hasNextBoolean()){
+					addErrorEntry("Team file has more entries: " + t.number + " SW");
+					while(scan.hasNextBoolean()) scan.nextBoolean();
 				}
 				scan.nextLine();
 				t.swTeamSig = scan.nextLine();
@@ -911,6 +907,10 @@ public class Server {
 			try{
 				for(int i = 0; i < t.fdData.length; i++){
 					t.fdData[i] = scan.nextBoolean();
+				}
+				if(scan.hasNextBoolean()){
+					addErrorEntry("Team file has more entries: " + t.number + " FD");
+					while(scan.hasNextBoolean()) scan.nextBoolean();
 				}
 				scan.nextLine();
 				t.fdTeamSig = scan.nextLine();
@@ -1012,6 +1012,14 @@ public class Server {
 		}		
 		return false;
 	}
+
+	public void unloadEvent() {
+		save();
+		event = null;
+		teams.clear();
+		addLogEntry("No Event Loaded");
+		
+	}
 	
 	/**
 	 * Saves the current team status data to the .status file, and the full inspection data for each team
@@ -1021,8 +1029,8 @@ public class Server {
 	public static boolean save(){
 		Resources.saveEventFile();
 		theServer.saveConfig();
-		PrintWriter pw=Resources.getStatusWriter();
-		if(pw==null)return false;
+		PrintWriter pw = Resources.getStatusWriter();
+		if(pw == null)return false;
 		for(Team t : theServer.teams){
 			pw.println(t.getStatusString());
 		}

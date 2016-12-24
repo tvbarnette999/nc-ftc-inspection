@@ -327,7 +327,7 @@ public class Main extends JFrame {
 				try {
 					Main.loadInspectionForm(file, formEdit.form);
 				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
+				
 					e1.printStackTrace();
 				}
 				refreshFormStatus();
@@ -1127,7 +1127,7 @@ public class Main extends JFrame {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		if(scan!=null)scan.close();
+		if(scan != null) scan.close();
 
 	}
 	
@@ -1439,6 +1439,9 @@ public class Main extends JFrame {
 				append("\tIP");
 				append("\tSAVE");
 				return;
+			}
+			else if(args[0].equals("UNLOAD")){
+				Server.theServer.unloadEvent();
 			}
 			else{
 				error("UNKNOW COMMAND: "+args[0]);
