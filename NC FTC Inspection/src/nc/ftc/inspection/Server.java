@@ -194,7 +194,7 @@ public class Server {
 
 		}
 		//respond to default text/html request
-		else pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\n");
+		else pw.print("HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n"); //TODO Check that utf-8 works (check marks in forms)
 		
 		if (extras == null){ 
 			extras = "";

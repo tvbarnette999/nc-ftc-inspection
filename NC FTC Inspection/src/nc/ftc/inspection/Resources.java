@@ -120,7 +120,7 @@ public class Resources {
 	public static PrintWriter getWriter(String file) throws IOException{
 		File f = new File(root + "/" + file);
 		if(!f.exists())f.createNewFile();
-		PrintWriter pw = new PrintWriter(f);
+		PrintWriter pw = new PrintWriter(f, "UTF-8");
 		return pw;
 	}
 

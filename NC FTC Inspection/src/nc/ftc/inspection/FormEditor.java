@@ -35,7 +35,8 @@ public class FormEditor extends JPanel implements Scrollable {
 	//TODO open pdf by running it as a command (either cmd xxx.pf or just .pdf) runtime.exec
 	//FIXME When saving, is there is a newline, replace it with <br>!!!!!! -oh no, wont work cuz it will get replaced with &lt whn loaded.... 
 	//maybe store as \r,  otherwise, dont allow new lines, or just replace them with whitespace see what trey thinks
-	//TODO When saving a file, if a change in # of CB occured, handle that with all Team Objects - resize arrays immediately. 
+	//TODO When saving a file, if a change in # of CB occured, handle that with all Team Objects - resize arrays immediately.
+	//TODO fix checkmarks so we dont have to replace with &#x2714; <-- this would mean checking every character, and if above u+255 converting it to that
 	InspectionForm form;
 	Vector<RowEdit> list = new Vector<RowEdit>();
 	String newDelimiter;
@@ -194,7 +195,7 @@ public class FormEditor extends JPanel implements Scrollable {
 //					h.titles = Arrays.copyOf(h.titles, h.cbCount);
 //					h.titles[h.cbCount - 1] = "";
 					
-					left.add(area, left.getComponentCount() - 2); //-1 for + button, -1 for index
+					left.add(area, left.getComponentCount() - 1); //-1 for + button, -1 for index
 					left.revalidate();
 					left.repaint();
 				} else{
@@ -202,7 +203,9 @@ public class FormEditor extends JPanel implements Scrollable {
 					boxes.add(combo);
 //					row.param = Arrays.copyOf(row.param, row.cbCount);
 //					row.param[row.cbCount - 1] = 0;
-					left.add(combo,left.getComponentCount() - 2);
+
+					System.out.println(left.getComponentCount());
+					left.add(combo,left.getComponentCount() - 1);
 				}
 				
 			} else if(src == addAbove){
@@ -221,7 +224,6 @@ public class FormEditor extends JPanel implements Scrollable {
 			} else if(src == convert){
 				int count = left.getComponentCount() - 1;
 				left.removeAll();
-				while(left.getComponentCount() > 1)left.remove(0);
 				
 				header = !header;
 				boxes.clear();

@@ -188,7 +188,8 @@ public class InspectionForm {
 			table.append("</tr>");
 		}
 		table.append("</table>");
-		return table.toString();
+		
+		return table.toString().replaceAll("&lt;br&gt;", "<br>");
 	}
 	
 	
