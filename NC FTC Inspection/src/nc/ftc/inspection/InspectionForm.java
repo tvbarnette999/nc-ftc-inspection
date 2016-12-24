@@ -170,9 +170,11 @@ public class InspectionForm {
 						table.append(" id=BG" + team.number + type + cbIndex);
 						table.append(" colspan=\"" + span + "\"><label>");
 						table.append("<input type=\"checkbox\"");
-						table.append("name=\"" + team.number + type + cbIndex + "\" ");
-						table.append(/*team.getStatus(this.type,cbIndex)*/false ? "checked=\"checked\"" : ""); //TODO FIXME Put this back in after fixing forms
-						table.append("onclick=\"update()\"/>");
+						table.append(" name=\"" + team.number + type + cbIndex + "\" ");
+						table.append(/*team.getStatus(this.type,cbIndex)*/false ? " checked=\"checked\"" : ""); //TODO FIXME Put this back in after fixing forms
+						table.append(" value=\"" + param + "\"");
+						table.append(" onclick=\"update()\"/>");
+						
 						table.append("</label>");
 						cbIndex++;
 					}

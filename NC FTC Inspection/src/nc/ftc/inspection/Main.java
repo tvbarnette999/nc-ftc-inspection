@@ -39,12 +39,7 @@ public class Main extends JFrame {
 	public static final boolean NIMBUS = true;
 
 	/*
-	 * TODO Decide how events are structured:
-	 * 
-	 * Premake team list for each event 
-	 * or select teams during setup?
-	 * 
-	 * Add search bar for adding team
+	 * TODO List:
 	 * 
 	 * Handle inability to load event
 	 * Handle incorrect inspection form (form vs team file mismatch)

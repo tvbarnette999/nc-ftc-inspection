@@ -355,8 +355,8 @@ public class Server {
 	 * @throws IOException
 	 */
 	public void post(String req, String data,Socket sock) throws IOException{
-		int pageID=0;
-		boolean valid=false;
+		int pageID = 0;
+		boolean valid = false;
 		String response = "";
 		String extras = "";
 //		System.out.println("POST: \n"+req+"\nData:\n"+data);
@@ -403,26 +403,26 @@ public class Server {
 				pageID=CUBE_INDEX_PAGE;
 			}
 			else if(req.startsWith("update?")){//These are requests that contain a state change for a team for a level of inspection.
-				System.out.println("LINE 389: "+req);
-				String s=req.substring(req.indexOf("=")+1);
-				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
-				String type=s.substring(s.indexOf("_")+1,s.indexOf("&"));
-				String v=s.substring(s.indexOf("=")+1);
-				v=v.substring(0, v.indexOf(" "));
-				getTeam(t).setStatus(type,Integer.parseInt(v));
+				System.out.println("LINE 389: " + req);
+				String s = req.substring(req.indexOf("=") + 1);
+				int t = Integer.parseInt(s.substring(0, s.indexOf("_")));
+				String type = s.substring(s.indexOf("_") + 1, s.indexOf("&"));
+				String v = s.substring(s.indexOf("=")+1);
+				v = v.substring(0, v.indexOf(" "));
+				getTeam(t).setStatus(type, Integer.parseInt(v));
 				pageID=H204;
 			}
 			else if(req.startsWith("fullupdate?")){//full inspection state change
-				String s=req.substring(req.indexOf("=")+1);
-				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
-				String type=s.substring(s.indexOf("_")+1,s.indexOf("&"));
-				int index=Integer.parseInt(type.substring(2));//type is 2 characters
-				type=type.substring(0, 2);
-				String v=s.substring(s.indexOf("=")+1);
-				v=v.substring(0, v.indexOf(" "));
+				String s = req.substring(req.indexOf("=")+1);
+				int t = Integer.parseInt(s.substring(0, s.indexOf("_")));
+				String type = s.substring(s.indexOf("_")+1,s.indexOf("&"));
+				int index = Integer.parseInt(type.substring(2));//type is 2 characters
+				type = type.substring(0, 2);
+				String v = s.substring(s.indexOf("=")+1);
+				v = v.substring(0, v.indexOf(" "));
 				getTeam(t).setInspectionIndex(type,index,Boolean.parseBoolean(v));
 				//send conf wth id of td containing the checkbox and the data we received(v)
-				response="BG"+t+"_"+type+index+"="+v;
+				response = "BG" + t + "_" + type + index + "=" + v;
 				pageID=SEND_RESPONSE;
 			}
 			else if(req.startsWith("note?")){
@@ -604,12 +604,6 @@ public class Server {
 		pw.println("</h1><table cellspacing=\"10\">");
 		for(Team t:teams){
 			pw.println("<tr><td id=\"R"+t.number+"\" bgcolor="+getColor(t.getStatus(i))+">"+t.number+"</td><td>");
-			/* radio button code (OLD)
-			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+PASS+"\" "+(t.get(i)==PASS?"checked=\"checked\"":"")+" onclick=\"update()\"/>Pass</label></td>");
-			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+FAIL+"\" "+(t.get(i)==FAIL?"checked=\"checked\"":"")+" onclick=\"update()\"/>Fail</label></td>");
-			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+PROGRESS+"\" "+(t.get(i)==PROGRESS?"checked=\"checked\"":"")+" onclick=\"update()\"/>In Progress</label></td>");
-			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+NO_DATA+"\" "+(t.get(i)==NO_DATA?"checked=\"checked\"":"")+" onclick=\"update()\"/>Uninspected</label></td>");
-			*/
 			//ComboBox code:
 			pw.println("<select onchange=\"update()\" name=\""+ t.number + type + "\""+">");
 			pw.println("<option value=\"" + PASS     + "\"" + (t.getStatus(i) == PASS?"selected":"")     + ">PASS</option>");
@@ -664,7 +658,7 @@ public class Server {
 			case FIELD:    type="field";break;
 			default:return;//TODO something else here?
 		}
-		pw.println("<html><body><h1>");
+		pw.println("<html><meta http-equiv=\"refresh\" content=\"5\"><body><h1>");//TODO test if refhresh is noticeable
 		switch(i){
 			case HARDWARE:pw.println("Hardware Inspection");break;
 			case SOFTWARE:pw.println("Software Inspection");break;

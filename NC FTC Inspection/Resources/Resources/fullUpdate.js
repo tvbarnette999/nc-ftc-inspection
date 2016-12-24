@@ -29,15 +29,15 @@ function fullpass(){
 	
 	sendNote();
 	//check everything is passed first. If not, popup and do not post.
-	var inputs=document.getElementsByTagName("input");
+	var inputs = document.getElementsByTagName("input");
 	var length = inputs.length;
-	var allPass=true;
+	var allPass = true;
 	
 	//if HW,ask for cube index. We will skip checking that index's checkbox as it will be handled by the cube page
 	//if cube inspection not separate from hw, server will return -1.
 	var name = event.target.name;
 	var ind = name.indexOf("_");
-	var isHW = name.substring(ind+1, ind+3) == "HW";
+	var isHW = name.substring(ind + 1, ind + 3) == "HW";
 	var cubeIndex=-1;
 	
 	if(isHW){
@@ -47,8 +47,9 @@ function fullpass(){
 		var cubeIndex=parseInt(xhttp.responseText);
 	}
 	for (var i = 0; i < length; i++) {
-		if(i==cubeIndex)continue; //skip the sizing cube
-	    if(inputs[i].type=="checkbox" && !inputs[i].checked){
+		if(i == cubeIndex)continue; //skip the sizing cube
+		//check value again 0 (required)
+	    if(inputs[i].type=="checkbox" && inputs.value == 0 && !inputs[i].checked){
 	    	allPass=false;
 	    	break;
 	    }

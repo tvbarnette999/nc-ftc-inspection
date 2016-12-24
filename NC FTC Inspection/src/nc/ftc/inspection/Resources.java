@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -538,7 +539,26 @@ public class Resources {
 		}
 
 		pw.flush();
-		pw.close();		
+		pw.close();	
+		
+		//TODO test this: Should update size of team's bool [] when form changes
+		switch(form.form.type){
+			case Server.HARDWARE:
+				for(Team t : Team.masterList.values()){
+					t.hwData = Arrays.copyOf(t.hwData, form.form.cbTotal);
+				} 
+				break;
+			case Server.SOFTWARE: 
+				for(Team t : Team.masterList.values()){
+					t.swData = Arrays.copyOf(t.swData, form.form.cbTotal);
+				} 
+				break;
+			case Server.FIELD:
+				for(Team t : Team.masterList.values()){
+					t.fdData = Arrays.copyOf(t.fdData, form.form.cbTotal);
+				} 
+				break;
+		}
 		
 	}
 
