@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -171,8 +172,8 @@ public class Server {
 	 * @throws IOException
 	 */
 	public void sendPage(Socket sock,int i, String extras, boolean verified, Object ... other) throws IOException{
-		OutputStream out=sock.getOutputStream();
-		PrintWriter pw=new PrintWriter(out);
+		OutputStream out = sock.getOutputStream();
+		PrintWriter pw = new PrintWriter(out);
 		//responding to post with data success header
 		if(i==H204){
 			pw.println("HTTP/1.1 204 No Content\n");
@@ -194,7 +195,12 @@ public class Server {
 
 		}
 		//respond to default text/html request
-		else pw.print("HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n"); //TODO Check that utf-8 works (check marks in forms)
+		else{
+			//need UTF-8, so do this: (for special characters in inspectiion form)
+			pw = new PrintWriter(new OutputStreamWriter(out, "utf-8")); //TODO check me here: this is not a memory leak cuz closing a pw closes the underlying stream right?
+			pw.print("HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n"); 
+			
+		}
 		
 		if (extras == null){ 
 			extras = "";

@@ -124,8 +124,8 @@ public class FormEditor extends JPanel implements Scrollable {
 			explain.setLineWrap(true);
 			rule.setLineWrap(true);
 			
-			explain.setText(row.explain.replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("<br>", "\n"));
-			rule.setText(row.rule.replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("<br>", "\n"));
+			if(row.explain != null)explain.setText(row.explain.replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("<br>", "\n"));
+			if(row.rule != null)rule.setText(row.rule.replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("<br>", "\n"));
 			
 			JPanel morePan = new JPanel();
 			morePan.add(more);

@@ -277,7 +277,7 @@ public class Main extends JFrame {
 			} else if(source == fieldEdit){
 				editForm(Server.fieldForm);
 			} else if(source == hardwareRestore){
-				//TODO, load the default one.
+				//TODO- Move custom one to backup, reload default file
 				
 			} else if(source == softwareRestore){
 				

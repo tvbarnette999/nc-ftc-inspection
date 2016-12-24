@@ -56,8 +56,12 @@ public class InspectionForm {
 			for(int i = 0; i < cbCount; i++){
 				param[i] = Integer.parseInt(raw[1 + i]);
 			}
-			explain = raw[cbCount + 1];
-			rule = raw[cbCount + 2];
+			try{
+				explain = raw[cbCount + 1];
+				rule = raw[cbCount + 2];
+			}catch(ArrayIndexOutOfBoundsException e){
+				//This row doesnt have enough data.
+			}
 		}
 		
 		
@@ -171,7 +175,7 @@ public class InspectionForm {
 						table.append(" colspan=\"" + span + "\"><label>");
 						table.append("<input type=\"checkbox\"");
 						table.append(" name=\"" + team.number + type + cbIndex + "\" ");
-						table.append(/*team.getStatus(this.type,cbIndex)*/false ? " checked=\"checked\"" : ""); //TODO FIXME Put this back in after fixing forms
+						table.append(team.getStatus(this.type,cbIndex) ? " checked=\"checked\"" : ""); //TODO FIXME Put this back in after fixing forms
 						table.append(" value=\"" + param + "\"");
 						table.append(" onclick=\"update()\"/>");
 						
