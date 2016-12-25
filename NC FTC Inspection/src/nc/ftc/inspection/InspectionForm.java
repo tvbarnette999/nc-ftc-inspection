@@ -37,8 +37,10 @@ public class InspectionForm {
 	int cbTotal;
 	int widestRow;
 	int type; 
+	int cubeIndex = -1;
 	String delimiter;
-	
+	String color = "#E6B222"; //the old color
+	String header;
 	
 	static class Row{
 		int cbCount;
@@ -120,19 +122,35 @@ public class InspectionForm {
 //		this.delim = delimiter;
 		System.out.println("Adding row: " + row);
 		try{
-		String[] split = row.split(delimiter, -1); //negative number doesnt leave off trailing empty strings
-		if(split[0].startsWith("H")){
-			Row r = new HeaderRow(split);
-			rows.add(r);
-			widestRow = max(widestRow, r.cbCount);
-		}
-		else{
-			Row r = new Row(split);
-			rows.add(r);
-			cbTotal += r.cbCount;
-			widestRow = max(widestRow, r.cbCount);			
-		}
+			String[] split = row.split(delimiter, -1); //negative number doesnt leave off trailing empty strings
+			if(split[0].startsWith("I")){
+				//metadata row.
+				for(String data : split){
+					System.out.println("Data Line: "+data);
+					if(data.startsWith("color=")){
+						color = data.substring(data.indexOf("=") + 1);
+					}
+					if(data.startsWith("cube_index=")){
+						cubeIndex = Integer.parseInt(data.substring(data.indexOf("=") + 1));
+					}
+					if(data.startsWith("header=")){
+						header = data.substring(data.indexOf("=") + 1);
+					}
+				}
+			}
+			else if(split[0].startsWith("H")){
+				Row r = new HeaderRow(split);
+				rows.add(r);
+				widestRow = max(widestRow, r.cbCount);
+			} 
+			else{
+				Row r = new Row(split);
+				rows.add(r);
+				cbTotal += r.cbCount;
+				widestRow = max(widestRow, r.cbCount);			
+			}
 		}catch(Exception e){
+			Server.addErrorEntry("Error Loading Inspection Form row: " + row);
 			e.printStackTrace();
 		}
 	}
@@ -155,13 +173,13 @@ public class InspectionForm {
 			int span = r.cbCount == 0 ? 0 : widestRow / r.cbCount;
 			if(r instanceof HeaderRow){
 				//TODO LCM of table widths
-				table.append("<tr bgcolor=\"#E6B222\">");
+				table.append("<tr bgcolor=\""+color+"\">"); //old color is #E6B222
 				for(String title : ((HeaderRow)r).titles){
 					table.append("<th colspan=\"" + span + "\">");
 					table.append(title);
 					table.append("</th>");
 				}
-				table.append("<th>" + r.explain + "</th>");
+				table.append("<th align=\"left\" >" + r.explain + "</th>");
 				table.append("<th>" + r.rule + "</th>");
 			}
 			else{

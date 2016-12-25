@@ -99,7 +99,7 @@ public class FormEditor extends JPanel implements Scrollable {
 					JTextArea label = new JTextArea(s.replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("<br>", "\n"));
 					boxes.addElement(label);
 				}
-				this.setBackground(Color.orange);//TODO use the real color
+				this.setBackground(Color.decode(form.color));//TODO use the real color
 			} else{
 				convert = new JMenuItem("Convert to Header");
 				for(int i : row.param){
@@ -241,7 +241,7 @@ public class FormEditor extends JPanel implements Scrollable {
 						
 						boxes.add(label);
 					}
-					this.setBackground(Color.orange);//TODO use the real color
+					this.setBackground(Color.decode(form.color));//TODO use the real color
 				} else{
 					convert.setText("Convert to Header");
 					

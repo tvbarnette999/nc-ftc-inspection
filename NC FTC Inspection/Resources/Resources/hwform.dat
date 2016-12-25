@@ -1,4 +1,7 @@
 ::
+I::color=#F57E25
+I::header=Appendix B - Robot Inspection Checklist
+I::cube_index=1
 H::1::✔ ::Robot Size Inspection::Rule #
 1::0::Robot is presented at inspection with all mechanisms (including all components of each mechanism), configurations, and decorations that will be used on the Robot during the competition.::<I7>
 1::0::Separately test the Robot in all of its unique starting (pre-match setup) configurations. The Robot fits within the Sizing Box without exerting undue force on the sizing box sides and top.::<RG02><br>

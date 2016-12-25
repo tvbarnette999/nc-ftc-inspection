@@ -710,8 +710,12 @@ public class Server {
 			case FIELD:    form = fieldForm; type = "_FD"; note = team.fdNote; back = "/field";    break;
 			default: throw new IllegalArgumentException("Full inspection not supported");
 		}
-		if(type.contains("HW")) head += "B: Robot Inspection Checklist";
-		else head += "C: Field Inspection Checklist";
+		if(form.header != null){
+			head = form.header;
+		} else{
+			if(type.contains("HW")) head += "B - Robot Inspection Checklist";
+			else head += "C - Field Inspection Checklist";
+		}
 		pw.println("<html><head><h2>" + head + "</h2><hr style=\"border: 3px solid #943634\" /><h3>Team Number: " + extras + "</h3></head>");
 		//TODO adjust table size so it is useable on phone.
 		pw.println("<body>");

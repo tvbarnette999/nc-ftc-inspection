@@ -1,4 +1,6 @@
 ::
+I::color=#F57E25
+I::header=Appendix C - Field Inspection Checklist
 H::1::✔::Driver Station Hardware Rules::Rule #
 1::0::Driver Station consists only of one Android device (ZTE Speed, Motorola Moto G 2nd Generation, Motorola Moto G 3rd Generation, Motorola Moto G4 Play, Google Nexus 5, or Samsung Galaxy S5). 	::<RE06><br><RE16>
 1::0::Driver Station Android device USB interface is only connected to either a Mini USB to OTG cable or combination of cables connected to an unpowered USB Hub, or One (1) gamepad. 	::<RE16>b 

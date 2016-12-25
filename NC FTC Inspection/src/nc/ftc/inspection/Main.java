@@ -199,7 +199,7 @@ public class Main extends JFrame {
 
 		public Dimension getPreferredSize(){
 			Dimension d = super.getPreferredSize();
-			if(d.width < 100) d.width = 100;
+			if(d.width < 50) d.width = 50;
 			return d;
 		}
 	};

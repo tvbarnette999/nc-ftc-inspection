@@ -519,6 +519,9 @@ public class Resources {
 		}
 		PrintWriter pw = getWriter(file);
 		pw.println(form.newDelimiter);
+		pw.println("I::color=" + form.form.color);
+		if(form.form.header != null) pw.println("I::header=" + form.form.header);
+		if(form.form.cubeIndex > -1)pw.println("I::cube_index=" + form.form.cubeIndex);
 		System.out.println(form.list.size());
 		for(RowEdit edit : form.list){
 			if(edit.header){
