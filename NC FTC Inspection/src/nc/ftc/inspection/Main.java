@@ -31,7 +31,7 @@ public class Main extends JFrame {
 //	public static HashMap<Integer,String> teamData=new HashMap<Integer,String>();
 
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("[hh:mm:ss] ");
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("hh:mm:ss");
 
 	public static final boolean NIMBUS = true;
 
@@ -129,7 +129,7 @@ public class Main extends JFrame {
 					}
 					catch(Exception e){
 						e.printStackTrace();
-						me.error(e.getLocalizedMessage());
+						me.error(e.getLocalizedMessage(), null);
 					}
 				}
 			}
@@ -509,12 +509,19 @@ public class Main extends JFrame {
 	private JLabel cookieLabel = new JLabel(COOKIE_LABEL_STRING);
 	private String trafficString = "Traffic (15s bin): ";
 	private JLabel trafficLabel = new JLabel(trafficString);
+	/**
+	 * This is the panel for displaying the traffic graph in the server screen
+	 */
 	private JPanel trafficPanel = new JPanel() {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 6310389226347369367L;
 
+		/**
+		 * This draws the bar graph of the traffic
+		 * @param g The graphics object to draw
+		 */
 		@Override
 		public void paint(Graphics g) {
 			
@@ -549,12 +556,21 @@ public class Main extends JFrame {
 
 	private JPanel consolePanel = new JPanel();
 	public FTCEditorPane consoleTextArea = new FTCEditorPane();
+	/**
+	 * This is for the cmd line interface. The system uses HTML code to render the commands, and this
+	 * class hides the need for the the interfacing code to care about some of the details of appending to html code.
+	 * @author Trey
+	 *
+	 */
 	public class FTCEditorPane extends JEditorPane {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 602436360740296867L;
 		String text = "";
+		/**
+		 * Creates a new empty command line display. This sets the background to black and the foreground to white.
+		 */
 		public FTCEditorPane() {
 			setContentType("text/html");
 			setEditable(false);
@@ -562,6 +578,10 @@ public class Main extends JFrame {
 			setForeground(Color.white);
 			setMaximumSize(new Dimension(10000, 400));
 		}
+		/**
+		 * This appends the given string to the command line and refreshes the GUI
+		 * @param t The String to append
+		 */
 		public void append(String t) {
 			text += t;
 			setText("<html><body>" + text + "</body></html>");
@@ -574,9 +594,18 @@ public class Main extends JFrame {
 			//			System.out.println(getText());
 			pack();
 		}
+		/**
+		 * Returns the text without the leading and trailing html and body tags.
+		 * NOTE: this is still HTML stylized, and currently there is no helper methods to convert back.
+		 * This is currently used for serving the /admin page which ports the cmd line to the web
+		 * @return
+		 */
 		public String getPlainText() {
 			return text;
 		}
+		/**
+		 * Clears the text of the command line
+		 */
 		public void clear() {
 			text = "";
 		}
@@ -609,6 +638,10 @@ public class Main extends JFrame {
 	 * update resource button: manual, forum.
 	 */
 	
+	/**
+	 * This quietly closes the server and then stops execution.
+	 * NOTE: this is needed to free the port that we are using for comm.
+	 */
 	public void kill() {
 		Server.stopServer();
 		setVisible(false);
@@ -618,6 +651,11 @@ public class Main extends JFrame {
 	/*
 	 * TODO divide this method into more moethods? Move each tab init to each own method? Move annonymous definitions outside method?
 	 * Basically this method is waaaay to long.
+	 */
+	/**
+	 * This does all of the work to init the GUI. 
+	 * NOTE: I think this ONLY does graphics stuff, but we have not guaranteed that it only does this.
+	 * If we move to headless ability, we need to check this method. Also, there may be other GUI init outside of this method.
 	 */
 	private void initGUI() {
 		setCheckBoxes();
@@ -1044,6 +1082,9 @@ public class Main extends JFrame {
 		teamList.setListData(Server.theServer.teams);
 	}
 	
+	/**
+	 * This uses Java 1.8 code to sort. NOTE: this could be converted to 1.6 if we decide we need to for portability.
+	 */
 	private void refreshMasterList(){
 		Vector<Team> v = new Vector<Team>(Team.masterList.values());
 		v.removeAll(Server.theServer.teams);
@@ -1065,7 +1106,9 @@ public class Main extends JFrame {
 		this.softwareLabel.setText(Resources.getFileStatus("swform.dat"));
 		this.fieldLabel.setText(Resources.getFileStatus("fdform.dat"));
 	}
-	
+	/**
+	 * This updates the area at the bottom right of the console page that shows the traffic states and the cookies issued
+	 */
 	private void updateServerGraphics(){
 		cookieLabel.setText(COOKIE_LABEL_STRING + Server.theServer.getCookieCount() + "");
 		System.arraycopy(traffic, 1, traffic, 0, traffic.length - 1); // shift array 1 left
@@ -1149,6 +1192,12 @@ public class Main extends JFrame {
 
 	}
 	
+	/**
+	 * This handles the command that was given by the String specified by who.
+	 * Who should be null only for use by the system console.
+	 * @param command The command to process
+	 * @param who The person who sent the command (or null for the System)
+	 */
 	public void handleCommand(String command, String who){
 		//TODO implement commands
 
@@ -1440,30 +1489,52 @@ public class Main extends JFrame {
 				return;
 			}
 			else if (args[0].equals("KILL") || args[0].equals("STOP")) {
-				kill(); //TODO (add confirmation?)
+				kill(); 
 			}
 			else if(args[0].equals("UNLOAD")){
 				Server.theServer.unloadEvent();
 			}
 			else{
-				error("UNKNOW COMMAND: "+args[0]);
+				error("UNKNOW COMMAND: "+args[0], who);
 				return;
 			}
 			append((success?"SUCCESS":"FAILED"), who);
 		}
 	}
 
-	private String[] colors = new String[] {"FF7F00", "#9400D3", "#00FF00", "#FF00FF", "#AAAAAA"};
+	private String[] colors = new String[] {"#FF7F00", "#9400D3", "#00FF00", "#FF00FF", "#AAAAAA"};
+	public static final String ERROR_STRING = "ERROR";
+	public static final String SERVER_STRING = "Server";
+	/**
+	 * Used to append info to the console
+	 * This formats the string that is given, adding a timestamp and stylizing the who sent it option.
+	 * If who is null then it sends it as the server, which will be gray, otherwise each person is assigned a color based on the name.
+	 * If the name starts with ERROR then the ERROR will be removed from the name and it will be stylized red. 
+	 * This is so that the system can display error responses to any user.
+	 * @param s The string to append to the console
+	 * @param who The user that posted this string (or the user this is a response to)
+	 */
 	public void append(String s, String who) {
 		s = fixHTML(s);
-		String color = who == null ? "#888888" : colors[Math.abs(who.hashCode()) % colors.length];
-		String timeWho = "<font color=\"" + color + "\">" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + "</font>";
+		String color = who == null ? "#888888" : (who.startsWith(ERROR_STRING) ? "#FF0000" : colors[Math.abs(who.hashCode() - 1) % colors.length]);
+		String timeWho = "<font color=\"" + color + "\" face=\"lucida console\">[" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + " - " + (who == null ? SERVER_STRING : who.replaceAll(ERROR_STRING, "")) + "] </font>";
 		consoleTextArea.append(timeWho + "<font color=\"#ffffff\" face=\"lucida console\">" + s + "</font><br>");
 	}
-	public void error(String s) {
-		s = fixHTML(s);
-		consoleTextArea.append("<font color=\"#ff0000\">" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + "</font><font color=\"#ff0000\" face=\"lucida console\">" + s + "</font><br>"); 
+	/**
+	 * This is the same as append, but it stylizes it as an ERROR. See append for more info
+	 * @param s The string to append to the console as an error
+	 * @param who The user this error is a response to
+	 */
+	public void error(String s, String who) {
+		append(s, ERROR_STRING + (who == null ? SERVER_STRING : who));
+//		s = fixHTML(s);
+//		consoleTextArea.append("<font color=\"#ff0000\">" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + "</font><font color=\"#ff0000\" face=\"lucida console\">" + s + "</font><br>"); 
 	}
+	/**
+	 * This replaces the line breaks and tabs in text with html versions
+	 * @param s The string to fix
+	 * @return The fixed string
+	 */
 	public static String fixHTML(String s) {
 		return s.replaceAll("\n", "<br>").replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
 	}

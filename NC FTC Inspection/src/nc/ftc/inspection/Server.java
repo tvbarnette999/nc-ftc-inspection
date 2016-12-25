@@ -120,11 +120,13 @@ public class Server {
 	
 	private byte[] hashedPass;
 	private String hashedPassString;
+	private String currentPasswordPlaintext;
 	
 	private int cookieCount;
 	private int traffic;
 	
 	public void setPassword(String password) {
+		currentPasswordPlaintext = password;
 		cookieCount = 0;
 		SecureRandom rand = new SecureRandom();
 		ByteBuffer buff = ByteBuffer.allocate(Long.BYTES + password.getBytes().length);
@@ -164,7 +166,6 @@ public class Server {
 		return cookieCount;
 	}
 	public boolean checkHash(String checkPass) {
-		if (DEBUG) return true;
 		System.out.println("CHECKING HASH");
 		System.out.println();
 		System.out.println(checkPass);
@@ -294,7 +295,10 @@ public class Server {
 		pw.close();
 		traffic++;
 	}
-
+	/**
+	 * Sends the admin page to the given printWriter
+	 * @param pw The PrintWriter to send to it
+	 */
 	private void sendAdminPage(PrintWriter pw) {
 		pw.println("<html><body bgcolor=#000><div style=\" overflow-y: auto; overflow-x:auto;\">");
 		pw.println(Main.me.consoleTextArea.getPlainText());
@@ -315,13 +319,12 @@ public class Server {
 				+ "\n}"
 				+ "\n}"
 				+ "\nxhttp.open(\"POST\",\"./admin?cmd=&&&\" + document.getElementById(\"admin\").value + \"&&&\" + document.cookie, true);"
-				+ "\nxhttp.send();"
+				+ "\nxhttp.send();" // instead of sending everything as part of the URL, we could use the send for the data like the other text areas do. But this works for now
 				+ "\n//window.location.reload(true);"
 				+ "\n}"
 				+ "\n</script>");
 		pw.println("<textarea onkeypress=\"test();\" cols=\"100\" rows=\"1\" id=\"admin\" autofocus></textarea>");
 		pw.println("<button onclick=\"sendAdmin();\">Send</button>");
-		//TODO add text area to add input
 		pw.println("</body></html>");
 	}
 	/**
@@ -338,9 +341,9 @@ public class Server {
 		try {
 			check = check.substring(check.indexOf(cookieHeader) + cookieHeader.length() + 1);
 			check = check.substring(check.indexOf("&&&") + 3, check.indexOf('\"')); // also take off [ ]
-			verified = checkHash(check);
+			verified = checkHash(check) || DEBUG;
 		} catch (Exception e) {
-			verified = false;
+			verified = DEBUG;
 			//e.printStackTrace();
 			//we dont have the password
 		}
@@ -434,6 +437,8 @@ public class Server {
 				if(req.equals("cube"))pageID=CUBE;
 				if(req.equals("checkin"))pageID=CHECKIN;
 				
+				//FOR COMPLICATED SOCKET REASONS, YOU CANNOT AUTO-REDIRECT TO THE ADMIN PAGE
+				
 			} else {
 				pageID = 1;
 				extras = generateExtrasPopup("Incorrect Password");
@@ -498,8 +503,7 @@ public class Server {
 				String cmd = req.substring(req.indexOf("&&&") + 3);
 				cmd = cmd.substring(0, cmd.indexOf("&&&"));
 				System.out.println("CMD: " + cmd);
-				String who = req.substring(req.indexOf(cookieHeader) + cookieHeader.length());
-				who = who.substring(0, who.indexOf("&&&"));
+				String who = getWho(req);
 				System.out.println("WHO: " + who);
 				Main.me.handleCommand(cmd, who);
 				response = "HELLO THIS IS A RESPONSE";
@@ -511,14 +515,36 @@ public class Server {
 		}
 		sendPage(sock,pageID, extras, valid, response);	
 	}
+	/**
+	 * Returns the number assigned to this user stored in the cookie
+	 * @param req the cookie header (or more, it will filter)
+	 * @return the number assigned to this user
+	 */
+	public String getWho(String req) {
+		req = fixURI(req);
+		req = req.substring(req.indexOf(cookieHeader) + cookieHeader.length());
+		req = req.substring(1, req.indexOf("&&&"));
+		return req;
+	}
+	/**
+	 * This replaces any %dd with the character that corresponds to the hex value of dd. This is the standard escape sequence for URI.
+	 * NOTE: While this does check for %d and will not replace it, if there is a %dd it will be replaced. Apparently chrome will convert
+	 * special characters to the %dd sequence, but it will not escape a %dd that is already there, so if your message is "hi%20" then it
+	 * will be rendered as "hi " even if you type out the %20. If yo want to get around this, you could use %25, which is the hex code for
+	 * the percent sign. So to get a return value of "hi%20" you would need to pass in "hi%2520"
+	 * @param cmd The string to process
+	 * @return A string with %dd replaced with the hex character dd.
+	 */
 	public String fixURI(String cmd) {
 		String[] ss = cmd.split("%");
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < ss.length - 1; i++) {
 			sb.append(ss[i]);
-			if (Character.isDigit(ss[i + 1].charAt(0))) {
+			if (ss[i + 1].length() > 1 && Character.isDigit(ss[i + 1].charAt(0)) && Character.isDigit(ss[i + 1].charAt(1))) {
 				sb.append((char) Integer.parseInt(ss[i + 1].substring(0, 2), 16));
 				ss[i + 1] = ss[i + 1].substring(2);
+			} else {
+				ss[i + 1] = '%' + ss[i + 1]; // reconstruct the original with the percent
 			}
 		}
 		sb.append(ss[ss.length - 1]);
@@ -583,8 +609,9 @@ public class Server {
 	}
 	/**
 	 * returns the color used for the given integer representation of progress(PASS,FAIL,etc)
-	 * @param i
-	 * @return
+	 * This defaults to black
+	 * @param i The int to check for color
+	 * @return The color as a String
 	 */
 	public String getColor(int i){
 		switch(i){
@@ -815,7 +842,7 @@ public class Server {
 	
 	/**
 	 * Sends the inspection home page, which has a menu to choose inspection
-	 * @param pw
+	 * @param pw The writer to send to
 	 */
 	public void sendHomePage(PrintWriter pw){
 		//TODO make this page better
@@ -836,7 +863,10 @@ public class Server {
 		pw.println("</body></html>");
 		pw.flush();
 	}
-
+	/**
+	 * Sends the log page
+	 * @param pw The writer to send to
+	 */
 	public void sendLogPage(PrintWriter pw){
 		pw.println("<html><body>");
 		for(String s:statusLog){
@@ -899,6 +929,7 @@ public class Server {
 	 * Format:
 	 * line 1:Event Full name
 	 * line 2:Comma separated list of team #s
+	 * @param event The string of the event to load. Must correspond to a .event file
 	 * @throws FileNotFoundException
 	 */
 	public void loadEvent(String event) throws FileNotFoundException{
@@ -1028,22 +1059,31 @@ public class Server {
 		}
 	}
 	
-	/**Adds a String to the Server's status log*/
-	public static void addLogEntry(String s){
+	/**
+	 * Adds a String to the Server's status log
+	 * @param s The string to add to the log
+	 */
+	public static void addLogEntry(String s){ //TODO add who
 		String time=DATE_FORMAT.format(Calendar.getInstance().getTime());
 		statusLog.add(time+s);
-		Main.me.append(s, null);
+		Main.me.append(s, null);//make this the who too
 		
 	}
 	
-	/**Adds a String to the Server's Error log*/
+	/**
+	 * Adds a String to the Server's Error log
+	 * @param s The string to add to the error log
+	 */
 	public static void addErrorEntry(String s) {
 		String time=DATE_FORMAT.format(Calendar.getInstance().getTime());
 		statusLog.add(time+s);
-		Main.me.error(s);
+		Main.me.error(s, null);
 	}
 	
-	/**Adds an exception to the Server's Error log*/
+	/**
+	 * Adds an exception to the Server's Error log
+	 * @param e The exception to log
+	 */ 
 	public static void addErrorEntry(Exception e) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		e.printStackTrace(new PrintStream(b));
@@ -1152,7 +1192,7 @@ public class Server {
 		PrintWriter pw = Resources.getConfigWriter();
 		if(pw == null)return false;
 		pw.println(event);
-		pw.println(hashedPassString);
+		pw.println(currentPasswordPlaintext);
 		pw.println(trackCheckIn);
 		pw.println(trackCube);
 		pw.println(separateCube);
@@ -1180,8 +1220,7 @@ public class Server {
 			Server.event = null;
 			Server.addLogEntry("No Event Loaded");
 		}
-		hashedPassString=scan.nextLine();
-		//TODO call whatever is needed for the password
+		this.setPassword(scan.nextLine());
 		trackCheckIn = scan.nextBoolean();
 		scan.nextLine();
 		trackCube = scan.nextBoolean();
