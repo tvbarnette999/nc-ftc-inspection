@@ -1,5 +1,15 @@
 ::
-H::1::CB::1 Width Test::Rule
-1::0::Sample explanation::Harsh Rule
-H::2::A::B::2 Width test::Rule
-2::0::0::ex 2:: Rule 7
+H::1::✔::Drive Team Members Present ::Rule # 
+1::0::Coach::<T8> 
+1::0::Driver 1 (required); Driver 2 (optional) 	::<T8> 
+H::1::✔::Robot Operation Verified at the Playing Field::Rule # 
+1::0::Robot Controller connects with the Driver Station.::
+1::0::Robot is motionless prior to the start of the Autonomous and Driver-Controlled periods. 	::<RS04> 
+1::0::Robot switches between Autonomous and Driver-Controlled operation correctly. 	::<RS05> 
+1::0::Robot starts and stops when commanded by the Driver Station. 	 ::
+1::0::The Stop Button, when pressed on the Driver Station, functions and stops the Robot. 	 ::
+1::0::The Team understands how to disable their Robot, if instructed to do so by a Referee. 	 ::
+H::1::✔ ::Queuing Process Information Provided at the Playing Field ::Rule # 
+1::0::Team understands that software changes are not allowed in the Queue Area. 	 ::
+1::0::Team understands that the Match schedule is only an estimate. Matches may start prior to or after the scheduled time. It is the Team’s responsibility to monitor schedule changes and show up when required. 	 ::
+1::0::Team knows where to receive alliance flags and where to return them after the Match. 	 ::
