@@ -2,12 +2,9 @@ package nc.ftc.inspection;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -17,7 +14,6 @@ import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
-import nc.ftc.inspection.InspectionForm.Row;
 
 
 public class Main extends JFrame {
@@ -576,9 +572,6 @@ public class Main extends JFrame {
 			//			}
 			//			System.out.println(getText());
 			pack();
-		}
-		public String getPlainText() {
-			return text;
 		}
 		public void clear() {
 			text = "";
