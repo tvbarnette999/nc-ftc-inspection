@@ -2,6 +2,7 @@ package nc.ftc.inspection;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.io.IOException;
@@ -547,7 +548,7 @@ public class Main extends JFrame {
 	 */
 
 	private JPanel consolePanel = new JPanel();
-	FTCEditorPane consoleTextArea = new FTCEditorPane();
+	public FTCEditorPane consoleTextArea = new FTCEditorPane();
 	public class FTCEditorPane extends JEditorPane {
 		/**
 		 * 
@@ -572,6 +573,9 @@ public class Main extends JFrame {
 			//			}
 			//			System.out.println(getText());
 			pack();
+		}
+		public String getPlainText() {
+			return text;
 		}
 		public void clear() {
 			text = "";
@@ -605,7 +609,12 @@ public class Main extends JFrame {
 	 * update resource button: manual, forum.
 	 */
 	
-	
+	public void kill() {
+		Server.stopServer();
+		setVisible(false);
+		dispose();
+		System.exit(0);
+	}
 	/*
 	 * TODO divide this method into more moethods? Move each tab init to each own method? Move annonymous definitions outside method?
 	 * Basically this method is waaaay to long.
@@ -641,10 +650,7 @@ public class Main extends JFrame {
 				int answer = JOptionPane.showConfirmDialog(null, "This will close the server, are you sure?");
 				//				System.out.println("ANSWER: " + answer);
 				if (answer == JOptionPane.YES_OPTION) {
-					Server.stopServer();
-					setVisible(false);
-					dispose();
-					System.exit(0);
+					kill();
 				} else {
 					setVisible(true);
 					System.err.println("Not closing");
@@ -988,7 +994,7 @@ public class Main extends JFrame {
 			public void keyReleased(KeyEvent e){
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_ENTER:
-					handleCommand(consoleField.getText());
+					handleCommand(consoleField.getText(), null);
 					commands.add(consoleField.getText());
 					command = commands.size();
 					consoleField.setText("");	
@@ -1143,7 +1149,7 @@ public class Main extends JFrame {
 
 	}
 	
-	public void handleCommand(String command){
+	public void handleCommand(String command, String who){
 		//TODO implement commands
 
 		/*   this does not include arguments
@@ -1174,9 +1180,11 @@ public class Main extends JFrame {
 		 * 
 		 *SAVE*
 		 * 
+		 *KILL/STOP
+		 * 
 		 * 
 		 */
-		append(command);
+		append(command, who);
 		boolean success=false;//return to not show success
 		String[] args=command.split(" ");
 		if(args.length>0){
@@ -1187,7 +1195,7 @@ public class Main extends JFrame {
 					args[1]=args[1].toUpperCase();
 					if(args[1].equals("EVENTS")){
 						for(String e:events){
-							append(e);
+							append(e, who);
 						}
 						return;
 					}
@@ -1197,13 +1205,13 @@ public class Main extends JFrame {
 							Integer[] copy=Team.masterList.keySet().toArray(new Integer[1]);
 							Arrays.sort(copy);
 							for(Integer num:copy){
-								append(Team.getSaveString(num));
+								append(Team.getSaveString(num), who);
 							}
 							return;
 						}
 						else{
 							for(Team t:Server.theServer.teams){
-								append(t.number+": "+t.name);
+								append(t.number+": "+t.name, who);
 							}
 							return;
 						}
@@ -1214,29 +1222,29 @@ public class Main extends JFrame {
 							int num=Integer.parseInt(args[2]);
 							Team t=Server.theServer.getTeam(num);
 							if(t==null){
-								if(Team.masterList.containsKey(num))append(num+" "+Team.masterList.get(num)+" is not in this event.");
-								else append("Unrecognized team #: "+num);
+								if(Team.masterList.containsKey(num))append(num+" "+Team.masterList.get(num)+" is not in this event.", who);
+								else append("Unrecognized team #: "+num, who);
 								return;
 							}
-							append(t.number+": "+t.name);
-							append((t.checkedIn?"":"NOT ")+"Checked In");
-							append((t.cube==Server.PASS?"":"NOT")+"passed sizing cube");
-							append((t.hardware==Server.PASS?"":"NOT")+"passed hardware");
-							append((t.software==Server.PASS?"":"NOT")+"passed software");
-							append((t.field==Server.PASS?"":"NOT")+"passed field");
+							append(t.number+": "+t.name, who);
+							append((t.checkedIn?"":"NOT ")+"Checked In", who);
+							append((t.cube==Server.PASS?"":"NOT")+"passed sizing cube", who);
+							append((t.hardware==Server.PASS?"":"NOT")+"passed hardware", who);
+							append((t.software==Server.PASS?"":"NOT")+"passed software", who);
+							append((t.field==Server.PASS?"":"NOT")+"passed field", who);
 							return;
 						}
 						catch(Exception e){
-							append("USAGE: LIST STATUS &lt;number&gt;");
+							append("USAGE: LIST STATUS &lt;number&gt;", who);
 							return;
 						}
 					}
 					else{
-						append("USAGE: LIST [EVENTS | TEAMS | STATUS]");
+						append("USAGE: LIST [EVENTS | TEAMS | STATUS]", who);
 						return;
 					}
 				}else{
-					append("USAGE: LIST [EVENTS | TEAMS | STATUS] ");
+					append("USAGE: LIST [EVENTS | TEAMS | STATUS] ", who);
 					return;
 				}
 			}
@@ -1248,13 +1256,13 @@ public class Main extends JFrame {
 								success=changeEvent(args[2]);
 							}
 						}else{
-							append("USAGE: CHANGE [EVENT] &lt;code&gt;");
+							append("USAGE: CHANGE [EVENT] &lt;code&gt;", who);
 							return;
 						}
 					}
 				}
 				else{
-					append("USAGE: CHANGE [EVENT] &lt;code&gt;");
+					append("USAGE: CHANGE [EVENT] &lt;code&gt;", who);
 					return;
 				}
 			}
@@ -1264,13 +1272,13 @@ public class Main extends JFrame {
 						try{
 							int num=Integer.parseInt(args[2]);
 							if(Server.theServer.getTeam(num)!=null){
-								append("Team "+num+" already in event");
+								append("Team "+num+" already in event", who);
 								return;
 							}
 							
 							if(!Team.doesTeamExist(num)){
 								Team.registerTeam(num, null);
-								append("Use \"SET TEAMNAME "+num +" <NAME>\" to set team name.");
+								append("Use \"SET TEAMNAME "+num +" <NAME>\" to set team name.", who);
 								Resources.saveTeamList();
 							}
 							success = Server.theServer.teams.add(Team.getTeam(num));							
@@ -1278,7 +1286,7 @@ public class Main extends JFrame {
 							success &= Resources.saveEventFile();
 							Server.save();
 						}catch(Exception e){
-							append("FAILED: USAGE: ADD TEAM &lt;number&gt;");
+							append("FAILED: USAGE: ADD TEAM &lt;number&gt;", who);
 							return;
 						}
 					}
@@ -1294,12 +1302,12 @@ public class Main extends JFrame {
 								success=Resources.saveEventsList();
 							}
 						}else{
-							append("USAGE: ADD [EVENT] &lt;code&gt; &lt;name&gt;");
+							append("USAGE: ADD [EVENT] &lt;code&gt; &lt;name&gt;", who);
 							return;
 						}
 					}
 				}else{
-					append("USAGE: ADD [TEAM | EVENT] &lt;number | code> &lt;name&gt;");//also least team #s for event
+					append("USAGE: ADD [TEAM | EVENT] &lt;number | code> &lt;name&gt;", who);//also least team #s for event
 					return;
 				}
 			}
@@ -1309,19 +1317,19 @@ public class Main extends JFrame {
 						Team t=Server.theServer.getTeam(Integer.parseInt(args[2]));
 						System.out.println(t);
 						if(t==null){
-							append("Team was not in event");
+							append("Team was not in event", who);
 							return;
 						}else{
 							success = Server.theServer.teams.remove(t);
 							success &= Resources.saveEventFile();//save removal
 						}
 					}catch(Exception e){
-						append("USAGE: REMOVE TEAM &lt;number&gt;");
+						append("USAGE: REMOVE TEAM &lt;number&gt;", who);
 						return;
 					}
 				}
 				else{
-					append("USAGE: REMOVE TEAM &lt;number&gt;");
+					append("USAGE: REMOVE TEAM &lt;number&gt;", who);
 					return;
 				}
 
@@ -1350,9 +1358,9 @@ public class Main extends JFrame {
 							}
 						}
 						else{
-							append("USAGE: SET STATUS &lt;number&gt; &lt;type&gt; &lt;status&gt;");
-							append("&lt;type= CI | SC | HW | SW | FD&gt;");
-							append("&lt;status= 0 | 1 | 2 | 3 | NO_DATA | FAIL | PROGRESS | PASS&gt;");
+							append("USAGE: SET STATUS &lt;number&gt; &lt;type&gt; &lt;status&gt;", who);
+							append("&lt;type= CI | SC | HW | SW | FD&gt;", who);
+							append("&lt;status= 0 | 1 | 2 | 3 | NO_DATA | FAIL | PROGRESS | PASS&gt;", who);
 							return;
 						}
 					}
@@ -1361,7 +1369,7 @@ public class Main extends JFrame {
 							autoSave=Long.parseLong(args[2])*1000;
 							success=true;
 						}catch(Exception e){
-							append("USAGE: SET AUTOSAVE &lt;time (s)&gt;");
+							append("USAGE: SET AUTOSAVE &lt;time (s)&gt;", who);
 							return;
 						}
 					}
@@ -1370,7 +1378,7 @@ public class Main extends JFrame {
 							int number=Integer.parseInt(args[2]);
 							Team t=Server.theServer.getTeam(number);
 							if(t==null){
-								append("Team "+number+" not found.");
+								append("Team "+number+" not found.", who);
 								return;
 							}
 							String name = args[3];
@@ -1378,13 +1386,13 @@ public class Main extends JFrame {
 							Team.setTeamName(number, name);
 							Resources.saveTeamList();
 						}catch(Exception e){
-							append("USAGE: SET TEAMNAME &lt;number&gt; &lt;name&gt;");
+							append("USAGE: SET TEAMNAME &lt;number&gt; &lt;name&gt;", who);
 							return;
 						}
 					}
 				}
 				else{
-					append("USAGE: SET [STATUS | PASSWORD | ROOT | AUTOSAVE | TEAMNAME | EVENT [NAME | CODE] ] &lt;value&gt;");
+					append("USAGE: SET [STATUS | PASSWORD | ROOT | AUTOSAVE | TEAMNAME | EVENT [NAME | CODE] ] &lt;value&gt;", who);
 					return;
 				}
 			}
@@ -1400,11 +1408,11 @@ public class Main extends JFrame {
 						return;
 					}
 					else{
-						append("USAGE: CLEAR [CONSOLE | DATA]");
+						append("USAGE: CLEAR [CONSOLE | DATA]", who);
 						return;
 					}
 				}else{
-					append("USAGE: CLEAR [CONSOLE | DATA]");
+					append("USAGE: CLEAR [CONSOLE | DATA]", who);
 					return;
 				}
 			}
@@ -1413,23 +1421,26 @@ public class Main extends JFrame {
 			}
 			else if(args[0].equals("IP")){
 				try {
-					append("Server IP: " + InetAddress.getLocalHost().getHostAddress());
+					append("Server IP: " + InetAddress.getLocalHost().getHostAddress(), who);
 				} catch (UnknownHostException e) {
 					
 				}
 				return;
 			}
 			else if(args[0].equals("HELP")){
-				append("Available commands: (Attempt use for more help)");
-				append("\tLIST [EVENTS | TEAMS | STATUS]");
-				append("\tADD [TEAM | EVENT]");
-				append("\tREMOVE TEAM");
-				append("\tSET [...]");
-				append("\tCHANGE EVENT");
-				append("\tSELECT EVENT");
-				append("\tIP");
-				append("\tSAVE");
+				append("Available commands: (Attempt use for more help)", who);
+				append("\tLIST [EVENTS | TEAMS | STATUS]", who);
+				append("\tADD [TEAM | EVENT]", who);
+				append("\tREMOVE TEAM", who);
+				append("\tSET [...]", who);
+				append("\tCHANGE EVENT", who);
+				append("\tSELECT EVENT", who);
+				append("\tIP", who);
+				append("\tSAVE", who);
 				return;
+			}
+			else if (args[0].equals("KILL") || args[0].equals("STOP")) {
+				kill(); //TODO (add confirmation?)
 			}
 			else if(args[0].equals("UNLOAD")){
 				Server.theServer.unloadEvent();
@@ -1438,14 +1449,16 @@ public class Main extends JFrame {
 				error("UNKNOW COMMAND: "+args[0]);
 				return;
 			}
-			append((success ? "SUCCESS" : "FAILED"));
+			append((success?"SUCCESS":"FAILED"), who);
 		}
 	}
 
-
-	public void append(String s) {
+	private String[] colors = new String[] {"FF7F00", "#9400D3", "#00FF00", "#FF00FF", "#AAAAAA"};
+	public void append(String s, String who) {
 		s = fixHTML(s);
-		consoleTextArea.append("<font color=\"#888888\">" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + "</font><font color=\"#ffffff\" face=\"lucida console\">" + s + "</font><br>");
+		String color = who == null ? "#888888" : colors[Math.abs(who.hashCode()) % colors.length];
+		String timeWho = "<font color=\"" + color + "\">" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + "</font>";
+		consoleTextArea.append(timeWho + "<font color=\"#ffffff\" face=\"lucida console\">" + s + "</font><br>");
 	}
 	public void error(String s) {
 		s = fixHTML(s);
