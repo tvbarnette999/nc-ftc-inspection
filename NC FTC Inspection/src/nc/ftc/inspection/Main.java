@@ -577,6 +577,9 @@ public class Main extends JFrame {
 			//			System.out.println(getText());
 			pack();
 		}
+		public String getPlainText() {
+			return text;
+		}
 		public void clear() {
 			text = "";
 		}
