@@ -175,7 +175,7 @@ public class InspectionForm {
 				//TODO LCM of table widths
 				table.append("<tr bgcolor=\""+color+"\">"); //old color is #E6B222
 				for(String title : ((HeaderRow)r).titles){
-					table.append("<th colspan=\"" + span + "\">");
+					table.append("<th colspan=\"" + span + "\" style=\"min-width:50pt\">"); //NOTE: size optimized for mobile!
 					table.append(title);
 					table.append("</th>");
 				}
@@ -187,20 +187,25 @@ public class InspectionForm {
 				for(int param : r.param){
 					table.append("<td");
 					if(param == CB_LEVEL.NA.value){
+						table.append(" colspan=\"" + span + "\"");
+						table.append(" align=\"center\"");
 						table.append(">NA");						
 					} else{
-						table.append(" id=BG" + team.number + type + cbIndex);
-						table.append(" colspan=\"" + span + "\"><label>");
-						table.append("<input type=\"checkbox\"");
-						table.append(" name=\"" + team.number + type + cbIndex + "\" ");
-						table.append(team.getStatus(this.type,cbIndex) ? " checked=\"checked\"" : ""); //TODO FIXME Put this back in after fixing forms
-						table.append(" value=\"" + param + "\"");
-						table.append(" onclick=\"update()\"/>");
 						
-						table.append("</label>");
+						table.append(" id=" + team.number + type + cbIndex);
+						table.append(" colspan=\"" + span + "\"");
+						//table.append("<input type=\"checkbox\"");
+//						table.append(" name=\"" + team.number + type + cbIndex + "\" ");
+						table.append(" checked=" + team.getStatus(this.type, cbIndex)); 
+						table.append(" value=\"" + param + "\"");
+						table.append(" class=" + CB_LEVEL.get(param)); //todo change to req vs opt to simplify
+						table.append(" align=\"center\"");
+						table.append(" onclick=\"update()\">");
+						table.append(team.getStatus(this.type,cbIndex) ? '\u2713' : " "); 
+//						table.append("</label>");
 						cbIndex++;
 					}
-
+					
 					table.append("</td>");
 					
 				}

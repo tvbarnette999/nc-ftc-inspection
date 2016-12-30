@@ -1,25 +1,27 @@
 function update(){
 	var xhttp = new XMLHttpRequest();
-	document.getElementById("BG"+event.target.name).bgColor = "#FF0000";
-	//response text should be BG+id=v
+	event.target.bgColor = "#FF0000"; 
+	checked = !eval(event.target.getAttribute("checked"));
+	event.target.setAttribute("checked", checked);
+	console.log(event.target.id +", " + checked)
+	if(checked){
+		event.target.innerHTML = " \u2713 ";
+	} else{
+		event.target.innerHTML = "   ";
+	}
+	//response text should be id=v
 	xhttp.onreadystatechange = function() {
 		 if (xhttp.readyState == 4 && xhttp.status == 200){
 			  var resp = xhttp.responseText;
-			  console.log(resp)
 			  var ind =  resp.indexOf("=");
 			  var id = resp.substring(0,ind);
 			  var v = resp.substring(ind + 1);
-			  console.log(id);
-			  console.log(id.substring(2));
-			  console.log(v);
-			  console.log(document.getElementsByName(id.substring(2))[0].checked)
-			  if(eval(v) == document.getElementsByName(id.substring(2))[0].checked){
+			  if(eval(v) == eval(document.getElementById(id).getAttribute("checked"))){// document.getElementsByName(id.substring(2))[0].checked){
 				  document.getElementById(id).bgColor = "#FFFFFF";
-			  
 			  }
 		}
 	};
-	xhttp.open("POST", "../fullupdate?team="+event.target.name+"&value="+event.target.checked, true);
+	xhttp.open("POST", "../fullupdate?team="+event.target.id+"&value="+event.target.getAttribute("checked"), true);
 	xhttp.send();
 	
 }
@@ -28,14 +30,14 @@ function fullpass(){
 	
 	
 	sendNote();
-	//check everything is passed first. If not, popup and do not post.
-	var inputs = document.getElementsByTagName("input");
+	//check everything is passed first. If not, popup and do not post. (Checks only required ones)
+	var inputs = document.getElementsByClassName("REQ");
 	var length = inputs.length;
 	var allPass = true;
-	
+	console.log(length);
 	//if HW,ask for cube index. We will skip checking that index's checkbox as it will be handled by the cube page
 	//if cube inspection not separate from hw, server will return -1.
-	var name = event.target.name;
+	var name = event.target.id;
 	var ind = name.indexOf("_");
 	var isHW = name.substring(ind + 1, ind + 3) == "HW";
 	var cubeIndex=-1;
@@ -49,8 +51,9 @@ function fullpass(){
 	for (var i = 0; i < length; i++) {
 		if(i == cubeIndex)continue; //skip the sizing cube
 		//check value again 0 (required)
-	    if(inputs[i].type=="checkbox" && inputs.value == 0 && !inputs[i].checked){
-	    	allPass=false;
+		console.log(inputs[i].id + ", " + inputs[i].getAttribute("checked"))
+	    if(!eval(inputs[i].getAttribute("checked"))){ 
+	    	allPass = false;
 	    	break;
 	    }
 	}

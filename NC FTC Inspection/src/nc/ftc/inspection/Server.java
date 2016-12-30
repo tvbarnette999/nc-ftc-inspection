@@ -411,7 +411,7 @@ public class Server {
 		boolean valid = false;
 		String response = "";
 		String extras = "";
-//		System.out.println("POST: \n"+req+"\nData:\n"+data);
+		System.out.println("POST: \n"+req+"\nData:\n"+data);
 		/*
 		 * if the data contains a password, its from the login page.
 		 * That means we can send it a secured page.
@@ -475,8 +475,8 @@ public class Server {
 				v = v.substring(0, v.indexOf(" "));
 				getTeam(t).setInspectionIndex(type,index,Boolean.parseBoolean(v));
 				//send conf wth id of td containing the checkbox and the data we received(v)
-				response = "BG" + t + "_" + type + index + "=" + v;
-				pageID=SEND_RESPONSE;
+				response = t + "_" + type + index + "=" + v;
+				pageID = SEND_RESPONSE;
 			}
 			else if(req.startsWith("note?")){
 				String s=req.substring(req.indexOf("=")+1);
