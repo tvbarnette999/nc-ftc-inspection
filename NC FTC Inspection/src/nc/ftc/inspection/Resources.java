@@ -60,6 +60,11 @@ public class Resources {
 	static final String DEFAULT = "Default";
 	static final String CUSTOM = "Custom";
 	static final String UNKNOWN = "UNKNOWN";
+	
+	static final String HW_FORM_FILE = "hwform.dat";
+	static final String SW_FORM_FILE = "swform.dat";
+	static final String FD_FORM_FILE = "fdform.dat";
+	
 	static HashMap<String, String> fileStatus = new HashMap<String, String>();
 	/**The root save directory that is checked first. Default value: "NC Inspection" */
 	public static String root="NC Inspection";

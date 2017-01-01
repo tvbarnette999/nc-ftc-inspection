@@ -15,7 +15,9 @@ import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
-
+import static nc.ftc.inspection.Resources.FD_FORM_FILE;
+import static nc.ftc.inspection.Resources.HW_FORM_FILE;
+import static nc.ftc.inspection.Resources.SW_FORM_FILE;
 
 public class Main extends JFrame {
 
@@ -264,6 +266,30 @@ public class Main extends JFrame {
 		});
 		this.formScrollPane.repaint();
 	}
+	
+	private void restoreDefault(String file, InspectionForm form){
+		String status = Resources.getFileStatus(file);
+		String backup = Resources.getBackup(file);
+		
+		if(status == Resources.CUSTOM){
+			int choice = JOptionPane.showConfirmDialog(Main.this, "This will move the current file to " + backup, "Restore Default Form", JOptionPane.OK_CANCEL_OPTION);
+			if(choice != JOptionPane.OK_OPTION) return;
+			try {
+				Resources.renameResource(file, backup);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				JOptionPane.showMessageDialog(Main.this, "Failed to move old file! Aborting operation.");
+				return;
+			}
+			try{
+				Main.loadInspectionForm(file, form);
+			}catch(Exception e1){
+				System.err.println("Failed to load default file!");
+				e1.printStackTrace();
+			}
+			
+		}
+	}
 	private ActionListener formListener = new ActionListener(){
 		public void actionPerformed(ActionEvent e){
 			JButton source = (JButton) e.getSource();
@@ -275,11 +301,12 @@ public class Main extends JFrame {
 				editForm(Server.fieldForm);
 			} else if(source == hardwareRestore){
 				//TODO- Move custom one to backup, reload default file
+				restoreDefault(HW_FORM_FILE, Server.hardwareForm);
 				
 			} else if(source == softwareRestore){
-				
+				restoreDefault(SW_FORM_FILE, Server.softwareForm);
 			} else if(source == fieldRestore){
-				
+				restoreDefault(FD_FORM_FILE, Server.fieldForm);
 			} else if(source == hardwareSelect){
 				//TODO, load file chooser
 			} else if(source == softwareSelect){
@@ -290,9 +317,9 @@ public class Main extends JFrame {
 				
 				String file = "";
 				switch(formEdit.form.type){
-					case Server.HARDWARE: file = "hwform.dat"; break;
-					case Server.SOFTWARE: file = "swform.dat"; break;
-					case Server.FIELD:    file = "fdform.dat"; break;
+					case Server.HARDWARE: file = HW_FORM_FILE; break;
+					case Server.SOFTWARE: file = SW_FORM_FILE; break;
+					case Server.FIELD:    file = FD_FORM_FILE; break;
 				}
 				String status = Resources.getFileStatus(file);
 				String backup = Resources.getBackup(file);
@@ -1102,9 +1129,9 @@ public class Main extends JFrame {
 	}
 	
 	private void refreshFormStatus(){
-		this.hardwareLabel.setText(Resources.getFileStatus("hwform.dat"));
-		this.softwareLabel.setText(Resources.getFileStatus("swform.dat"));
-		this.fieldLabel.setText(Resources.getFileStatus("fdform.dat"));
+		this.hardwareLabel.setText(Resources.getFileStatus(HW_FORM_FILE));
+		this.softwareLabel.setText(Resources.getFileStatus(SW_FORM_FILE));
+		this.fieldLabel.setText(Resources.getFileStatus(FD_FORM_FILE));
 	}
 	/**
 	 * This updates the area at the bottom right of the console page that shows the traffic states and the cookies issued
@@ -1125,21 +1152,21 @@ public class Main extends JFrame {
 		
 		//TODO need to do something if any of these throw an exception?
 		try {
-			loadInspectionForm("hwform.dat",Server.hardwareForm);
+			loadInspectionForm(HW_FORM_FILE, Server.hardwareForm);
 		} catch (FileNotFoundException e1) {
 			
 			e1.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Unable to load Hardware Inspection form!");
 		}
 		try {
-			loadInspectionForm("swform.dat",Server.softwareForm);
+			loadInspectionForm(SW_FORM_FILE, Server.softwareForm);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Unable to load Software Inspection form!");
 		}
 
 		try {
-			loadInspectionForm("fdform.dat",Server.fieldForm);
+			loadInspectionForm(FD_FORM_FILE, Server.fieldForm);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Unable to load Field Inspection form!");
