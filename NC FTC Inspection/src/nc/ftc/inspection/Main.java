@@ -58,6 +58,7 @@ public class Main extends JFrame {
 	 *TODO if web page cant send POST due to disconnect, have a button at bottom of page to send all data from page for reconnect?
 	 *-or keep a vector in js or something?
 	 *
+	 *
 	 *TODO have server respond with notes and signatures to confirm.?
 	 *
 	 *TODO capability to run headless. just in case

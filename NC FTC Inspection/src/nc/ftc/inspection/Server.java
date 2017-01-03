@@ -1,9 +1,11 @@
 
 package nc.ftc.inspection;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
@@ -19,6 +21,7 @@ import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
@@ -26,6 +29,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.swing.plaf.synth.SynthSpinnerUI;
 
 public class Server {
 	
@@ -209,7 +214,7 @@ public class Server {
 		else{
 			//need UTF-8, so do this: (for special characters in inspectiion form)
 			pw = new PrintWriter(new OutputStreamWriter(out, "utf-8")); //TODO check me here: this is not a memory leak cuz closing a pw closes the underlying stream right?
-			pw.print("HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n"); 
+			pw.print("HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\nCache-Control:no-store\n"); 
 			
 		}
 		
@@ -374,7 +379,7 @@ public class Server {
 			pageID=verified?FIELD:LOGIN;
 			other=req.substring(req.indexOf("/")+1);			
 		}
-		//handle forums
+		//handle forums-- This is the only part of the server that acts like a real webserver
 		if(req.startsWith("reference/")){
 			req = req.substring(req.indexOf("/")+1);
 			if(req.startsWith("game"))pageID=GAME_FORUM;
@@ -411,7 +416,11 @@ public class Server {
 		boolean valid = false;
 		String response = "";
 		String extras = "";
-		System.out.println("POST: \n"+req+"\nData:\n"+data);
+		System.out.println("POST: "+req+"\nData: ("+data.length() + ")\n" +data);
+		for(char c : data.toCharArray()){
+			System.out.print(((int) c) + " ");
+		}
+		System.out.println();
 		/*
 		 * if the data contains a password, its from the login page.
 		 * That means we can send it a secured page.
@@ -428,6 +437,7 @@ public class Server {
 //				pw.flush();
 				valid=true;
 //				System.out.println("VERIFIED PASSWORD");
+				System.out.println(req +"  "+req.indexOf("/")+"  "+req.indexOf(" "));
 				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
 				System.out.println("REQ:"+req);
 				if(req.equals("hardware"))pageID=HARDWARE;
@@ -453,7 +463,7 @@ public class Server {
 			req=req.substring(1);
 //			System.out.println("VERIFIED "+req);
 			if(req.startsWith("cubeindex?")){//js is asking what the cube index is before passing the team
-				pageID=CUBE_INDEX_PAGE;
+				pageID = CUBE_INDEX_PAGE;
 			}
 			else if(req.startsWith("update?")){//These are requests that contain a state change for a team for a level of inspection.
 				System.out.println("LINE 389: " + req);
@@ -510,7 +520,8 @@ public class Server {
 				pageID = SEND_RESPONSE;
 			}
 			else{
-				pageID=1;
+				System.out.println("NOTHIN!");
+				pageID = H204;
 			}
 		}
 		sendPage(sock,pageID, extras, valid, response);	
@@ -934,7 +945,7 @@ public class Server {
 	 */
 	public void loadEvent(String event) throws FileNotFoundException{
 		if(event == null)return;//Do not attempt to load null event.
-		Scanner scan = Resources.getScanner(event+".event");//new Scanner(new File("Resources/"+event));
+		Scanner scan = Resources.getScanner(event + ".event");//new Scanner(new File("Resources/"+event));
 		Server.event = event;//if finds file, set Server event to the new one.
 		fullEventName = scan.nextLine();
 		Vector<Integer> nums=new Vector<Integer>();
@@ -946,7 +957,15 @@ public class Server {
 		}
 		scan.close();
 		for(int i:nums){
-			teams.add(Team.getTeam(i));
+			System.out.println("Loading team "+ i);
+			Team t = Team.getTeam(i);
+			if(t == null){
+				System.err.println("WARNING! NO TEAM " + i);
+				Server.theServer.addErrorEntry("WARNING! NO TEAM " + i +" CREATING DUMMY TEAM!");
+				Team.registerTeam(i, null);
+				t = Team.getTeam(i);
+			}
+			teams.add(t);
 		}
 		addLogEntry("Loaded event: "+fullEventName);
 		Collections.sort(teams);
@@ -1039,17 +1058,52 @@ public class Server {
 		}
 		public void run(){
 			try{
-				byte[] b=new byte[1024];
-				sock.getInputStream().read(b);
-				String req=new String(b);
-				if(req.startsWith("GET")){
-					get(req.substring(4,req.indexOf("\n")),sock, req);
+				StringBuilder full = new StringBuilder();
+				StringBuilder data = new StringBuilder();
+				BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+				String type = in.readLine();
+				System.out.println(type);
+				full.append(type);
+				full.append('\n');
+				String line = null;
+				int len = -1;
+				sock.setSoTimeout(50);
+				try{
+					while((line = in.readLine()) != null && !line.isEmpty()){
+						full.append(line );
+						full.append('\n');
+						if(line.startsWith("Content-Length:")){
+							Scanner scan = new Scanner(line.substring(line.indexOf(":") + 1));
+							len = scan.nextInt();
+							scan.close();
+							break;
+						}
+					}
+					
+					//we have recieved cntent length!
+					while((line = in.readLine()) != null && line.contains(":")){
+						//still receiveing header
+						full.append(line);
+						full.append('\n');
+					}
+				}catch(SocketTimeoutException e){}//there has got to be a better way
+				if(type == null)return;
+				if(type.startsWith("GET")){
+					get(type.substring(4),sock, full.toString());
+				} else{
+					for(int i = 0; i < len; i++){
+						char c = (char)in.read();
+						data.append(c);
+						full.append(c);
+					}
 				}
-				if(req.startsWith("POST")){			
-					String[] datarray=req.split("\n");
-					String data=datarray[datarray.length-1];
-					data=data.substring(data.indexOf("\n")+3);//why is this here? This is why we comment code.
-					post(req.substring(5,req.indexOf("\n")),data,sock);//yeah? well maybe I don't like your tone
+				
+//				System.out.println("FULL REQUEST: " + full.toString() +"\n END FULL REQ");
+				
+				if(type.startsWith("POST")){			
+					
+//					System.out.println("POST: " + type + '\n' + "DATA:" + data.toString());
+					post(type.substring(5), data.toString(), sock);
 				} 											
 				sock.close();
 			}catch(Exception e){

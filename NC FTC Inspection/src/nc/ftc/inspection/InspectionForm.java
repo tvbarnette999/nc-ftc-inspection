@@ -159,7 +159,7 @@ public class InspectionForm {
 	 * Returns the table part of the inspection form
 	 * @return
 	 */
-	public String getFormTable(Team team){
+	public String getFormTable(Team team){ //for multiple teams, make Team ..., at each step do another <td> / <th> for each. For headers, do <br> then (#). multiple comments/pass buttons? or select team then enter?
 		String type = null;
 		switch(this.type){
 			case Server.HARDWARE: type = "_HW"; break;
