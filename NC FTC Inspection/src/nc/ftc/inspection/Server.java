@@ -21,6 +21,7 @@ import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Vector;
@@ -42,6 +43,8 @@ public class Server {
 	public static final String GREEN="\"#00FF00\"";
 	public static final String CYAN="\"#00FFFF\"";
 	public static final String WHITE="\"#FFFFFF\"";
+	
+	public static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 	public static final int NO_DATA=0;
 	public static final int PASS=3;
@@ -55,7 +58,9 @@ public class Server {
 	public static final int CUBE=5;
 	public static final int CHECKIN=6;
 	public static final int HOME=7;
-	public static final int LOG=11;
+	public static final int LOG_ERROR = 11;
+	public static final int LOG_OUT = 26;
+	public static final int LOG_COMM = 27;
 	public static final int H204=10;
 	public static final int CUBE_INDEX_PAGE=12;
 	/**Use this to send just the first element of the Object[] as the content*/
@@ -120,7 +125,16 @@ public class Server {
 
 	public static Server theServer=new Server();
 	
+	private PrintStream commStream;
+	private String commFile;
 	private Server(){		//Singleton
+		try {
+			commFile = "/log/" + Main.DATE_TIME_FORMAT.format(new Date()) + "_COMM.log";
+			commStream = new PrintStream(Resources.getPrintStream(commFile));
+		} catch (Exception e) {
+			System.err.println("There was an error setting up the comm stream:");
+			e.printStackTrace();
+		}
 	}
 	
 	private byte[] hashedPass;
@@ -267,7 +281,9 @@ public class Server {
 			case ADMIN:
 				sendAdminPage(pw);
 				break;
-			case LOG:sendLogPage(pw);break;
+			case LOG_ERROR:
+			case LOG_COMM:
+			case LOG_OUT: sendLogPage(pw, i);break;
 			case CUBE_INDEX_PAGE:
 				pw.println((separateCube && fullHardware )?Team.CUBE_INDEX:-1);
 				break;
@@ -365,7 +381,9 @@ public class Server {
 		if(req.equals("admin"))pageID=verified?ADMIN:LOGIN;
 		
 		
-		if(req.equals("log"))pageID=verified?LOG:LOGIN;
+		if(req.equals("error"))pageID=verified?LOG_ERROR:LOGIN;
+		if(req.equals("out"))pageID=verified?LOG_OUT:LOGIN;
+		if(req.equals("comm"))pageID=verified?LOG_COMM:LOGIN;
 		
 		if(req.startsWith("hardware/") && fullHardware){
 			pageID=verified?HARDWARE:LOGIN;
@@ -432,7 +450,8 @@ public class Server {
 //				OutputStream out=sock.getOutputStream();
 //				PrintWriter pw=new PrintWriter(out);
 //				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
-				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + cookieCount++ + "&&&" + hashedPassString + "\\\";path=/\";</script>";
+				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";</script>";
+				cookieCount++;
 //				pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: " + cookieHeader + hashedPassString + "\"\n\n    \n");
 //				pw.flush();
 				valid=true;
@@ -571,7 +590,8 @@ public class Server {
 	}
 	
 	/**
-	 * This is for sending an html webpage that is completely contained within the file. (No real-time generation by this server)
+	 * This is for sending an html webpage that is completely contained within the file. (No real-time generation by this server). 
+	 * NOTE: this does not replace newlines with <br> or other such niceties, to do that see sendPageAsHTML
 	 * @param pw
 	 * @param f
 	 * @throws IOException
@@ -579,6 +599,18 @@ public class Server {
 	public void sendPage(PrintWriter pw,String f) throws IOException{
 		Scanner s=Resources.getScanner(f);
 		while(s.hasNextLine())pw.println(s.nextLine());
+		s.close();
+	}
+	
+	/**
+	 * This sends the file specified to the printwriter, replacing all instances of \n with <br> and \t with four spaces
+	 * @param pw
+	 * @param f
+	 * @throws IOException
+	 */
+	public void sendPageAsHTML(PrintWriter pw, String f) throws IOException {
+		Scanner s=Resources.getScanner(f);
+		while(s.hasNextLine())pw.println(s.nextLine().replaceAll("\t", TAB) + "<br>");
 		s.close();
 	}
 
@@ -887,12 +919,25 @@ public class Server {
 	 * Sends the log page
 	 * @param pw The writer to send to
 	 */
-	public void sendLogPage(PrintWriter pw){
-		pw.println("<html><body>");
-		for(String s:statusLog){
-			pw.println(s+"<br>");
+	public void sendLogPage(PrintWriter pw, int which) {
+		pw.println("<html><body bgcolor=\"#000000\">");
+		try {
+			if (which == LOG_ERROR) {
+				pw.println("<font color=\"#FF0000\">");
+				sendPageAsHTML(pw, ((RedirectingPrintStream) System.err).getRedirFile());
+			} else if (which == LOG_OUT) {
+				pw.println("<font color=\"#FFFFFF\">");
+				sendPageAsHTML(pw, ((RedirectingPrintStream) System.out).getRedirFile());
+			} else if (which == LOG_COMM) {
+				pw.println("<font color=\"#FFFFFF\">");
+				sendPage(pw, "commFilterHeader.html");
+				sendPageAsHTML(pw, commFile);
+			}
+		} catch (Exception e) {
+			pw.println("There was an error rendering the log page:");
+			e.printStackTrace(pw);
 		}
-		pw.println("</body></html>");
+		pw.println("</font></body></html>");
 		pw.flush();
 	}
 	/**
@@ -1096,8 +1141,10 @@ public class Server {
 						full.append('\n');
 					}
 				}catch(SocketTimeoutException e){}//there has got to be a better way
+				
 				if(type == null)return;
 				if(type.startsWith("GET")){
+					commStream.println("<div name=\"" + sock.getInetAddress().getHostAddress() + "\" class=\"GET\">" + sock.getInetAddress().getHostAddress() + "<br>" + full + "<br><hr><br></div>");
 					get(type.substring(4),sock, full.toString());
 				} else{
 					for(int i = 0; i < len; i++){
@@ -1105,6 +1152,7 @@ public class Server {
 						data.append(c);
 						full.append(c);
 					}
+					commStream.println("<div name=\"" + sock.getInetAddress().getHostAddress() + "\" class=\"POST\">" + sock.getInetAddress().getHostAddress() + "<br>" + full + "<br><hr><br></div>");
 				}
 				
 //				System.out.println("FULL REQUEST: " + full.toString() +"\n END FULL REQ");

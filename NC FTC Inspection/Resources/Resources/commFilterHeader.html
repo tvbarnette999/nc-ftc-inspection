@@ -1,0 +1,94 @@
+<script>
+function showGet() {
+	var x = document.getElementsByClassName("GET")
+	var i;
+	for (i = 0; i < x.length; i++) {
+		x[i].style.display="block";
+	}
+}
+
+function hideGet() {
+	var x = document.getElementsByClassName("GET")
+	var i;
+	for (i = 0; i < x.length; i++) {
+		x[i].style.display="none";
+	}
+}
+
+function showPost() {
+	var x = document.getElementsByClassName("POST")
+	var i;
+	for (i = 0; i < x.length; i++) {
+		x[i].style.display="block";
+	}
+}
+
+function hidePost() {
+	var x = document.getElementsByClassName("POST")
+	var i;
+	for (i = 0; i < x.length; i++) {
+		x[i].style.display="none";
+	}
+}
+
+function test() {
+	if (window.event.keyCode == 13) {
+		updateIP();
+	}
+}
+
+function update() {
+	fixGetPost();
+	updateIP();
+}
+
+function fixGetPost() {
+	if (document.getElementById('GET').checked) {
+		showGet();
+		hidePost();
+	} else if (document.getElementById('POST').checked) {
+		showPost();
+		hideGet();
+	} else if (document.getElementById('GETandPOST').checked) {
+		showGet();
+		showPost();
+	}
+}
+
+function updateIP() {
+	var s = document.getElementById('ip').value.trim();
+	document.getElementById('ip').value = s;
+	if ( s === '') {
+		var x = document.getElementsByTagName('div'); // hide all divs 
+		var i;
+		for (i = 0; i < x.length; i++) {
+			x[i].style.display="block";
+		}		
+		fixGetPost();
+		return;
+	} else {
+		var x = document.getElementsByTagName('div'); // hide all divs 
+		var i;
+		for (i = 0; i < x.length; i++) {
+			if (!(x[i].getAttribute('name') === s)) {
+				x[i].style.display="none";
+			}
+		}
+	}
+}
+</script>
+<label>
+	<input type="radio" name="class" value="GET" id="GET" onchange="update()">
+	<b>GET</b>
+</label>
+<label>
+	<input type="radio" name="class" value="POST" id="POST" onchange="update()">
+	<b>POST</b>
+</label>
+<label>
+	<input checked="true" type="radio" name="class" value="GETandPOST" id="GETandPOST" onchange="update()">
+	<b>GET and POST</b>
+</label>
+
+<textarea onkeypress="test()" cols="20" rows="1" id="ip" autofocus></textarea>
+<button onclick="updateIP()">Update</button>
