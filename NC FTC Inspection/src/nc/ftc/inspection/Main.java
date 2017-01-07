@@ -27,10 +27,6 @@ public class Main extends JFrame {
 	private static final long serialVersionUID = -2371487851745548963L;
 
 
-	/**
-	 * Mapping of all NC team numbers to names.
-	 */
-//	public static HashMap<Integer,String> teamData=new HashMap<Integer,String>();
 
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("hh:mm:ss");
@@ -83,6 +79,7 @@ public class Main extends JFrame {
 	public static Thread autoSaveThread;
 	public static void main(String[] args) {
 		
+		
 		//TODO popup for non existant root directory?
 //		if(!Resources.rootExists()){
 //			
@@ -111,7 +108,6 @@ public class Main extends JFrame {
 		me = new Main();
 		loadFiles();
 		me.initGUI();
-
 		try {
 			Server.theServer.startServer(80);
 		} catch (FileNotFoundException e) {
@@ -126,6 +122,7 @@ public class Main extends JFrame {
 					try{
 						Thread.sleep(autoSave);
 						Server.save();
+						Resources.backup();
 						System.out.println("AutoSave");
 					}catch(InterruptedException e){
 						return;

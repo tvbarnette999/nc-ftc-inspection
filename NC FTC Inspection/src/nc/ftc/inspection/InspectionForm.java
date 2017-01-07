@@ -120,7 +120,7 @@ public class InspectionForm {
 	
 	public void addRow(String row){
 //		this.delim = delimiter;
-		System.out.println("Adding row: " + row);
+//		System.out.println("Adding row: " + row);
 		try{
 			String[] split = row.split(delimiter, -1); //negative number doesnt leave off trailing empty strings
 			if(split[0].startsWith("I")){
