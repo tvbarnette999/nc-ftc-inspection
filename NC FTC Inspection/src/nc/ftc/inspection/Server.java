@@ -756,8 +756,8 @@ public class Server {
 	
 	/**
 	 * Sends the page to select the team to inspect. Displays current status behind their numbers to prevent multiple inspections
-	 * @param pw
-	 * @param i
+	 * @param pw The printwriter to send the page through
+	 * @param i The inspection type
 	 */
 	public void sendInspectionTeamSelect(PrintWriter pw, int i){
 		String type="";
@@ -767,7 +767,7 @@ public class Server {
 			case FIELD:    type="field";break;
 			default:return;//TODO something else here?
 		}
-		pw.println("<html><meta http-equiv=\"refresh\" content=\"5\"><body><h1>");//TODO test if refhresh is noticeable
+		pw.println("<html><meta http-equiv=\"refresh\" content=\"5\"><body><h1>");//TODO test if refresh is noticeable
 		switch(i){
 			case HARDWARE:pw.println("Hardware Inspection");break;
 			case SOFTWARE:pw.println("Software Inspection");break;
@@ -779,6 +779,15 @@ public class Server {
 		}
 		pw.println("</table></body></html>");
 		pw.flush();
+	}
+	
+	/**
+	 * Sends the page to select multiple teams to inspect
+	 * @param pw
+	 * @param i
+	 */
+	public void sendMultiTeamSelect(PrintWriter pw, int i){
+		
 	}
 	
 	/**
@@ -1202,7 +1211,7 @@ public class Server {
 		
 		for(Team t:theServer.teams){
 			//hardware
-			pw=Resources.getHardwareWriter(t.number);
+			pw = Resources.getHardwareWriter(t.number);
 			for(boolean b:t.hwData){
 				pw.println(b);
 			}

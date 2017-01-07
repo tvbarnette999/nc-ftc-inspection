@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -68,6 +69,7 @@ public class Resources {
 	static HashMap<String, String> fileStatus = new HashMap<String, String>();
 	/**The root save directory that is checked first. Default value: "NC Inspection" */
 	public static String root="NC Inspection";
+	public static String backup = "backup"; //TODO Selection of backup drive (preferable USB)
 	/**
 	 * Returns a Scanner object for the given resource.
 	 * @param name the Resource to access
@@ -76,6 +78,31 @@ public class Resources {
 	 */
 	public static Scanner getScanner(String name) throws FileNotFoundException{
 		return new Scanner(getInputStream(name), "UTF-8");
+	}
+	
+	private static void copyDirectory(File src, File dest, CopyOption opt) throws IOException{
+		for(File f : src.listFiles()){
+			if(f.isDirectory()){
+				File target = new File(dest + "/" + f.getName());
+				if(!target.exists() || !target.isDirectory())target.mkdir();
+				copyDirectory(f, target, opt);
+			} else{
+				Files.copy(f.toPath(), dest.toPath().resolve(f.getName()), opt);
+			}
+		}
+	}
+	public static void backup(){
+		try {
+			File back = new File(backup + "/NC Inspection");
+			if(!back.exists() || !back.isDirectory()){
+				back.mkdirs();
+			}
+			copyDirectory(new File(root), back, StandardCopyOption.REPLACE_EXISTING);
+			
+		} catch (IOException e) {
+			Server.addErrorEntry("BACKUP FAILED");
+			e.printStackTrace();
+		}
 	}
 	
 	/**
