@@ -1,0 +1,17 @@
+table { border-collapse: collapse; }
+tr { border: none; }
+td {
+  border-right: solid 1px #000; 
+  border-left: solid 1px #000;
+  min-width: 30px;
+  align: center;
+}
+ul {
+  list-style-type: none;
+}
+li{
+  margin: 10px 0;
+}
+table.t2{
+	border: 1px solid black
+}

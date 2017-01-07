@@ -760,6 +760,7 @@ public class Server {
 	 * @param i The inspection type
 	 */
 	public void sendInspectionTeamSelect(PrintWriter pw, int i){
+		System.err.println("SELECTING TEAM");
 		String type="";
 		switch(i){
 			case HARDWARE: type="hardware";break;
@@ -785,9 +786,31 @@ public class Server {
 	 * Sends the page to select multiple teams to inspect
 	 * @param pw
 	 * @param i
+	 * @throws IOException 
 	 */
-	public void sendMultiTeamSelect(PrintWriter pw, int i){
-		
+	public void sendMultiTeamSelect(PrintWriter pw, int i) {
+		System.out.println("HI?");
+		pw.println("<html><style>");
+		try {
+			sendPage(pw, "multi_select.css");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		pw.println("</style><h1>Select Teams to Inspect</h1><body><table>");
+		pw.println("<tr><th>Available Teams</th><th>Selected Teams</th></tr>");
+		pw.println("<tr><td><ul id=\"out()\">");
+		for(Team t : teams){
+			pw.println("<li id=\"" + t.number + "\"><button onclick=add()>" + t.number + "</button></li>");
+		}
+		pw.println("<td align = center><table id=\"in\" class=\"t2\"><tr><th>Index</th><th>Team Number</th><th/><th/><th/></tr></table><br><button onclick=inspect()>Inspect</button></td>");
+		pw.println("<tr></table><script>");
+		try {
+			sendPage(pw, "multi_select.js");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		pw.println("</script></body></html>");
+		pw.flush();
 	}
 	
 	/**
