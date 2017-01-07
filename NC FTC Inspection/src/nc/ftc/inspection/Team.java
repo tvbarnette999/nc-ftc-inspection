@@ -44,9 +44,9 @@ public class Team implements Comparable<Team> {
 //			name=Main.teamData.get(number);
 			//TODO move the arrays elsewhere for memory? (teams not in event dont need arrays in RAM until added to event)
 			this.name = name;
-			hwData=new boolean[Server.HWForm.size()];
-			swData=new boolean[Server.SWForm.size()];
-			fdData=new boolean[Server.FDForm.size()];
+			hwData = new boolean[Server.hardwareForm.cbTotal];
+			swData = new boolean[Server.softwareForm.cbTotal];
+			fdData = new boolean[Server.fieldForm.cbTotal];
 
 		}
 		
@@ -149,17 +149,17 @@ public class Team implements Comparable<Team> {
 		 * @param i
 		 */
 		public void setStatus(String type, int i) {
-			if(type.equals("CI"))this.checkedIn = i==3?true:false;
+			if(type.equals("CI"))this.checkedIn = i==3 ? true : false;
 			if(type.equals("SC")){
 				this.cube = i;
-				if(this.cube ==  Server.PASS && !Server.separateCube){
+				if(this.cube == Server.PASS && !Server.separateCube){
 					hwData[CUBE_INDEX] = true;
 				}
 			}
 			if(type.equals("HW"))this.hardware=i;
 			if(type.equals("SW"))this.software=i;
 			if(type.equals("FD"))this.field=i;
-			System.out.println("set "+this.number+" "+type+":"+i);			
+			System.out.println("set " + this.number + " " + type + ":" + i);			
 	
 			if(i==Server.NO_DATA){
 				Server.addLogEntry(this.number+" "+type+" set to Uninspected"); 
@@ -211,20 +211,20 @@ public class Team implements Comparable<Team> {
 		public void setInspectionIndex(String type, int index, boolean status) {
 			System.out.println("TEAM SET:"+hwData+" "+index+" "+status);
 			if(type.equals("HW")){
-				hwData[index]=status;				
+				hwData[index] = status;				
 				//TODO pass hw and fail cube when not separate? Or not, cuz they have technically failed HW at that point. consider sigs for hw and how that affect this
-				if(this.getStatus(Server.HARDWARE)!=Server.PROGRESS)this.setStatus(type, Server.PROGRESS);//dont set if we dont have to cuz status log
+				if(this.getStatus(Server.HARDWARE) != Server.PROGRESS)this.setStatus(type, Server.PROGRESS);//dont set if we dont have to cuz status log
 				if(index == CUBE_INDEX && Server.trackCube && !Server.separateCube){
-					setStatus("SC",status?Server.PASS:Server.FAIL);
+					setStatus("SC", status ? Server.PASS : Server.FAIL);
 				}
 			}
 			if(type.equals("SW")){
-				swData[index]=status;			
-				if(this.getStatus(Server.SOFTWARE)!=Server.PROGRESS)this.setStatus(type, Server.PROGRESS);
+				swData[index] = status;			
+				if(this.getStatus(Server.SOFTWARE) != Server.PROGRESS)this.setStatus(type, Server.PROGRESS);
 			}
 			if(type.equals("FD")){
-				fdData[index]=status;			
-				if(this.getStatus(Server.FIELD)!=Server.PROGRESS)this.setStatus(type, Server.PROGRESS);
+				fdData[index] = status;			
+				if(this.getStatus(Server.FIELD) != Server.PROGRESS)this.setStatus(type, Server.PROGRESS);
 			}
 		}
 		

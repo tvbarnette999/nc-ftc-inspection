@@ -1,25 +1,36 @@
+
 package nc.ftc.inspection;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.swing.plaf.synth.SynthSpinnerUI;
 
 public class Server {
 	
@@ -81,9 +92,13 @@ public class Server {
 	private boolean done=false;
 	
 	//TODO add sections to the form data to handle new one, accommodate for dual columned entries like new SW
-	public static Vector<String> HWForm=new Vector<String>();
-	public static Vector<String> SWForm=new Vector<String>();
-	public static Vector<String> FDForm=new Vector<String>();
+//	public static Vector<String> HWForm=new Vector<String>();
+//	public static Vector<String> SWForm=new Vector<String>();
+//	public static Vector<String> FDForm=new Vector<String>();
+	
+	public static InspectionForm hardwareForm = new InspectionForm(HARDWARE);
+	public static InspectionForm softwareForm = new InspectionForm(SOFTWARE);
+	public static InspectionForm fieldForm = new InspectionForm(FIELD);
 	
 	
 	
@@ -173,8 +188,8 @@ public class Server {
 	 * @throws IOException
 	 */
 	public void sendPage(Socket sock,int i, String extras, boolean verified, Object ... other) throws IOException{
-		OutputStream out=sock.getOutputStream();
-		PrintWriter pw=new PrintWriter(out);
+		OutputStream out = sock.getOutputStream();
+		PrintWriter pw = new PrintWriter(out);
 		//responding to post with data success header
 		if(i==H204){
 			pw.println("HTTP/1.1 204 No Content\n");
@@ -196,7 +211,12 @@ public class Server {
 
 		}
 		//respond to default text/html request
-		else pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\n");
+		else{
+			//need UTF-8, so do this: (for special characters in inspectiion form)
+			pw = new PrintWriter(new OutputStreamWriter(out, "utf-8")); //TODO check me here: this is not a memory leak cuz closing a pw closes the underlying stream right?
+			pw.print("HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\nCache-Control:no-store\n"); 
+			
+		}
 		
 		if (extras == null){ 
 			extras = "";
@@ -344,6 +364,7 @@ public class Server {
 		if(req.equals("reference") || req.equals("forum"))pageID=REFERENCE_HOME;
 		if(req.equals("admin"))pageID=verified?ADMIN:LOGIN;
 		
+		
 		if(req.equals("log"))pageID=verified?LOG:LOGIN;
 		
 		if(req.startsWith("hardware/") && fullHardware){
@@ -358,7 +379,7 @@ public class Server {
 			pageID=verified?FIELD:LOGIN;
 			other=req.substring(req.indexOf("/")+1);			
 		}
-		//handle forums
+		//handle forums-- This is the only part of the server that acts like a real webserver
 		if(req.startsWith("reference/")){
 			req = req.substring(req.indexOf("/")+1);
 			if(req.startsWith("game"))pageID=GAME_FORUM;
@@ -368,6 +389,7 @@ public class Server {
 			if(req.startsWith("judge"))pageID=JUDGING_FORUM;
 			if(req.startsWith("manual1"))pageID=MANUAL1;
 			if(req.startsWith("manual1"))pageID=MANUAL2;
+			
 		}
 		//these do not require login
 		if(req.equals("favicon.ico"))pageID=100;
@@ -390,11 +412,15 @@ public class Server {
 	 * @throws IOException
 	 */
 	public void post(String req, String data,Socket sock) throws IOException{
-		int pageID=0;
-		boolean valid=false;
+		int pageID = 0;
+		boolean valid = false;
 		String response = "";
 		String extras = "";
-		System.out.println("POST: \n"+req+"\nData:\n"+data);
+		System.out.println("POST: "+req+"\nData: ("+data.length() + ")\n" +data);
+		for(char c : data.toCharArray()){
+			System.out.print(((int) c) + " ");
+		}
+		System.out.println();
 		/*
 		 * if the data contains a password, its from the login page.
 		 * That means we can send it a secured page.
@@ -411,6 +437,7 @@ public class Server {
 //				pw.flush();
 				valid=true;
 //				System.out.println("VERIFIED PASSWORD");
+				System.out.println(req +"  "+req.indexOf("/")+"  "+req.indexOf(" "));
 				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
 				System.out.println("REQ:"+req);
 				if(req.equals("hardware"))pageID=HARDWARE;
@@ -436,30 +463,30 @@ public class Server {
 			req=req.substring(1);
 //			System.out.println("VERIFIED "+req);
 			if(req.startsWith("cubeindex?")){//js is asking what the cube index is before passing the team
-				pageID=CUBE_INDEX_PAGE;
+				pageID = CUBE_INDEX_PAGE;
 			}
 			else if(req.startsWith("update?")){//These are requests that contain a state change for a team for a level of inspection.
-				System.out.println("LINE 389: "+req);
-				String s=req.substring(req.indexOf("=")+1);
-				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
-				String type=s.substring(s.indexOf("_")+1,s.indexOf("&"));
-				String v=s.substring(s.indexOf("=")+1);
-				v=v.substring(0, v.indexOf(" "));
-				getTeam(t).setStatus(type,Integer.parseInt(v));
+				System.out.println("LINE 389: " + req);
+				String s = req.substring(req.indexOf("=") + 1);
+				int t = Integer.parseInt(s.substring(0, s.indexOf("_")));
+				String type = s.substring(s.indexOf("_") + 1, s.indexOf("&"));
+				String v = s.substring(s.indexOf("=")+1);
+				v = v.substring(0, v.indexOf(" "));
+				getTeam(t).setStatus(type, Integer.parseInt(v));
 				pageID=H204;
 			}
 			else if(req.startsWith("fullupdate?")){//full inspection state change
-				String s=req.substring(req.indexOf("=")+1);
-				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
-				String type=s.substring(s.indexOf("_")+1,s.indexOf("&"));
-				int index=Integer.parseInt(type.substring(2));//type is 2 characters
-				type=type.substring(0, 2);
-				String v=s.substring(s.indexOf("=")+1);
-				v=v.substring(0, v.indexOf(" "));
+				String s = req.substring(req.indexOf("=")+1);
+				int t = Integer.parseInt(s.substring(0, s.indexOf("_")));
+				String type = s.substring(s.indexOf("_")+1,s.indexOf("&"));
+				int index = Integer.parseInt(type.substring(2));//type is 2 characters
+				type = type.substring(0, 2);
+				String v = s.substring(s.indexOf("=")+1);
+				v = v.substring(0, v.indexOf(" "));
 				getTeam(t).setInspectionIndex(type,index,Boolean.parseBoolean(v));
 				//send conf wth id of td containing the checkbox and the data we received(v)
-				response="BG"+t+"_"+type+index+"="+v;
-				pageID=SEND_RESPONSE;
+				response = t + "_" + type + index + "=" + v;
+				pageID = SEND_RESPONSE;
 			}
 			else if(req.startsWith("note?")){
 				String s=req.substring(req.indexOf("=")+1);
@@ -493,7 +520,8 @@ public class Server {
 				pageID = SEND_RESPONSE;
 			}
 			else{
-				pageID=1;
+				System.out.println("NOTHIN!");
+				pageID = H204;
 			}
 		}
 		sendPage(sock,pageID, extras, valid, response);	
@@ -685,12 +713,6 @@ public class Server {
 		pw.println("</h1><table cellspacing=\"10\">");
 		for(Team t:teams){
 			pw.println("<tr><td id=\"R"+t.number+"\" bgcolor="+getColor(t.getStatus(i))+">"+t.number+"</td><td>");
-			/* radio button code (OLD)
-			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+PASS+"\" "+(t.get(i)==PASS?"checked=\"checked\"":"")+" onclick=\"update()\"/>Pass</label></td>");
-			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+FAIL+"\" "+(t.get(i)==FAIL?"checked=\"checked\"":"")+" onclick=\"update()\"/>Fail</label></td>");
-			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+PROGRESS+"\" "+(t.get(i)==PROGRESS?"checked=\"checked\"":"")+" onclick=\"update()\"/>In Progress</label></td>");
-			pw.println("<td><label><input type=\"radio\" name=\""+t.number+type+"\" value=\""+NO_DATA+"\" "+(t.get(i)==NO_DATA?"checked=\"checked\"":"")+" onclick=\"update()\"/>Uninspected</label></td>");
-			*/
 			//ComboBox code:
 			pw.println("<select onchange=\"update()\" name=\""+ t.number + type + "\""+">");
 			pw.println("<option value=\"" + PASS     + "\"" + (t.getStatus(i) == PASS?"selected":"")     + ">PASS</option>");
@@ -745,7 +767,7 @@ public class Server {
 			case FIELD:    type="field";break;
 			default:return;//TODO something else here?
 		}
-		pw.println("<html><body><h1>");
+		pw.println("<html><meta http-equiv=\"refresh\" content=\"5\"><body><h1>");//TODO test if refhresh is noticeable
 		switch(i){
 			case HARDWARE:pw.println("Hardware Inspection");break;
 			case SOFTWARE:pw.println("Software Inspection");break;
@@ -770,56 +792,40 @@ public class Server {
 		//when submit button clicked, send note and thats how you know IP->fail (or pass)
 		//note beng reason for failure as prescribed 
 		//TODO do we want to be able to print an inspection sheet for a team if they ask? IE print job? -Nah scoring pc can just connect and print webpage
-		Team team=null;
+		Team team = null;
 		try{
-			team=getTeam(Integer.parseInt(extras));
-			if(team==null) throw new IllegalArgumentException("Invalid team #: "+extras);
+			team = getTeam(Integer.parseInt(extras));
+			if(team == null) throw new IllegalArgumentException("Invalid team #: "+extras);
 		}catch(Exception e){
 			//TODO send error page. 404? some better way to do this?
 			return;
 		}
 		
-		Vector<String> form;
+		InspectionForm form;
 //		System.out.println("full: "+i);
 		String type = "";
 		String note = "";
 		String head = "Appendix ";
 		String back = "";
 		switch(i){
-			case HARDWARE: form = HWForm; type = "_HW"; note = team.hwNote; back = "/hardware"; break;
-			case SOFTWARE: form = SWForm; type = "_SW"; note = team.swNote; back = "/software"; break;
-			case FIELD:    form = FDForm; type = "_FD"; note = team.fdNote; back = "/field";    break;
+			case HARDWARE: form = hardwareForm; type = "_HW"; note = team.hwNote; back = "/hardware"; break;
+			case SOFTWARE: form = softwareForm; type = "_SW"; note = team.swNote; back = "/software"; break;
+			case FIELD:    form = fieldForm; type = "_FD"; note = team.fdNote; back = "/field";    break;
 			default: throw new IllegalArgumentException("Full inspection not supported");
 		}
-		if(type.contains("W")) head += "A: Robot Inspection Checklist";
-		else head += "B: Field Inspection Checklist";
+		if(form.header != null){
+			head = form.header;
+		} else{
+			if(type.contains("HW")) head += "B - Robot Inspection Checklist";
+			else head += "C - Field Inspection Checklist";
+		}
 		pw.println("<html><head><h2>" + head + "</h2><hr style=\"border: 3px solid #943634\" /><h3>Team Number: " + extras + "</h3></head>");
 		//TODO adjust table size so it is useable on phone.
-		pw.println("<body><table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;\">");
-		pw.println("<tr bgcolor=\"#E6B222\" ><th>Insp.</th><th>Inspection Rule</th><th>Rule #</th></tr>");
+		pw.println("<body>");
 		
-		int j=0;
-		/*
-		 * 
-		 * pass: check all boxes are checked.
-		 *       popup for "signature"? like NobleHour did?
-		 * fail: dont need to check (could fail for safety)
-		 * both: send comments 
-		 *       send status update (pass only when signed)-DONE(no sign for pass yet)
-		 *       
-		 * remove auto check for pass when all checked? (forces signature) -DONE
-		 * 
-		 */
-		for(int ind=0;ind<form.size();ind++){
-			//if(separateCube && ind == Team.CUBE_INDEX)continue;//remove cube from full hw
-			
-			String s=form.get(ind);
-			pw.print("<tr><td id=BG"+extras+type+j+"><label>");
-			pw.println("<input type=\"checkbox\" name=\""+extras+type+j+"\" "+(team.getStatus(i,j)?"checked=\"checked\"":"")+" onclick=\"update()\"/>");
-			pw.println("</label></td><td>"+s+"</td></tr>");
-			j++;
-		}
-		pw.println("</table><br><b>General Comments or Reasons for Failure:</b><br><textarea name="+extras+type+" id=\"note\" rows=\"4\" co"
+		pw.println(form.getFormTable(team));
+		
+		pw.println("<br><b>General Comments or Reasons for Failure:</b><br><textarea name="+extras+type+" id=\"note\" rows=\"4\" co"
 				+ "ls=\"100\">"+note+"</textarea>");
 		pw.println("<br><br><button type=\"button\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
 		pw.println("<button type=\"button\" name=\""+extras+type+"\" onclick=\"fullfail()\">Fail</button>");
@@ -939,9 +945,9 @@ public class Server {
 	 */
 	public void loadEvent(String event) throws FileNotFoundException{
 		if(event == null)return;//Do not attempt to load null event.
-		Scanner scan=Resources.getScanner(event+".event");//new Scanner(new File("Resources/"+event));
-		Server.event=event;//if finds file, set Server event to the new one.
-		fullEventName=scan.nextLine();
+		Scanner scan = Resources.getScanner(event + ".event");//new Scanner(new File("Resources/"+event));
+		Server.event = event;//if finds file, set Server event to the new one.
+		fullEventName = scan.nextLine();
 		Vector<Integer> nums=new Vector<Integer>();
 		scan.useDelimiter(",| |\\n");
 		while(scan.hasNext()){
@@ -951,66 +957,88 @@ public class Server {
 		}
 		scan.close();
 		for(int i:nums){
-			teams.add(Team.getTeam(i));
+			System.out.println("Loading team "+ i);
+			Team t = Team.getTeam(i);
+			if(t == null){
+				System.err.println("WARNING! NO TEAM " + i);
+				Server.theServer.addErrorEntry("WARNING! NO TEAM " + i +" CREATING DUMMY TEAM!");
+				Team.registerTeam(i, null);
+				t = Team.getTeam(i);
+			}
+			teams.add(t);
 		}
 		addLogEntry("Loaded event: "+fullEventName);
 		Collections.sort(teams);
 		
 		//load status data if exists
-		scan=Resources.getStatusScanner();
-		if(scan==null)return;//were done here- no data
-//		String[] line = null;
+		scan = Resources.getStatusScanner();
+		if(scan == null)return;//were done here- no data
+		String[] line;
 		while(scan.hasNextLine()){
-			Team.loadDataFromString(scan.nextLine());
-//			line=scan.nextLine().split(",");
-//			if(line.length<1)continue;
-//			try{
-//				Team t=getTeam(Integer.parseInt(line[0]));
-//				t.checkedIn=Boolean.parseBoolean(line[1]);
-//				t.cube=Integer.parseInt(line[2]);
-//				t.hardware=Integer.parseInt(line[3]);;
-//				t.software=Integer.parseInt(line[4]);
-//				t.field=Integer.parseInt(line[5]);
-//			}catch(Exception e){
-//				
-//			}			
+			Team.loadDataFromString(scan.nextLine());		
 		}
 		scan.close();
 		
-		for(Team t:teams){//can be converted to 1.6
-			scan= Resources.getHardwareScanner(t.number);
-			for(int i=0;i<t.hwData.length;i++){
-				t.hwData[i]=scan.nextBoolean();
-			}
-			scan.nextLine();
-			t.hwTeamSig=scan.nextLine();
-			t.hwInspSig=scan.nextLine();
-			while(scan.hasNextLine()){
-				t.hwNote+=scan.nextLine()+"\n";
+		for(Team t:teams){
+			scan = Resources.getHardwareScanner(t.number);
+			try{
+				for(int i = 0; i < t.hwData.length; i++){
+					t.hwData[i] = scan.nextBoolean();
+				}
+				if(scan.hasNextBoolean()){
+					addErrorEntry("Team file has more entries: " + t.number + " HW");
+					while(scan.hasNextBoolean()) scan.nextBoolean();
+				}
+				scan.nextLine();
+				t.hwTeamSig = scan.nextLine();
+				t.hwInspSig = scan.nextLine();
+				while(scan.hasNextLine()){
+					t.hwNote += scan.nextLine()+"\n";
+				}
+			}catch(Exception e){
+				//This means that the size of the form did not match the number of entries
+				//in the team's .ins file
+				addErrorEntry("Inspection File Mismatch: " + t.number + " HW");
 			}
 			scan.close();
 			
 			scan= Resources.getSoftwareScanner(t.number);
-			for(int i=0;i<t.swData.length;i++){
-				t.swData[i]=scan.nextBoolean();
-			}
-			scan.nextLine();
-			t.swTeamSig=scan.nextLine();
-			t.swInspSig=scan.nextLine();
-			while(scan.hasNextLine()){
-				t.swNote+=scan.nextLine()+"\n";
+			try{
+				for(int i = 0; i < t.swData.length; i++){
+					t.swData[i] = scan.nextBoolean();
+				}
+				if(scan.hasNextBoolean()){
+					addErrorEntry("Team file has more entries: " + t.number + " SW");
+					while(scan.hasNextBoolean()) scan.nextBoolean();
+				}
+				scan.nextLine();
+				t.swTeamSig = scan.nextLine();
+				t.swInspSig = scan.nextLine();
+				while(scan.hasNextLine()){
+					t.swNote += scan.nextLine() + "\n";
+				}
+			}catch(Exception e){
+				addErrorEntry("Inspection File Mismatch: " + t.number + "HW");
 			}
 			scan.close();
 			
 			scan= Resources.getFieldScanner(t.number);
-			for(int i=0;i<t.fdData.length;i++){
-				t.fdData[i]=scan.nextBoolean();
-			}
-			scan.nextLine();
-			t.fdTeamSig=scan.nextLine();
-			t.fdInspSig=scan.nextLine();
-			while(scan.hasNextLine()){
-				t.fdNote+=scan.nextLine()+"\n";
+			try{
+				for(int i = 0; i < t.fdData.length; i++){
+					t.fdData[i] = scan.nextBoolean();
+				}
+				if(scan.hasNextBoolean()){
+					addErrorEntry("Team file has more entries: " + t.number + " FD");
+					while(scan.hasNextBoolean()) scan.nextBoolean();
+				}
+				scan.nextLine();
+				t.fdTeamSig = scan.nextLine();
+				t.fdInspSig = scan.nextLine();
+				while(scan.hasNextLine()){
+					t.fdNote += scan.nextLine()+"\n";
+				}
+			}catch(Exception e){
+				addErrorEntry("Inspection File Mismatch: " + t.number + "HW");
 			}
 			scan.close();
 		}
@@ -1030,18 +1058,53 @@ public class Server {
 		}
 		public void run(){
 			try{
-				byte[] b=new byte[1024];
-				sock.getInputStream().read(b);
-				String req=new String(b);
-				if(req.startsWith("GET")){
-					get(req.substring(4,req.indexOf("\n")),sock, req);
+				StringBuilder full = new StringBuilder();
+				StringBuilder data = new StringBuilder();
+				BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+				String type = in.readLine();
+				System.out.println(type);
+				full.append(type);
+				full.append('\n');
+				String line = null;
+				int len = -1;
+				sock.setSoTimeout(50);
+				try{
+					while((line = in.readLine()) != null && !line.isEmpty()){
+						full.append(line );
+						full.append('\n');
+						if(line.startsWith("Content-Length:")){
+							Scanner scan = new Scanner(line.substring(line.indexOf(":") + 1));
+							len = scan.nextInt();
+							scan.close();
+							break;
+						}
+					}
+					
+					//we have recieved cntent length!
+					while((line = in.readLine()) != null && line.contains(":")){
+						//still receiveing header
+						full.append(line);
+						full.append('\n');
+					}
+				}catch(SocketTimeoutException e){}//there has got to be a better way
+				if(type == null)return;
+				if(type.startsWith("GET")){
+					get(type.substring(4),sock, full.toString());
+				} else{
+					for(int i = 0; i < len; i++){
+						char c = (char)in.read();
+						data.append(c);
+						full.append(c);
+					}
 				}
-				if(req.startsWith("POST")){			
-					String[] datarray=req.split("\n");
-					String data=datarray[datarray.length-1];
-					data=data.substring(data.indexOf("\n")+3);//why is this here? This is why we comment code.
-					post(req.substring(5,req.indexOf("\n")),data,sock);//yeah? well maybe I don't like your tone
-				}
+				
+//				System.out.println("FULL REQUEST: " + full.toString() +"\n END FULL REQ");
+				
+				if(type.startsWith("POST")){			
+					
+//					System.out.println("POST: " + type + '\n' + "DATA:" + data.toString());
+					post(type.substring(5), data.toString(), sock);
+				} 											
 				sock.close();
 			}catch(Exception e){
 				e.printStackTrace();
@@ -1112,6 +1175,14 @@ public class Server {
 		}		
 		return false;
 	}
+
+	public void unloadEvent() {
+		save();
+		event = null;
+		teams.clear();
+		addLogEntry("No Event Loaded");
+		
+	}
 	
 	/**
 	 * Saves the current team status data to the .status file, and the full inspection data for each team
@@ -1121,8 +1192,8 @@ public class Server {
 	public static boolean save(){
 		Resources.saveEventFile();
 		theServer.saveConfig();
-		PrintWriter pw=Resources.getStatusWriter();
-		if(pw==null)return false;
+		PrintWriter pw = Resources.getStatusWriter();
+		if(pw == null)return false;
 		for(Team t : theServer.teams){
 			pw.println(t.getStatusString());
 		}
@@ -1195,10 +1266,13 @@ public class Server {
 	 */
 	public void loadConfig(){
 		Scanner scan = Resources.getConfigScanner();
-		if(scan == null)return;
+		if(scan == null) return;
 		String event = scan.nextLine();
-		if(Main.events.contains(event)){
+		if(event != "null" && Main.events.contains(event)){
 			Server.event = event;
+		} else{
+			Server.event = null;
+			Server.addLogEntry("No Event Loaded");
 		}
 		this.setPassword(scan.nextLine());
 		trackCheckIn = scan.nextBoolean();

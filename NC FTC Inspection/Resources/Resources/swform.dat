@@ -1,7 +1,20 @@
-The FTC controller app is the default application, the application launches, and no other messages pop up:<RS07>
-Robot Controller�s operating system is either version 4.2.x or 4.4.x (ZTE Speed) OR 4.2.x,4.4.x, or 5.0.2 (Motorola Moto G 2nd Generation):<RS04>
-The Robot Controller is set to airplane mode, and Bluetooth is turned off:<RS08>
-Robot Controller Android device is named with the official Team number followed by -RC:<RS02>
-Robot Controller Wi-Fi Direct device name does not include a newline character in the name:
-Robot is not connected to any local networks:
-The FTC Wi-Fi Direct Channel Changing App is installed on the Robot Controller (for ZTE Speed devices only):
+::
+I::color=#F57E25
+I::header=Appendix C - Field Inspection Checklist
+H::1::✔::Driver Station Hardware Rules::Rule #
+1::0::Driver Station consists only of one Android device (ZTE Speed, Motorola Moto G 2nd Generation, Motorola Moto G 3rd Generation, Motorola Moto G4 Play, Google Nexus 5, or Samsung Galaxy S5). 	::<RE06><br><RE16>
+1::0::Driver Station Android device USB interface is only connected to either a Mini USB to OTG cable or combination of cables connected to an unpowered USB Hub, or One (1) gamepad. 	::<RE16>b 
+1::0::No more than one (1) optional Commercial Off The Shelf USB external battery connected to the USB hub is allowed. 	::<RE06>d<br><RE16>c
+1::0::The Driver Station consists of no more than two of the allowed gamepads (Logitech F310 or Xbox 360 in any combination). 	::<RE16>d
+1::0::The touch display screen of the Driver Station must be accessible and visible to field personnel. 	::<RE16>e 
+H::2::DS::RC::Driver Station (DS) and Robot Controller (RC) Software Rules ::Rule #
+2::0::0::Android device is named with the official Team number followed by –DS or –RC as appropriate. 	::<RS01> 
+2::0::0::Android operating system satisfies the requirements: ZTE Speed - version 4.4 or higher, Motorola Moto G4 Play 6.0.1 or higher, all other allowed Android devices - version 6.0 or higher. 	::<RS03> 
+2::0::0::The Android device is set to airplane mode, and Bluetooth is turned off. 	::<RE16>f<br><RS08> 
+2::0::0::Android Wi-Fi Direct device name does not include a newline character in the name. 	 ::
+2::0::0::Robot is not connected to any local networks. 	 ::
+2::0::0::All remembered Wi-Fi Direct Groups have been removed. 	 ::
+2::0::-1::Driver Station uses the official FTC Driver Station app to control the Robot. 	::<RS07> 
+2::-1::0::The FTC controller app is the default application, the application launches, and no other messages pop up. 	::<RS06> 
+2::-1::0::The FTC Wi-Fi Direct Channel Changing App is installed on the Robot Controller (for ZTE Speed devices only). 	::<RS09> 
+2::-1::0::Robot Controller is set to the correct Wi-Fi Direct channel (if required by the tournament, ZTE Speed, Motorola Moto G 2nd Generation, Motorola Moto G 3rd Generation, and Motorola Moto G4 Play only). ::<T6>

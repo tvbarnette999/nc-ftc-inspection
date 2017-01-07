@@ -15,7 +15,9 @@ import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
-
+import static nc.ftc.inspection.Resources.FD_FORM_FILE;
+import static nc.ftc.inspection.Resources.HW_FORM_FILE;
+import static nc.ftc.inspection.Resources.SW_FORM_FILE;
 
 public class Main extends JFrame {
 
@@ -36,12 +38,7 @@ public class Main extends JFrame {
 	public static final boolean NIMBUS = true;
 
 	/*
-	 * TODO Decide how events are structured:
-	 * 
-	 * Premake team list for each event 
-	 * or select teams during setup?
-	 * 
-	 * Add search bar for adding team
+	 * TODO List:
 	 * 
 	 * Handle inability to load event
 	 * Handle incorrect inspection form (form vs team file mismatch)
@@ -61,13 +58,15 @@ public class Main extends JFrame {
 	 *TODO if web page cant send POST due to disconnect, have a button at bottom of page to send all data from page for reconnect?
 	 *-or keep a vector in js or something?
 	 *
+	 *
 	 *TODO have server respond with notes and signatures to confirm.?
 	 *
 	 *TODO capability to run headless. just in case
 	 *
-	 *TODO save which to track? save in server.config in root?
 	 *
 	 *TODO Some GUI easy way to select root save dir.
+	 *
+	 *TODO static import constants where used multiple times (ie Server.HARDWARE)
 	 *
 	 *
 	 *
@@ -83,14 +82,7 @@ public class Main extends JFrame {
 	public static Vector<String> events=new Vector<String>();
 	public static Thread autoSaveThread;
 	public static void main(String[] args) {
-		for(String s:args){
-			if(s.startsWith("root=")){
-				//TODO set root
-			}
-			if(s.startsWith("headless")){
-				//TODO headless
-			}
-		}
+		
 		//TODO popup for non existant root directory?
 //		if(!Resources.rootExists()){
 //			
@@ -156,6 +148,7 @@ public class Main extends JFrame {
 	private JTabbedPane tabbedPane = new JTabbedPane();
 	private JPanel eventSettingsPanel = new JPanel();
 	private JPanel serverSettingsPanel = new JPanel();
+	private JPanel resourceManagerPanel = new JPanel();
 	private JPanel leftPanel = new JPanel();
 	private JPanel pwPanel = new JPanel();
 	private JPanel pwSub1 = new JPanel();
@@ -192,6 +185,49 @@ public class Main extends JFrame {
 	private JButton editEvent = new JButton();
 	private JButton changeEvent = new JButton();
 	
+	private JPanel inspectionPanel = new JPanel();
+	private JPanel referencePanel = new JPanel();
+	private JPanel formEditPanel = new JPanel();
+	private FormEditor formEdit = new FormEditor();
+	private JScrollPane formScrollPane = new JScrollPane(formEdit);
+	private JPanel hardwarePanel = new JPanel();
+	private JPanel softwarePanel = new JPanel();
+	private JPanel fieldPanel = new JPanel();
+	JPanel formBottomPanel = new JPanel();
+	JTextField delimiter = new JTextField(){
+		private static final long serialVersionUID = -3943675988999287631L;
+
+		public Dimension getPreferredSize(){
+			Dimension d = super.getPreferredSize();
+			if(d.width < 50) d.width = 50;
+			return d;
+		}
+	};
+	JLabel delimiterLabel = new JLabel("Delimiter:");
+	JButton saveForm = new JButton("Save");
+	JButton resetForm = new JButton("Revert Changes");
+	JButton cancelForm = new JButton("Cancel");
+
+	JLabel hardware1 = new JLabel("Hardware:");
+	JLabel software1 = new JLabel("Software:");
+	JLabel field1 = new JLabel("Field:");
+	private JLabel hardwareLabel = new JLabel(Resources.DEFAULT);
+	private JLabel softwareLabel = new JLabel(Resources.DEFAULT);
+	private JLabel fieldLabel    = new JLabel(Resources.DEFAULT);
+	private JButton hardwareEdit = new JButton("Edit");
+	private JButton softwareEdit = new JButton("Edit");
+	private JButton fieldEdit = new JButton("Edit");
+	private JButton hardwareRestore = new JButton("Restore Default");
+	private JButton softwareRestore = new JButton("Restore Default");
+	private JButton fieldRestore = new JButton("Restore Default");
+	private JButton hardwareSelect = new JButton("Select File");
+	private JButton softwareSelect = new JButton("Select File");
+	private JButton fieldSelect = new JButton("Select File");
+	
+	
+	
+	
+	
 	private JDialog dialog = new JDialog(this, "Add team to event");
 	private JButton addSelectedTeam = new JButton("Add Selected Team");
 	private JButton newTeam = new JButton("New Team");
@@ -212,6 +248,125 @@ public class Main extends JFrame {
 	private JCheckBox trackField = new JCheckBox("Field",true);
 	private JCheckBox fullField = new JCheckBox("Full Field",true);
 	private static final int INDENT = 50;
+	
+	private void editForm(InspectionForm f){
+		formEdit.setForm(f);
+		delimiter.setText(f.delimiter);
+		delimiter.getDocument().addDocumentListener(new DocumentListener(){
+			@Override
+			public void changedUpdate(DocumentEvent arg0) {
+			}
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				formEdit.setDelimiter(delimiter.getText());
+			}
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				formEdit.setDelimiter(delimiter.getText());
+			}
+		});
+		this.formScrollPane.repaint();
+	}
+	
+	private void restoreDefault(String file, InspectionForm form){
+		String status = Resources.getFileStatus(file);
+		String backup = Resources.getBackup(file);
+		
+		if(status == Resources.CUSTOM){
+			int choice = JOptionPane.showConfirmDialog(Main.this, "This will move the current file to " + backup, "Restore Default Form", JOptionPane.OK_CANCEL_OPTION);
+			if(choice != JOptionPane.OK_OPTION) return;
+			try {
+				Resources.renameResource(file, backup);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				JOptionPane.showMessageDialog(Main.this, "Failed to move old file! Aborting operation.");
+				return;
+			}
+			try{
+				Main.loadInspectionForm(file, form);
+			}catch(Exception e1){
+				System.err.println("Failed to load default file!");
+				e1.printStackTrace();
+			}
+			
+		}
+	}
+	private ActionListener formListener = new ActionListener(){
+		public void actionPerformed(ActionEvent e){
+			JButton source = (JButton) e.getSource();
+			if(source == hardwareEdit){
+				editForm(Server.hardwareForm);
+			} else if(source == softwareEdit){
+				editForm(Server.softwareForm);
+			} else if(source == fieldEdit){
+				editForm(Server.fieldForm);
+			} else if(source == hardwareRestore){
+				//TODO- Move custom one to backup, reload default file
+				restoreDefault(HW_FORM_FILE, Server.hardwareForm);
+				
+			} else if(source == softwareRestore){
+				restoreDefault(SW_FORM_FILE, Server.softwareForm);
+			} else if(source == fieldRestore){
+				restoreDefault(FD_FORM_FILE, Server.fieldForm);
+			} else if(source == hardwareSelect){
+				//TODO, load file chooser
+			} else if(source == softwareSelect){
+				
+			} else if(source == fieldSelect){
+				
+			} else if(source == saveForm){
+				
+				String file = "";
+				switch(formEdit.form.type){
+					case Server.HARDWARE: file = HW_FORM_FILE; break;
+					case Server.SOFTWARE: file = SW_FORM_FILE; break;
+					case Server.FIELD:    file = FD_FORM_FILE; break;
+				}
+				String status = Resources.getFileStatus(file);
+				String backup = Resources.getBackup(file);
+				
+				if(status == Resources.CUSTOM){
+					int choice = JOptionPane.showConfirmDialog(Main.this, "This will save as " + file + ",\n moving the old file to " + backup, "Save Custom Form", JOptionPane.OK_CANCEL_OPTION);
+					if(choice != JOptionPane.OK_OPTION) return;
+					try {
+						Resources.renameResource(file, backup);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(Main.this, "Failed to move old file! Aborting operation.");
+						return;
+					}
+				}
+				try {
+					Resources.saveForm(formEdit);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(Main.this, "Failed to save form! Aborting operation.");
+					return;
+				}
+				
+				try {
+					Main.loadInspectionForm(file, formEdit.form);
+				} catch (FileNotFoundException e1) {
+				
+					e1.printStackTrace();
+				}
+				refreshFormStatus();
+				formEdit.form = null;
+				formEdit.list.clear();
+				formEdit.removeAll();
+				formEdit.revalidate();
+				formEdit.repaint();
+			} else if(source == resetForm){
+				editForm(formEdit.form);
+			} else if(source == cancelForm){
+				formEdit.form = null;
+				formEdit.list.clear();
+				formEdit.removeAll();
+				formEdit.revalidate();
+				formEdit.repaint();
+			}
+		}
+	};
 	private ActionListener trackListener = new ActionListener(){
 		public void actionPerformed(ActionEvent e){
 			Server.trackCheckIn = trackCheckIn.isSelected();
@@ -378,6 +533,7 @@ public class Main extends JFrame {
 
 	private static final String SERVER_SETTINGS = "Server Settings";
 	private static final String EVENT_SETTINGS = "Event Settings";
+	private static final String RESOURCE_MANAGER = "Resource Manager";
 	private JLabel cookieLabel = new JLabel(COOKIE_LABEL_STRING);
 	private String trafficString = "Traffic (15s bin): ";
 	private JLabel trafficLabel = new JLabel(trafficString);
@@ -678,6 +834,8 @@ public class Main extends JFrame {
 
 		tabbedPane.addTab(SERVER_SETTINGS, UIManager.getIcon("FileChooser.hardDriveIcon"), serverSettingsPanel, SERVER_SETTINGS);
 		tabbedPane.addTab(EVENT_SETTINGS, ftcIcon, eventSettingsPanel, EVENT_SETTINGS);
+		tabbedPane.addTab(RESOURCE_MANAGER, ftcIcon, resourceManagerPanel, RESOURCE_MANAGER);
+		
 		trackingPanel.setOpaque(true);
 		trackingPanel.setBorder(new TitledBorder("Tracking Option"));
 		trackingPanel.setPreferredSize(new Dimension(260, 300));
@@ -757,6 +915,90 @@ public class Main extends JFrame {
 		eventSettingsPanel.add(trackingPanel, BorderLayout.WEST);
 		eventSettingsPanel.add(teamPanel, BorderLayout.EAST);
 		eventSettingsPanel.add(eventPanel,BorderLayout.CENTER);
+		
+		//Resource Manager Tab
+		
+		hardwareEdit.addActionListener(formListener);
+		hardwareRestore.addActionListener(formListener);
+		hardwareSelect.addActionListener(formListener);
+		
+		FlowLayout flow = new FlowLayout(FlowLayout.LEFT);
+		hardware1.setPreferredSize(new Dimension(70,20));
+		hardwarePanel.setLayout(flow);		
+		hardwareLabel.setPreferredSize(new Dimension(70,20));
+		hardwarePanel.add(hardware1);
+		hardwarePanel.add(hardwareLabel);
+		hardwarePanel.add(hardwareEdit);
+		hardwarePanel.add(hardwareRestore);
+		hardwarePanel.add(hardwareSelect);
+		
+		softwareEdit.addActionListener(formListener);
+		softwareRestore.addActionListener(formListener);
+		softwareSelect.addActionListener(formListener);
+		
+		FlowLayout flow2 = new FlowLayout(FlowLayout.LEFT);
+		software1.setPreferredSize(new Dimension(70,20));
+		softwarePanel.setLayout(flow2);
+		softwareLabel.setPreferredSize(new Dimension(70,20));
+		softwarePanel.add(software1);
+		softwarePanel.add(softwareLabel);
+		softwarePanel.add(softwareEdit);
+		softwarePanel.add(softwareRestore);
+		softwarePanel.add(softwareSelect);
+		
+		fieldEdit.addActionListener(formListener);
+		fieldRestore.addActionListener(formListener);
+		fieldSelect.addActionListener(formListener);
+		
+		FlowLayout flow3 = new FlowLayout(FlowLayout.LEFT);
+		field1.setPreferredSize(new Dimension(70,20));
+		fieldPanel.setLayout(flow3);
+		fieldLabel.setPreferredSize(new Dimension(70,20));
+		fieldPanel.add(field1);
+		fieldPanel.add(fieldLabel);
+		fieldPanel.add(fieldEdit);
+		fieldPanel.add(fieldRestore);
+		fieldPanel.add(fieldSelect);
+		
+		
+		
+		inspectionPanel.setPreferredSize(new Dimension(450,200));
+		inspectionPanel.setBorder(new TitledBorder("Inspection Forms"));
+		inspectionPanel.add(hardwarePanel);
+		inspectionPanel.add(softwarePanel);
+		inspectionPanel.add(fieldPanel);
+
+		refreshFormStatus();
+		
+//		formEditTable.set
+		
+		formEditPanel.setBorder(new TitledBorder("Form Edit"));
+		formEditPanel.setLayout(new BorderLayout());
+		
+		
+		
+		formBottomPanel.add(delimiterLabel);
+		formBottomPanel.add(delimiter);
+		formBottomPanel.add(saveForm);
+		formBottomPanel.add(resetForm);
+		formBottomPanel.add(cancelForm);
+		formEditPanel.add(formBottomPanel, BorderLayout.SOUTH);
+		formEditPanel.add(formScrollPane, BorderLayout.CENTER);
+		
+		saveForm.addActionListener(formListener);
+		resetForm.addActionListener(formListener);
+		cancelForm.addActionListener(formListener);
+		
+		
+		
+		resourceManagerPanel.setLayout(new BorderLayout());
+		resourceManagerPanel.add(inspectionPanel, BorderLayout.WEST);
+		resourceManagerPanel.add(formEditPanel, BorderLayout.CENTER);
+		
+		
+		
+		
+		
 				
 		//listener to update graphics when tab changed
 		tabbedPane.addChangeListener(new ChangeListener(){
@@ -887,6 +1129,11 @@ public class Main extends JFrame {
 		masterList.setListData(v);
 	}
 	
+	private void refreshFormStatus(){
+		this.hardwareLabel.setText(Resources.getFileStatus(HW_FORM_FILE));
+		this.softwareLabel.setText(Resources.getFileStatus(SW_FORM_FILE));
+		this.fieldLabel.setText(Resources.getFileStatus(FD_FORM_FILE));
+	}
 	/**
 	 * This updates the area at the bottom right of the console page that shows the traffic states and the cookies issued
 	 */
@@ -906,21 +1153,21 @@ public class Main extends JFrame {
 		
 		//TODO need to do something if any of these throw an exception?
 		try {
-			loadInspectionForm("hwform.dat",Server.HWForm);
+			loadInspectionForm(HW_FORM_FILE, Server.hardwareForm);
 		} catch (FileNotFoundException e1) {
 			
 			e1.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Unable to load Hardware Inspection form!");
 		}
 		try {
-			loadInspectionForm("swform.dat",Server.SWForm);
+			loadInspectionForm(SW_FORM_FILE, Server.softwareForm);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Unable to load Software Inspection form!");
 		}
 
 		try {
-			loadInspectionForm("fdform.dat",Server.FDForm);
+			loadInspectionForm(FD_FORM_FILE, Server.fieldForm);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Unable to load Field Inspection form!");
@@ -933,41 +1180,46 @@ public class Main extends JFrame {
 		}
 		
 		try {
-			scan=Resources.getScanner("events.dat");
+			scan = Resources.getScanner("events.dat");
 			while(scan.hasNextLine()){
 				events.add(scan.nextLine());
 			}
 			Server.theServer.loadConfig();
-			if(!events.contains(Server.event)){
-				if(events.size() > 0) Server.event = events.get(0);
-				else Server.event=null;
-			}
+			//FIXME address this
+//			if(!events.contains(Server.event)){
+//				if(events.size() > 0) Server.event = events.get(0);
+//				else Server.event=null;
+//			}
+			System.out.println(Server.event);
 			Server.theServer.loadEvent(Server.event);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		if(scan!=null)scan.close();
+		if(scan != null) scan.close();
 
 	}
-
-
-	public static void loadInspectionForm(String srcFile, Vector<String> target) throws FileNotFoundException{
-
-		Scanner scan=Resources.getScanner(srcFile);			
+	
+	public static void loadInspectionForm(String srcFile, InspectionForm target) throws FileNotFoundException{
+		target.cbTotal = 0;
+		target.rows.clear();
+		target.widestRow = 0;
+		Scanner scan = Resources.getScanner(srcFile);	//The first line is the delimiter
+		String delimiter = scan.nextLine();
+		target.setDelimiter(delimiter);
 		while(scan.hasNextLine()){
 			try{
 				String line=scan.nextLine();
 				line=line.replaceAll("<","&lt;");
 				line=line.replaceAll(">","&gt;");
-				line=line.replaceAll("::", "</td><td>");
-				target.add(line);
+				target.addRow(line);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
 		}
+		scan.close();
 
 	}
-
+	
 	/**
 	 * This handles the command that was given by the String specified by who.
 	 * Who should be null only for use by the system console.
@@ -1004,7 +1256,7 @@ public class Main extends JFrame {
 		 * IP - show ip.
 		 * 
 		 *SAVE*
-		 *
+		 * 
 		 *KILL/STOP
 		 * 
 		 * 
@@ -1266,6 +1518,9 @@ public class Main extends JFrame {
 			}
 			else if (args[0].equals("KILL") || args[0].equals("STOP")) {
 				kill(); 
+			}
+			else if(args[0].equals("UNLOAD")){
+				Server.theServer.unloadEvent();
 			}
 			else{
 				error("UNKNOW COMMAND: "+args[0], who);

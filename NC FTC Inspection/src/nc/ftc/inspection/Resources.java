@@ -5,9 +5,21 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Scanner;
+
+import javax.swing.JComboBox;
+import javax.swing.JTextArea;
+
+import nc.ftc.inspection.FormEditor.RowEdit;
+import nc.ftc.inspection.InspectionForm.CB_LEVEL;
+import nc.ftc.inspection.InspectionForm.HeaderRow;
 
 /**A class with static methods for accessing Resources. The root directory is specified at runtime or in configuration, and 
  * is where the data is saved. It defaults to "NC Inspection" adjacent to .jar. It is the first place checked for any 
@@ -43,7 +55,17 @@ import java.util.Scanner;
  */
 
 
+
 public class Resources {
+	static final String DEFAULT = "Default";
+	static final String CUSTOM = "Custom";
+	static final String UNKNOWN = "UNKNOWN";
+	
+	static final String HW_FORM_FILE = "hwform.dat";
+	static final String SW_FORM_FILE = "swform.dat";
+	static final String FD_FORM_FILE = "fdform.dat";
+	
+	static HashMap<String, String> fileStatus = new HashMap<String, String>();
 	/**The root save directory that is checked first. Default value: "NC Inspection" */
 	public static String root="NC Inspection";
 	/**
@@ -59,27 +81,52 @@ public class Resources {
 	/**
 	 * Returns an InputStream for the given resource.
 	 * @param name the name of the resource
+	 * @param forceDefault Throw exception if not the default (in .jar) one
 	 * @return the InputStream
 	 * @throws FileNotFoundException if file cannot be found
 	 */
 	@SuppressWarnings("resource")
-	public static InputStream getInputStream(String name) throws FileNotFoundException{
+	public static InputStream getInputStream(String name, boolean forceDefault) throws FileNotFoundException{
 		InputStream in;
 		/*try root save directory first- if we need to change a file on the fly it loads that one first 
 		(also any mod like add team- rewrite new event data file there and its saved)
 		*/
 		try{
-			in=new FileInputStream(root+"/"+name);
+			if(forceDefault)throw new Exception("Forcing Default");
+			in = new FileInputStream(root + "/" + name);
+			fileStatus.put(name, CUSTOM);
 		}catch(Exception e){
 			try{		
-				in=Resources.class.getResourceAsStream("/Resources/"+name);
-				if(in==null)throw new FileNotFoundException("Resource " + name + " not in save root");
+				in = Resources.class.getResourceAsStream("/Resources/" + name);
+				if(in == null){
+					if(forceDefault) throw new FileNotFoundException("Unable to load default!");
+					throw new FileNotFoundException("Resource " + name + " not in save root");
+				}
+				fileStatus.put(name, DEFAULT);
 			}catch(FileNotFoundException e1){
-				System.err.println("Unable to load Resource: "+name);
-				throw new FileNotFoundException("Could not find resource: "+name);
+				System.err.println("Unable to load Resource: " + name);
+				throw new FileNotFoundException("Could not find resource: " + name);
 			}
 		}
 		return in;
+	}
+	
+	/**
+	 * Returns an InputStream for the given resource.
+	 * @param name the name of the resource
+	 * @return the InputStream
+	 * @throws FileNotFoundException if file cannot be found
+	 */
+	public static InputStream getInputStream(String name) throws FileNotFoundException{
+		return getInputStream(name, false);
+	}
+	
+	
+	public static PrintWriter getWriter(String file) throws IOException{
+		File f = new File(root + "/" + file);
+		if(!f.exists())f.createNewFile();
+		PrintWriter pw = new PrintWriter(f, "UTF-8");
+		return pw;
 	}
 
 	/**
@@ -440,5 +487,96 @@ public class Resources {
 		}	
 		
 		if(scan!=null)scan.close();
+	}
+	
+	public static String getFileStatus(String file){
+		String res = fileStatus.get(file);
+		if(res == null) res = UNKNOWN;
+		return res;
+	}
+	
+	/**
+	 * Adds _1 to the end of the given filename, and increments until that file does not exist
+	 * @param orig
+	 * @return
+	 */
+	public static String getBackup(String file){
+		String name = file.substring(0, file.lastIndexOf('.'));
+		String ext = file.substring(file.lastIndexOf('.'));
+		int i = 1;
+		System.out.println(root + "/" + name + "_" + i + ext);
+		while(new File(root + "/" + name + "_" + i + ext).exists())i++;
+		return name + "_" + i + ext;
+	}
+
+	/**
+	 * Saves the form stored in the GUI of the given FormEditor
+	 * @param form
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	public static void saveForm(FormEditor form) throws IOException {
+		String file = "";
+		switch(form.form.type){
+			case Server.HARDWARE: file = "hwform.dat"; break;
+			case Server.SOFTWARE: file = "swform.dat"; break;
+			case Server.FIELD:    file = "fdform.dat"; break;
+		}
+		PrintWriter pw = getWriter(file);
+		pw.println(form.newDelimiter);
+		pw.println("I::color=" + form.form.color);
+		if(form.form.header != null) pw.println("I::header=" + form.form.header);
+		if(form.form.cubeIndex > -1)pw.println("I::cube_index=" + form.form.cubeIndex);
+		System.out.println(form.list.size());
+		for(RowEdit edit : form.list){
+			if(edit.header){
+				pw.print("H" + form.newDelimiter);
+				pw.print((edit.left.getComponentCount() - 1) + form.newDelimiter);
+				for(int i = 0; i < edit.left.getComponentCount() - 1; i ++){
+					pw.print(((JTextArea)edit.left.getComponent(i)).getText().replaceAll("\n", "<br>") + form.newDelimiter);
+				}
+			} else{
+				pw.print((edit.left.getComponentCount() - 1) + form.newDelimiter);
+				for(int i = 0; i < edit.left.getComponentCount() - 1; i++){
+					pw.print(((CB_LEVEL)((JComboBox<CB_LEVEL>)edit.left.getComponent(i)).getSelectedItem()).value + form.newDelimiter);
+				}
+			}
+
+			pw.print(edit.explain.getText().replaceAll("\n", "<br>") + form.newDelimiter);
+			pw.println(edit.rule.getText().replaceAll("\n", "<br>"));
+		}
+
+		pw.flush();
+		pw.close();	
+		
+		//TODO test this: Should update size of team's bool [] when form changes
+		switch(form.form.type){
+			case Server.HARDWARE:
+				for(Team t : Team.masterList.values()){
+					t.hwData = Arrays.copyOf(t.hwData, form.form.cbTotal);
+				} 
+				break;
+			case Server.SOFTWARE: 
+				for(Team t : Team.masterList.values()){
+					t.swData = Arrays.copyOf(t.swData, form.form.cbTotal);
+				} 
+				break;
+			case Server.FIELD:
+				for(Team t : Team.masterList.values()){
+					t.fdData = Arrays.copyOf(t.fdData, form.form.cbTotal);
+				} 
+				break;
+		}
+		
+	}
+
+	/**
+	 * Renames a local resource (not stored in the jar)
+	 * @param file
+	 * @param backup
+	 * @throws IOException
+	 */
+	public static void renameResource(String file, String backup) throws IOException {
+		Files.move(new File(root + "/" + file).toPath(), new File(root + "/" + backup).toPath(), StandardCopyOption.REPLACE_EXISTING);		
 	}
 }
