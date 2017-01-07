@@ -2,7 +2,6 @@ package nc.ftc.inspection;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.io.IOException;
@@ -29,7 +28,10 @@ public class Main extends JFrame {
 
 
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("hh:mm:ss");
+	public static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat ("hh:mm:ss");
+	
+	public static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("MM_DD_YY_hh-mm-ssa");
+	
 
 	public static final boolean NIMBUS = true;
 
@@ -78,7 +80,17 @@ public class Main extends JFrame {
 	public static Vector<String> events=new Vector<String>();
 	public static Thread autoSaveThread;
 	public static void main(String[] args) {
-		
+		try {
+			setUpLogFiles();
+		} catch (IOException e1) {
+			System.err.println("Unable to redirect syserr or sysout");
+			e1.printStackTrace();
+		}
+		try {
+			throw new Exception("Hello this is an exception");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		//TODO popup for non existant root directory?
 //		if(!Resources.rootExists()){
@@ -139,6 +151,10 @@ public class Main extends JFrame {
 
 	}
 	
+	private static void setUpLogFiles() throws IOException {
+		System.setErr(new RedirectingPrintStream(System.err, "/log/" + DATE_TIME_FORMAT.format(new Date()) + "_ERROR.log"));
+		System.setOut(new RedirectingPrintStream(System.out, "/log/" + DATE_TIME_FORMAT.format(new Date()) + "_OUT.log"));
+	}
 	private static Color BACKGROUND = Color.decode("#EEEEEE");
 	
 	private ImageIcon ftcIcon;
@@ -580,62 +596,8 @@ public class Main extends JFrame {
 	 */
 
 	private JPanel consolePanel = new JPanel();
-	public FTCEditorPane consoleTextArea = new FTCEditorPane();
-	/**
-	 * This is for the cmd line interface. The system uses HTML code to render the commands, and this
-	 * class hides the need for the the interfacing code to care about some of the details of appending to html code.
-	 * @author Trey
-	 *
-	 */
-	public class FTCEditorPane extends JEditorPane {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 602436360740296867L;
-		String text = "";
-		/**
-		 * Creates a new empty command line display. This sets the background to black and the foreground to white.
-		 */
-		public FTCEditorPane() {
-			setContentType("text/html");
-			setEditable(false);
-			setBackground(Color.black);
-			setForeground(Color.white);
-			setMaximumSize(new Dimension(10000, 400));
-		}
-		/**
-		 * This appends the given string to the command line and refreshes the GUI
-		 * @param t The String to append
-		 */
-		public void append(String t) {
-			text += t;
-			setText("<html><body>" + text + "</body></html>");
-			//System.out.println(getText());
-			//			Document d = getDocument();
-			//			try {
-			//				d.insertString(d.getLength(), t, null);
-			//			} catch (BadLocationException e) {
-			//			}
-			//			System.out.println(getText());
-			pack();
-		}
-		/**
-		 * Returns the text without the leading and trailing html and body tags.
-		 * NOTE: this is still HTML stylized, and currently there is no helper methods to convert back.
-		 * This is currently used for serving the /admin page which ports the cmd line to the web
-		 * @return
-		 */
-		public String getPlainText() {
-			return text;
-		}
-		/**
-		 * Clears the text of the command line
-		 */
-		public void clear() {
-			text = "";
-		}
+	public FTCEditorPane consoleTextArea = new FTCEditorPane(this);
 
-	}
 	private JScrollPane consoleScrollPane = new JScrollPane(consoleTextArea);
 	private JTextField consoleField = new JTextField();
 	private JPanel consoleInputPanel = new JPanel();
@@ -1527,7 +1489,7 @@ public class Main extends JFrame {
 		}
 	}
 
-	private String[] colors = new String[] {"#FF7F00", "#9400D3", "#00FF00", "#FF00FF", "#AAAAAA"};
+	private String[] colors = new String[] {"#FF7F00", "#9400D3", "#00FF00", "#FF00FF", "#0000FF", "33A8FF"};
 	public static final String ERROR_STRING = "ERROR";
 	public static final String SERVER_STRING = "Server";
 	/**
@@ -1542,7 +1504,7 @@ public class Main extends JFrame {
 	public void append(String s, String who) {
 		s = fixHTML(s);
 		String color = who == null ? "#888888" : (who.startsWith(ERROR_STRING) ? "#FF0000" : colors[Math.abs(who.hashCode() - 1) % colors.length]);
-		String timeWho = "<font color=\"" + color + "\" face=\"lucida console\">[" + DATE_FORMAT.format(Calendar.getInstance().getTime()) + " - " + (who == null ? SERVER_STRING : who.replaceAll(ERROR_STRING, "")) + "] </font>";
+		String timeWho = "<font color=\"" + color + "\" face=\"lucida console\">[" + TIME_FORMAT.format(Calendar.getInstance().getTime()) + " - " + (who == null ? SERVER_STRING : who.replaceAll(ERROR_STRING, "")) + "] </font>";
 		consoleTextArea.append(timeWho + "<font color=\"#ffffff\" face=\"lucida console\">" + s + "</font><br>");
 	}
 	/**
@@ -1581,5 +1543,7 @@ public class Main extends JFrame {
 		setCheckBoxes();
 		return b;
 	}
+	
+	
 
 }

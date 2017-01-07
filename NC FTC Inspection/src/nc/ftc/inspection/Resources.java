@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
@@ -151,9 +152,22 @@ public class Resources {
 	
 	public static PrintWriter getWriter(String file) throws IOException{
 		File f = new File(root + "/" + file);
-		if(!f.exists())f.createNewFile();
+		if(!f.exists()){
+			f.getParentFile().mkdirs();
+			f.createNewFile();
+		}
 		PrintWriter pw = new PrintWriter(f, "UTF-8");
 		return pw;
+	}
+	
+	public static PrintStream getPrintStream(String file) throws IOException{
+		File f = new File(root + "/" + file);
+		if(!f.exists()){
+			f.getParentFile().mkdirs();
+			f.createNewFile();
+		}
+		PrintStream ps = new PrintStream(f, "UTF-8");
+		return ps;
 	}
 
 	/**
