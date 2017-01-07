@@ -371,19 +371,19 @@ public class Server {
 		req=req.substring(1,req.indexOf(" "));
 		int pageID=Integer.MIN_VALUE; //default case
 		if(req.length() == 0)pageID = 0; //just localhost, show status page
-		if(req.equals("hardware"))pageID=verified?HARDWARE:LOGIN;
-		if(req.equals("software"))pageID=verified?SOFTWARE:LOGIN;
-		if(req.equals("field"))pageID=verified?FIELD:LOGIN;
-		if(req.equals("cube"))pageID=verified?CUBE:LOGIN;
-		if(req.equals("checkin"))pageID=verified?CHECKIN:LOGIN;
-		if(req.equals("home"))pageID=verified?HOME:LOGIN;
-		if(req.equals("reference") || req.equals("forum"))pageID=REFERENCE_HOME;
-		if(req.equals("admin"))pageID=verified?ADMIN:LOGIN;
+		if(req.equals("hardware"))pageID = verified?HARDWARE:LOGIN;
+		if(req.equals("software"))pageID = verified?SOFTWARE:LOGIN;
+		if(req.equals("field"))pageID = verified?FIELD:LOGIN;
+		if(req.equals("cube"))pageID = verified?CUBE:LOGIN;
+		if(req.equals("checkin"))pageID = verified?CHECKIN:LOGIN;
+		if(req.equals("home"))pageID = verified?HOME:LOGIN;
+		if(req.equals("reference") || req.equals("forum"))pageID = REFERENCE_HOME;
+		if(req.equals("admin"))pageID = verified?ADMIN:LOGIN;
 		
 		
-		if(req.equals("error"))pageID=verified?LOG_ERROR:LOGIN;
-		if(req.equals("out"))pageID=verified?LOG_OUT:LOGIN;
-		if(req.equals("comm"))pageID=verified?LOG_COMM:LOGIN;
+		if(req.equals("error"))pageID = verified?LOG_ERROR:LOGIN;
+		if(req.equals("out"))pageID = verified?LOG_OUT:LOGIN;
+		if(req.equals("comm"))pageID = verified?LOG_COMM:LOGIN;
 		
 		if(req.startsWith("hardware/") && fullHardware){
 			pageID=verified?HARDWARE:LOGIN;
@@ -792,7 +792,10 @@ public class Server {
 	 * @param i The inspection type
 	 */
 	public void sendInspectionTeamSelect(PrintWriter pw, int i){
-		System.err.println("SELECTING TEAM");
+		if(i == FIELD){
+			sendMultiTeamSelect(pw, i);
+			return;
+		}
 		String type="";
 		switch(i){
 			case HARDWARE: type="hardware";break;
@@ -822,6 +825,7 @@ public class Server {
 	 */
 	public void sendMultiTeamSelect(PrintWriter pw, int i) {
 		System.out.println("HI?");
+		
 		pw.println("<html><style>");
 		try {
 			sendPage(pw, "multi_select.css");

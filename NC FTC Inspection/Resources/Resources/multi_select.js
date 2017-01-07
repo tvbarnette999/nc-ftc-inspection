@@ -106,13 +106,14 @@ function down(){
 }
 
 function inspect(){
-	var url = "/multi_inspect?teams=";
+	console.log(window.location.href);
+	var url = window.location.href + "/multi_inspect?teams=";
 	var rows = document.getElementById("in").childNodes;
 	for(var i = 1; i < rows.length; i++){
 		url += rows[i].id;
 		if(i != rows.length - 1) url += ",";
 	}
-	console.log(url);
+	var xhttp = new XMLHttpRequest();
 	xhttp.open("GET", url); //todo add comma separated list of teams.
 	xhttp.send();
 }
