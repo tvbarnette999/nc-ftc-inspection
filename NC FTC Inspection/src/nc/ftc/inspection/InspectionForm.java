@@ -159,7 +159,7 @@ public class InspectionForm {
 	 * Returns the table part of the inspection form
 	 * @return
 	 */
-	public String getFormTable(Team team){ //for multiple teams, make Team ..., at each step do another <td> / <th> for each. For headers, do <br> then (#). multiple comments/pass buttons? or select team then enter?
+	public String getFormTable(Team ... teams){ //for multiple teams, make Team ..., at each step do another <td> / <th> for each. For headers, do <br> then (#). multiple comments/pass buttons? or select team then enter?
 		String type = null;
 		switch(this.type){
 			case Server.HARDWARE: type = "_HW"; break;
@@ -174,40 +174,49 @@ public class InspectionForm {
 			if(r instanceof HeaderRow){
 				//TODO LCM of table widths
 				table.append("<tr bgcolor=\""+color+"\">"); //old color is #E6B222
-				for(String title : ((HeaderRow)r).titles){
-					table.append("<th colspan=\"" + span + "\" style=\"min-width:50pt\">"); //NOTE: size optimized for mobile!
-					table.append(title);
-					table.append("</th>");
+				for(Team t : teams){
+					for(String title : ((HeaderRow)r).titles){
+						table.append("<th colspan=\"" + span + "\" style=\"min-width:50pt\">"); //NOTE: size optimized for mobile!
+						table.append(title);
+						if(teams.length > 1)table.append("<br>("+t.number+")");
+						table.append("</th>");
+					}
 				}
 				table.append("<th align=\"left\" >" + r.explain + "</th>");
 				table.append("<th>" + r.rule + "</th>");
 			}
 			else{
 				table.append("<tr bgcolor=\"#FFFFFF\">");
+				
 				for(int param : r.param){
-					table.append("<td");
-					if(param == CB_LEVEL.NA.value){
-						table.append(" colspan=\"" + span + "\"");
-						table.append(" align=\"center\"");
-						table.append(">NA");						
-					} else{
+					for(Team t : teams){
+						table.append("<td");
+						if(param == CB_LEVEL.NA.value){
+							table.append(" colspan=\"" + span + "\"");
+							table.append(" align=\"center\"");
+							table.append(">NA");						
+						} else{
+							
+							table.append(" id=" + t.number + type + cbIndex);
+							table.append(" colspan=\"" + span + "\"");
+							//table.append("<input type=\"checkbox\"");
+	//						table.append(" name=\"" + team.number + type + cbIndex + "\" ");
+							table.append(" checked=" + t.getStatus(this.type, cbIndex)); 
+							table.append(" value=\"" + param + "\"");
+							table.append(" class=" + CB_LEVEL.get(param)); //todo change to req vs opt to simplify
+							table.append(" align=\"center\"");
+							table.append(" onclick=\"update()\">");
+							table.append(t.getStatus(this.type,cbIndex) ? '\u2713' : " "); 
+	//						table.append("</label>");
+							
+						}
 						
-						table.append(" id=" + team.number + type + cbIndex);
-						table.append(" colspan=\"" + span + "\"");
-						//table.append("<input type=\"checkbox\"");
-//						table.append(" name=\"" + team.number + type + cbIndex + "\" ");
-						table.append(" checked=" + team.getStatus(this.type, cbIndex)); 
-						table.append(" value=\"" + param + "\"");
-						table.append(" class=" + CB_LEVEL.get(param)); //todo change to req vs opt to simplify
-						table.append(" align=\"center\"");
-						table.append(" onclick=\"update()\">");
-						table.append(team.getStatus(this.type,cbIndex) ? '\u2713' : " "); 
-//						table.append("</label>");
+						table.append("</td>");
+						
+					}
+					if(param != CB_LEVEL.NA.value){
 						cbIndex++;
 					}
-					
-					table.append("</td>");
-					
 				}
 				table.append("<td>" + r.explain + "</td>");
 				table.append("<td>" + r.rule + "</td>");

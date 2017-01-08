@@ -28,7 +28,7 @@ function update(){
 
 function fullpass(){
 	
-	
+	//TODO check only the given team's in multi
 	sendNote();
 	//check everything is passed first. If not, popup and do not post. (Checks only required ones)
 	var inputs = document.getElementsByClassName("REQ");

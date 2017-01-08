@@ -417,8 +417,8 @@ public class Server {
 		if(req.equals("DeanKamen.jpg"))pageID = KAMEN;
 		
 		if (req.equals("firstfavicon.png")) pageID = -1;
-		if(other!=null)sendPage(sock,pageID,null,verified,other);
-		else sendPage(sock,pageID,null,verified);
+		if(other != null)sendPage(sock, pageID, null, verified, other);
+		else sendPage(sock, pageID, null, verified);
 
 	}
 	/**
@@ -838,7 +838,7 @@ public class Server {
 		for(Team t : teams){
 			pw.println("<li id=\"" + t.number + "\"><button onclick=add()>" + t.number + "</button></li>");
 		}
-		pw.println("<td align = center><table id=\"in\" class=\"t2\"><tr><th>Index</th><th>Team Number</th><th/><th/><th/></tr></table><br><button onclick=inspect()>Inspect</button></td>");
+		pw.println("</ul></td><td align = center><table id=\"in\" class=\"t2\"><tr><th>Index</th><th>Team Number</th><th/><th/><th/></tr></table><br><button onclick=inspect()>Inspect</button></td>");
 		pw.println("<tr></table><script>");
 		try {
 			sendPage(pw, "multi_select.js");
@@ -864,8 +864,20 @@ public class Server {
 		try{
 			team = getTeam(Integer.parseInt(extras));
 			if(team == null) throw new IllegalArgumentException("Invalid team #: "+extras);
-		}catch(Exception e){
-			//TODO send error page. 404? some better way to do this?
+		}catch(Exception e){ //this is actually a multi-inspection page!
+			System.out.println("EXTRAS = " + extras);
+			String[] list = extras.substring(extras.indexOf("=") + 1).split(",");
+			Team[] teams = new Team[list.length];
+			for(int x = 0; x < list.length; x++){
+				try{
+					teams[x] = getTeam(Integer.parseInt(list[x]));
+					if(teams[x] == null) throw new IllegalArgumentException("Invalid team #: "+extras);
+				}catch(Exception e1){
+					//TODO send error page. 404? some better way to do this?
+					return;
+				}
+			}
+			sendMultiInspectionPage(pw, i, teams);
 			return;
 		}
 		
@@ -919,6 +931,70 @@ public class Server {
 		pw.flush();
 	}
 	
+	public void sendMultiInspectionPage(PrintWriter pw, int i, Team[] teams){
+		
+		InspectionForm form = null;
+		String type = "";
+		String note = "";
+		String head = "Appendix ";
+		String back = ""; //TODO update note ad pas fail part
+		String[] notes = new String[teams.length];
+		System.out.print("MULTI PAGE: ");
+		int ind = 0;
+		for(Team t : teams){
+			switch(i){
+				case HARDWARE: form = hardwareForm; type = "_HW"; notes[ind] = t.hwNote; back = "/hardware"; break;
+				case SOFTWARE: form = softwareForm; type = "_SW"; notes[ind] = t.swNote; back = "/software"; break;
+				case FIELD:    form = fieldForm; type = "_FD"; notes[ind] = t.fdNote; back = "/field";    break;
+				default: throw new IllegalArgumentException("Full inspection not supported");
+			}
+			ind++;
+			System.out.print(t.number + ",");
+		}
+		System.out.println();
+		if(form.header != null){
+			head = form.header;
+		} else{
+			if(type.contains("HW")) head += "B - Robot Inspection Checklist";
+			else head += "C - Field Inspection Checklist";
+		}
+		pw.println("<html><head><h2>" + head + "</h2><hr style=\"border: 3px solid #943634\" /><h3>Team Numbers: Multiple" + "</h3></head>"); //TODO make this better?
+		//TODO adjust table size so it is useable on phone.
+		pw.println("<body>");
+		
+		pw.println(form.getFormTable(teams));
+		
+		String extras = "TEMP"; //FIXME get rid of this
+		for(ind = 0; ind < teams.length; ind++){
+			Team t = teams[ind];
+			pw.println("<h3>Team " + t.number + ":</h3>");
+			pw.println("<br><b>General Comments or Reasons for Failure:</b><br><textarea name="+t.number+type+" id=\"note\" rows=\"4\" co"
+					+ "ls=\"100\">"+notes[ind]+"</textarea>");
+			pw.println("<br><br><button type=\"button\" name=\""+t.number+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
+			pw.println("<button type=\"button\" name=\""+t.number+type+"\" onclick=\"fullfail()\">Fail</button>");
+			pw.println("<hr style=\"border: 1px solid #000\" />");
+		}
+		pw.println("<br><br><a href=\"" + back + "\">Back</a>");
+		
+		String[] sigs=teams[0].getSigs(type.substring(1));
+		if(sigs.length>0){
+			//TODO tidy this up a lot!
+			pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
+									"the FIRST Tech Challenge have been abided by.</b><br><br>");
+			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td>"+sigs[1]+"<hr></td><td>"+sigs[0]+"<hr></td></tr>");
+			pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
+		}
+		
+		pw.println("<script>");
+		try {
+			sendPage(pw,"fullUpdate.js");
+		} catch (IOException e) {
+			e.printStackTrace();
+			addErrorEntry(e);
+		}
+		pw.println("</script></body></html>");
+		pw.flush();
+	}
 	/**
 	 * Sends the inspection home page, which has a menu to choose inspection
 	 * @param pw The writer to send to
