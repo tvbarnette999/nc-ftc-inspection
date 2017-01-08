@@ -457,9 +457,9 @@ public class Server {
 		if(req.contains("password")){
 			String pass=req.substring(req.indexOf("password")+9);
 			pass=pass.substring(0, pass.indexOf("&"));
+			OutputStream out=sock.getOutputStream();
+			PrintWriter pw=new PrintWriter(out);
 			if(checkPassword(pass)){
-				OutputStream out=sock.getOutputStream();
-				PrintWriter pw=new PrintWriter(out);
 //				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
 //				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";</script>";
 				cookieCount++;
@@ -467,9 +467,11 @@ public class Server {
 //				pw.flush();
 				valid=true;
 //				System.out.println("VERIFIED PASSWORD");
-				pw.print("document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";");
-				pw.flush();
-				return;
+				response = "document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";";
+//				pw.print("document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";");
+//				pw.flush();
+//				return;
+				pageID = SEND_RESPONSE;
 //				System.out.println(req +"  "+req.indexOf("/")+"  "+req.indexOf(" "));
 //				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
 //				req = req.substring(0, req.indexOf('?')).toLowerCase();
@@ -488,8 +490,12 @@ public class Server {
 				
 				
 			} else {
-				pageID = 1;
-				extras = generateExtrasPopup("Incorrect Password");
+				pageID = SEND_RESPONSE;
+				response = "window.alert('Incorrect Password');";
+//				pw.println("window.alert('Incorrect Password');");
+//				pw.flush();
+				return;
+//				extras = generateExtrasPopup("Incorrect Password");
 			}
 			//else, no password, pageID stays 0 (the status page)
 		}
@@ -929,6 +935,8 @@ public class Server {
 		
 		pw.println("<br><b>General Comments or Reasons for Failure:</b><br><textarea name="+extras+type+" id=\"note\" rows=\"4\" co"
 				+ "ls=\"100\">"+note+"</textarea>");
+		/* commenting to move to merge with main 
+		 //*********************************************************
 		
 		pw.println("<br><br><div style=\"border:1px solid black;\" id=\"padDiv\"><canvas id=\"signature_canvas\"></canvas></div><br>");
 		pw.println("<button onclick=\"clearSig()\">Clear</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
@@ -936,7 +944,6 @@ public class Server {
 		pw.println("<script>");
 		try {
 			sendPage(pw, "signature_pad.js");
-			sendPage(pw,"fullUpdate.js");
 		} catch (IOException e) {
 			e.printStackTrace();
 			addErrorEntry(e);
@@ -985,18 +992,27 @@ public class Server {
 //		pw.println("img.src = dataURL;");
 //		pw.println("signaturePad.fromDataURL(canvas.toDataURL())");
 		
+		//***********************************************
+		*/
 		pw.println("<br><br><button type=\"button\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
 		pw.println("<button type=\"button\" name=\""+extras+type+"\" onclick=\"fullfail()\">Fail</button>");
 		pw.println("<br><br><a href=\"" + back + "\">Back</a>");
-		
-//		String[] sigs=team.getSigs(type.substring(1));
-//		if(sigs.length>0){
-//			//TODO tidy this up a lot!
-//			pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
-//									"the FIRST Tech Challenge have been abided by.</b><br><br>");
-//			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td>"+sigs[1]+"<hr></td><td>"+sigs[0]+"<hr></td></tr>");
-//			pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
-//		}
+		pw.println("<script>");
+		try {
+			sendPage(pw,"fullUpdate.js");
+		} catch (IOException e) {
+			e.printStackTrace();
+			addErrorEntry(e);
+		}
+		pw.println("</script>");
+		String[] sigs=team.getSigs(type.substring(1));
+		if(sigs.length>0){
+			//TODO tidy this up a lot!
+			pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
+									"the FIRST Tech Challenge have been abided by.</b><br><br>");
+			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td>"+sigs[1]+"<hr></td><td>"+sigs[0]+"<hr></td></tr>");
+			pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
+		}
 		
 
 		pw.println("</body></html>");
