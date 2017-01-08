@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class Team implements Comparable<Team> {
 		int number;
 		String name;
-		
+		HashMap<String, String> sigURLs = new HashMap<String, String>(); //map from type to sig 
 		/**
 		 * The master list of all registered teams.
 		 */
@@ -288,6 +288,14 @@ public class Team implements Comparable<Team> {
 		
 		public String toString(){
 			return number+"  "+name;
+		}
+		
+		public void setSigURL(String type, String sig) {
+			sigURLs.put(type, sig);
+		}
+		
+		public String getSigURL(String type) {
+			return sigURLs.get(type);
 		}
 
 		
