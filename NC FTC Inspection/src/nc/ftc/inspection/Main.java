@@ -86,11 +86,6 @@ public class Main extends JFrame {
 			System.err.println("Unable to redirect syserr or sysout");
 			e1.printStackTrace();
 		}
-		try {
-			throw new Exception("Hello this is an exception");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		
 		//TODO popup for non existant root directory?
 //		if(!Resources.rootExists()){
@@ -734,6 +729,9 @@ public class Main extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Server.theServer.setPassword(new String(pw1.getPassword()));
+				append("Password updated", null);
+				pw1.setText("");
+				pw2.setText("");
 			}
 		});
 		pwPanel.setLayout(new BorderLayout());
@@ -1438,13 +1436,23 @@ public class Main extends JFrame {
 					args[1]=args[1].toUpperCase();
 					if(args[1].equals("DATA")){
 						success=Server.clearData();
-					}
+					} else
 					if(args[1].equals("CONSOLE")){
 						consoleTextArea.clear();
 						return;
+					} else
+					if (args[1].equals("LOGS")) {
+						Resources.deleteDirectory("log", "log");
+						append("Old logs cleared, current session logs untouched", who);
+						return;
+					} else
+					if (args[1].equals("COOKIES")) {
+						Server.theServer.refreshPassword();
+						append("Cookies cleared, all users unauthenticated", who);
+						return;
 					}
 					else{
-						append("USAGE: CLEAR [CONSOLE | DATA]", who);
+						append("USAGE: CLEAR [CONSOLE | COOKIES | DATA | LOGS]", who);
 						return;
 					}
 				}else{

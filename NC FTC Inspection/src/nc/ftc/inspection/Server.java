@@ -61,6 +61,7 @@ public class Server {
 	public static final int LOG_ERROR = 11;
 	public static final int LOG_OUT = 26;
 	public static final int LOG_COMM = 27;
+	public static final int TEST = 28;
 	public static final int H204=10;
 	public static final int CUBE_INDEX_PAGE=12;
 	/**Use this to send just the first element of the Object[] as the content*/
@@ -108,7 +109,7 @@ public class Server {
 	
 	
 
-	public static final long SEED = System.currentTimeMillis();
+	public long seed = System.currentTimeMillis();
 	public static final String password="hello123";//"NCftc2016";
 
 	public static String event="BCRI_16";
@@ -149,7 +150,7 @@ public class Server {
 		cookieCount = 0;
 		SecureRandom rand = new SecureRandom();
 		ByteBuffer buff = ByteBuffer.allocate(Long.BYTES + password.getBytes().length);
-		buff.putLong(SEED);
+		buff.putLong(seed);
 		buff.put(password.getBytes());
 		rand.setSeed(buff.array());
 		hashedPass = new byte[32];
@@ -158,11 +159,17 @@ public class Server {
 		for (Byte b : hashedPass)
 			hashedPassString += (char) (((int)'a') + Math.abs(b) / 12);
 	}
+	
+	public void refreshPassword() {
+		seed = System.currentTimeMillis();
+		setPassword(currentPasswordPlaintext);
+	}
+	
 	public boolean checkPassword(String password) {
 //		System.out.println("Check Password: " + password);
 		SecureRandom rand = new SecureRandom();
 		ByteBuffer buff = ByteBuffer.allocate(Long.BYTES + password.getBytes().length);
-		buff.putLong(SEED);
+		buff.putLong(seed);
 		buff.put(password.getBytes());
 		rand.setSeed(buff.array());
 		byte[] checkPass = new byte[hashedPass.length];
@@ -302,6 +309,9 @@ public class Server {
 			case SEND_RESPONSE:
 				pw.println(other[0]);
 				break;
+			case TEST:
+				sendPage(pw, "test.html");
+				break;
 			default:
 				//404
 				pw.write("Error 404: Showing default<br><br>\n\n");
@@ -379,6 +389,7 @@ public class Server {
 		if(req.equals("home"))pageID = verified?HOME:LOGIN;
 		if(req.equals("reference") || req.equals("forum"))pageID = REFERENCE_HOME;
 		if(req.equals("admin"))pageID = verified?ADMIN:LOGIN;
+		if(req.equals("test"))pageID = verified?TEST:LOGIN;
 		
 		
 		if(req.equals("error"))pageID = verified?LOG_ERROR:LOGIN;
@@ -450,12 +461,12 @@ public class Server {
 				OutputStream out=sock.getOutputStream();
 				PrintWriter pw=new PrintWriter(out);
 //				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
-				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";</script>";
+//				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";</script>";
 				cookieCount++;
 //				pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: " + cookieHeader + hashedPassString + "\"\n\n    \n");
 //				pw.flush();
 				valid=true;
-				System.out.println("VERIFIED PASSWORD");
+//				System.out.println("VERIFIED PASSWORD");
 				pw.print("document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";");
 				pw.flush();
 				return;
@@ -545,6 +556,9 @@ public class Server {
 				Main.me.handleCommand(cmd, who);
 				response = "HELLO THIS IS A RESPONSE";
 				pageID = SEND_RESPONSE;
+			}
+			else if (req.startsWith("test")) {
+				
 			}
 			else{
 				System.out.println("NOTHIN!");
