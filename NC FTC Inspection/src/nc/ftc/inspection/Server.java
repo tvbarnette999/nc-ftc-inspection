@@ -557,6 +557,18 @@ public class Server {
 				response = "HELLO THIS IS A RESPONSE";
 				pageID = SEND_RESPONSE;
 			}
+			else if (req.startsWith("fancySig")) {
+				int x = 0;
+				String img = req.substring((x = req.indexOf('?')) + 1, req.indexOf(" HTTP"));
+				req = req.substring(0, x);
+				System.out.println("Img: " + img);
+				req = req.substring(req.indexOf('_') + 1);
+				Team t = Team.getTeam(Integer.parseInt(req.substring(0, req.indexOf('_'))));
+				System.out.println("Team: " + t.number);
+				req = req.substring(req.indexOf('_'));
+				System.out.println("Type: " + req);
+				t.setSigURL(req, img);
+			}
 			else if (req.startsWith("test")) {
 				
 			}
@@ -917,27 +929,77 @@ public class Server {
 		
 		pw.println("<br><b>General Comments or Reasons for Failure:</b><br><textarea name="+extras+type+" id=\"note\" rows=\"4\" co"
 				+ "ls=\"100\">"+note+"</textarea>");
-		pw.println("<br><br><button type=\"button\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
-		pw.println("<button type=\"button\" name=\""+extras+type+"\" onclick=\"fullfail()\">Fail</button>");
-		pw.println("<br><br><a href=\"" + back + "\">Back</a>");
 		
-		String[] sigs=team.getSigs(type.substring(1));
-		if(sigs.length>0){
-			//TODO tidy this up a lot!
-			pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
-									"the FIRST Tech Challenge have been abided by.</b><br><br>");
-			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td>"+sigs[1]+"<hr></td><td>"+sigs[0]+"<hr></td></tr>");
-			pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
-		}
-		
+		pw.println("<br><br><div style=\"border:1px solid black;\" id=\"padDiv\"><canvas id=\"signature_canvas\"></canvas></div><br>");
+		pw.println("<button onclick=\"clearSig()\">Clear</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		pw.println("<button onclick=\"sendSig()\">Submit</button><br>");
 		pw.println("<script>");
 		try {
+			sendPage(pw, "signature_pad.js");
 			sendPage(pw,"fullUpdate.js");
 		} catch (IOException e) {
 			e.printStackTrace();
 			addErrorEntry(e);
 		}
-		pw.println("</script></body></html>");
+		pw.println("</script>");
+		pw.println("<script>" + 
+		"var canvas = document.querySelector(\"canvas\");"+
+		"var signaturePad = new SignaturePad(canvas);");
+		
+		if (team.getSigURL(type) != null) {
+			System.out.println("Found img for: " + team.number+type);
+			pw.println("var dataURL='" + team.getSigURL(type) + "';");
+		}
+		pw.println("\nfunction fixBorder() {" +
+		"\n	var d = document.getElementById('padDiv');" +
+		"\n	d.style.width = canvas.width;" +
+		"\n	d.style.height = canvas.height;" +
+		"\n}" +
+		"\nfunction sendSig() {" +
+		"\n	var xhttp = new XMLHttpRequest();" +
+		"\n	xhttp.open(\"POST\", \"../fancySig_" + team.number + type + "?\" + signaturePad.toDataURL(), true);" +
+		"\n	xhttp.send();" +
+		"\n}" +
+		"\nfunction clearSig() {" +
+		"\n	signaturePad.clear();"+
+		"\n}"+
+		"\nfixBorder();" +
+		"\nfunction resizeCanvas() {" +
+		"\n	var nw = window.screen.availWidth * 11 / 12;" +
+		"\n	var nh = window.screen.availHeight / 2;" +
+		"\n	  canvas.width = nw;" +
+		"\n	  canvas.height = nh;" +
+		"\n if (typeof dataURL !== \"undefined\") {" +
+		"\n	var canvas1 = document.createElement('canvas');" +
+		"\n canvas1.width = nw; canvas1.height = nh;" + 
+		"\n	var ctx = canvas1.getContext('2d'); var img = new Image; img.onload = function() { ctx.drawImage(img, 0, 0, canvas.width, canvas.height); signaturePad.fromDataURL(canvas1.toDataURL());};" +
+		"\n	img.src = dataURL;" +
+		"\n}//end dataURL if" +
+		"\n	  fixBorder();" +
+		"}" +
+		"	window.addEventListener(\"resize\", resizeCanvas);" +
+		"	resizeCanvas();" +
+		"</script>");
+//		pw.println("var canvas1 = document.createElement('canvas');");
+//		pw.println("var ctx = canvas1.getContext('2d'); var img = new Image; img.onload = function() { ctx.drawImage(0, 0, nw, nh) };");
+//		pw.println("img.src = dataURL;");
+//		pw.println("signaturePad.fromDataURL(canvas.toDataURL())");
+		
+		pw.println("<br><br><button type=\"button\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
+		pw.println("<button type=\"button\" name=\""+extras+type+"\" onclick=\"fullfail()\">Fail</button>");
+		pw.println("<br><br><a href=\"" + back + "\">Back</a>");
+		
+//		String[] sigs=team.getSigs(type.substring(1));
+//		if(sigs.length>0){
+//			//TODO tidy this up a lot!
+//			pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
+//									"the FIRST Tech Challenge have been abided by.</b><br><br>");
+//			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td>"+sigs[1]+"<hr></td><td>"+sigs[0]+"<hr></td></tr>");
+//			pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
+//		}
+		
+
+		pw.println("</body></html>");
 		pw.flush();
 	}
 	
