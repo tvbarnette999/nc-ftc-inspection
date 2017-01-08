@@ -239,7 +239,7 @@ public class Server {
 		System.out.println(extras);
 		switch(i){
 			case 0:sendStatusPage(pw);break;
-			case 1:sendPage(pw,"inspectorLogin.php");break;
+			case LOGIN:sendPage(pw,"inspectorLogin.php");break;
 			case HARDWARE: 
 				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
 				else if(fullHardware)sendInspectionTeamSelect(pw,i);
@@ -443,30 +443,38 @@ public class Server {
 		 * if the data contains a password, its from the login page.
 		 * That means we can send it a secured page.
 		 */
-		if(data.contains("password")){
-			String pass=data.substring(data.indexOf("password")+9);
+		if(req.contains("password")){
+			String pass=req.substring(req.indexOf("password")+9);
 			pass=pass.substring(0, pass.indexOf("&"));
 			if(checkPassword(pass)){
-//				OutputStream out=sock.getOutputStream();
-//				PrintWriter pw=new PrintWriter(out);
+				OutputStream out=sock.getOutputStream();
+				PrintWriter pw=new PrintWriter(out);
 //				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
 				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";</script>";
 				cookieCount++;
 //				pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: " + cookieHeader + hashedPassString + "\"\n\n    \n");
 //				pw.flush();
 				valid=true;
-//				System.out.println("VERIFIED PASSWORD");
-				System.out.println(req +"  "+req.indexOf("/")+"  "+req.indexOf(" "));
-				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
-				System.out.println("REQ:"+req);
-				if(req.equals("hardware"))pageID=HARDWARE;
-				if(req.equals("field"))pageID=FIELD;
-				if(req.equals("home"))pageID=HOME;
-				if(req.equals("software"))pageID=SOFTWARE;
-				if(req.equals("cube"))pageID=CUBE;
-				if(req.equals("checkin"))pageID=CHECKIN;
+				System.out.println("VERIFIED PASSWORD");
+				pw.print("document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";");
+				pw.flush();
+				return;
+//				System.out.println(req +"  "+req.indexOf("/")+"  "+req.indexOf(" "));
+//				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
+//				req = req.substring(0, req.indexOf('?')).toLowerCase();
+//				System.out.println("REQ:"+req);
+//				if(req.equals("home"))pageID=HOME;
+//				if(req.equals("hardware"))pageID=HARDWARE;
+//				if(req.equals("field"))pageID=FIELD;
+//				if(req.equals("home"))pageID=HOME;
+//				if(req.equals("software"))pageID=SOFTWARE;
+//				if(req.equals("cube"))pageID=CUBE;
+//				if(req.equals("checkin"))pageID=CHECKIN;
+//				if(req.equals("admin"))pageID=ADMIN;
+//				if(req.equals("comm"))pageID=LOG_COMM;
+//				if(req.equals("error"))pageID=LOG_ERROR;
+//				if(req.equals("out"))pageID=LOG_OUT;
 				
-				//FOR COMPLICATED SOCKET REASONS, YOU CANNOT AUTO-REDIRECT TO THE ADMIN PAGE
 				
 			} else {
 				pageID = 1;
