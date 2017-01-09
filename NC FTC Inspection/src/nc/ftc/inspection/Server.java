@@ -76,6 +76,7 @@ public class Server {
 	public static final int MANUAL1=98;
 	public static final int MANUAL2=99;
 	public static final int KAMEN = 80;
+	public static final int TEST = 28;
 	/*
 	
 	UHM PROBLEM! CMD HW DOESNT OVERRIDE FULL INSPECTION!!!!
