@@ -20,7 +20,8 @@ function sendPW() {
 		console.log('got response: (' + xhttp.responseText.length + ') ' + xhttp.responseText);
 		eval(xhttp.responseText);
 		//location.reload();
-		window.location.reload()
+		window.location.assign(window.location.href);
+//		window.location.reload()
 // 		if (typeof xhttp.responseText != 'undefined' || xhttp.resposeText.length == 0) return;
 // 		if (count++ == 0) {
 // 			alert(xhttp.responseText);

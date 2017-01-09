@@ -468,15 +468,17 @@ public class Server {
 //				pw.flush();
 				valid=true;
 //				System.out.println("VERIFIED PASSWORD");
-				System.out.println(req +"  "+req.indexOf("/")+"  "+req.indexOf(" "));
-				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
-				System.out.println("REQ:"+req);
-				if(req.equals("hardware"))pageID=HARDWARE;
-				if(req.equals("field"))pageID=FIELD;
-				if(req.equals("home"))pageID=HOME;
-				if(req.equals("software"))pageID=SOFTWARE;
-				if(req.equals("cube"))pageID=CUBE;
-				if(req.equals("checkin"))pageID=CHECKIN;
+				response = "document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";";
+//				System.out.println(req +"  "+req.indexOf("/")+"  "+req.indexOf(" "));
+//				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
+//				System.out.println("REQ:"+req);
+				pageID = SEND_RESPONSE;
+//				if(req.equals("hardware"))pageID=HARDWARE;
+//				if(req.equals("field"))pageID=FIELD;
+//				if(req.equals("home"))pageID=HOME;
+//				if(req.equals("software"))pageID=SOFTWARE;
+//				if(req.equals("cube"))pageID=CUBE;
+//				if(req.equals("checkin"))pageID=CHECKIN;
 				
 				//FOR COMPLICATED SOCKET REASONS, YOU CANNOT AUTO-REDIRECT TO THE ADMIN PAGE
 				
