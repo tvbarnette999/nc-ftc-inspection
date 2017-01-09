@@ -195,6 +195,20 @@ public class Resources {
 	}
 	
 	/**
+	 * This deletes all files in a given directory matching a given file extension. This is currently only used for deleting the log files
+	 * @param dir
+	 * @param ext
+	 */
+	public static void deleteDirectory(String dir, String ext) {
+		File fDir = new File(root + "/" + dir);
+		for (File f:fDir.listFiles()) {
+			if (f.getName().endsWith(ext)) {
+				f.delete();
+			}
+		}
+	}
+	
+	/**
 	 * Saves the current list of events.
 	 * @return true is successful
 	 */

@@ -111,7 +111,7 @@ public class Server {
 	
 	
 
-	public static final long SEED = System.currentTimeMillis();
+	public static long seed = System.currentTimeMillis();
 	public static final String password="hello123";//"NCftc2016";
 
 	public static String event="BCRI_16";
@@ -152,7 +152,7 @@ public class Server {
 		cookieCount = 0;
 		SecureRandom rand = new SecureRandom();
 		ByteBuffer buff = ByteBuffer.allocate(Long.BYTES + password.getBytes().length);
-		buff.putLong(SEED);
+		buff.putLong(seed);
 		buff.put(password.getBytes());
 		rand.setSeed(buff.array());
 		hashedPass = new byte[32];
@@ -161,11 +161,15 @@ public class Server {
 		for (Byte b : hashedPass)
 			hashedPassString += (char) (((int)'a') + Math.abs(b) / 12);
 	}
+	public void refreshPassword() {
+		seed = System.currentTimeMillis();
+		setPassword(currentPasswordPlaintext);
+	}
 	public boolean checkPassword(String password) {
 //		System.out.println("Check Password: " + password);
 		SecureRandom rand = new SecureRandom();
 		ByteBuffer buff = ByteBuffer.allocate(Long.BYTES + password.getBytes().length);
-		buff.putLong(SEED);
+		buff.putLong(seed);
 		buff.put(password.getBytes());
 		rand.setSeed(buff.array());
 		byte[] checkPass = new byte[hashedPass.length];
@@ -242,7 +246,7 @@ public class Server {
 		System.out.println(extras);
 		switch(i){
 			case 0:sendStatusPage(pw);break;
-			case 1:sendPage(pw,"inspectorLogin.php");break;
+			case LOGIN:sendPage(pw,"inspectorLogin.php");break;
 			case HARDWARE: 
 				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
 				else if(fullHardware)sendInspectionTeamSelect(pw,i);
@@ -304,6 +308,9 @@ public class Server {
 				//breaks if extras is not null
 			case SEND_RESPONSE:
 				pw.println(other[0]);
+				break;
+			case TEST:
+				sendPage(pw, "test.html");
 				break;
 			default:
 				//404
@@ -382,6 +389,7 @@ public class Server {
 		if(req.equals("home"))pageID = verified?HOME:LOGIN;
 		if(req.equals("reference") || req.equals("forum"))pageID = REFERENCE_HOME;
 		if(req.equals("admin"))pageID = verified?ADMIN:LOGIN;
+		if(req.equals("test"))pageID = verified?TEST:LOGIN;
 		
 		
 		if(req.equals("error"))pageID = verified?LOG_ERROR:LOGIN;
@@ -446,14 +454,14 @@ public class Server {
 		 * if the data contains a password, its from the login page.
 		 * That means we can send it a secured page.
 		 */
-		if(data.contains("password")){
-			String pass=data.substring(data.indexOf("password")+9);
+		if(req.contains("password")){
+			String pass=req.substring(req.indexOf("password")+9);
 			pass=pass.substring(0, pass.indexOf("&"));
+			OutputStream out=sock.getOutputStream();
+			PrintWriter pw=new PrintWriter(out);
 			if(checkPassword(pass)){
-//				OutputStream out=sock.getOutputStream();
-//				PrintWriter pw=new PrintWriter(out);
 //				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
-				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";</script>";
+//				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";</script>";
 				cookieCount++;
 //				pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: " + cookieHeader + hashedPassString + "\"\n\n    \n");
 //				pw.flush();
@@ -472,8 +480,12 @@ public class Server {
 				//FOR COMPLICATED SOCKET REASONS, YOU CANNOT AUTO-REDIRECT TO THE ADMIN PAGE
 				
 			} else {
-				pageID = 1;
-				extras = generateExtrasPopup("Incorrect Password");
+				pageID = SEND_RESPONSE;
+				response = "window.alert('Incorrect Password');";
+//				pw.println("window.alert('Incorrect Password');");
+//				pw.flush();
+				return;
+//				extras = generateExtrasPopup("Incorrect Password");
 			}
 			//else, no password, pageID stays 0 (the status page)
 		}
@@ -540,6 +552,21 @@ public class Server {
 				Main.me.handleCommand(cmd, who);
 				response = "HELLO THIS IS A RESPONSE";
 				pageID = SEND_RESPONSE;
+			}
+			else if (req.startsWith("fancySig")) {
+				int x = 0;
+				String img = req.substring((x = req.indexOf('?')) + 1, req.indexOf(" HTTP"));
+				req = req.substring(0, x);
+				System.out.println("Img: " + img);
+				req = req.substring(req.indexOf('_') + 1);
+				Team t = Team.getTeam(Integer.parseInt(req.substring(0, req.indexOf('_'))));
+				System.out.println("Team: " + t.number);
+				req = req.substring(req.indexOf('_'));
+				System.out.println("Type: " + req);
+				t.setSigURL(req, img);
+			}
+			else if (req.startsWith("test")) {
+				
 			}
 			else{
 				System.out.println("NOTHIN!");
