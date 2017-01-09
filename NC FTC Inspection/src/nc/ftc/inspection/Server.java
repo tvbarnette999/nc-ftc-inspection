@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
@@ -88,11 +89,13 @@ public class Server {
 	public static boolean separateCube=true;//only relevant if trackCube
 	public static boolean trackHardware=true;
 	public static boolean fullHardware=true;
+	public static boolean multiHardware = true;
 	public static boolean trackSoftware=true;
 	public static boolean fullSoftware=true;
+	public static boolean multiSoftware = true;
 	public static boolean trackField=true;
 	public static boolean fullField=true;
-	
+	public static boolean multiField = true;
 	
 	private boolean done=false;
 	
@@ -792,15 +795,27 @@ public class Server {
 	 * @param i The inspection type
 	 */
 	public void sendInspectionTeamSelect(PrintWriter pw, int i){
-		if(i == FIELD){
-			sendMultiTeamSelect(pw, i);
-			return;
-		}
+		
 		String type="";
 		switch(i){
-			case HARDWARE: type="hardware";break;
-			case SOFTWARE: type="software";break;
-			case FIELD:    type="field";break;
+			case HARDWARE: 
+				if(multiHardware){
+					sendMultiTeamSelect(pw, i);
+					return;
+				}
+				type="hardware";break;
+			case SOFTWARE:
+				if(multiSoftware){
+					sendMultiTeamSelect(pw, i);
+					return;
+				}
+				type="software";break;
+			case FIELD:  
+				if(multiField){
+					sendMultiTeamSelect(pw, i);
+					return;
+				}
+				type="field";break;
 			default:return;//TODO something else here?
 		}
 		pw.println("<html><meta http-equiv=\"refresh\" content=\"5\"><body><h1>");//TODO test if refresh is noticeable
@@ -834,7 +849,7 @@ public class Server {
 		}
 		pw.println("</style><h1>Select Teams to Inspect</h1><body><table>");
 		pw.println("<tr><th>Available Teams</th><th>Selected Teams</th></tr>");
-		pw.println("<tr><td><ul id=\"out()\">");
+		pw.println("<tr><td><ul id=\"out\">");
 		for(Team t : teams){
 			pw.println("<li id=\"" + t.number + "\"><button onclick=add()>" + t.number + "</button></li>");
 		}
@@ -972,18 +987,18 @@ public class Server {
 					+ "ls=\"100\">"+notes[ind]+"</textarea>");
 			pw.println("<br><br><button type=\"button\" name=\""+t.number+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
 			pw.println("<button type=\"button\" name=\""+t.number+type+"\" onclick=\"fullfail()\">Fail</button>");
+			String[] sigs = t.getSigs(type.substring(1));
+			if(sigs.length>0){
+				pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
+										"the FIRST Tech Challenge have been abided by.</b><br><br>");
+				pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td>"+sigs[1]+"<hr></td><td>"+sigs[0]+"<hr></td></tr>");
+				pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
+			}
 			pw.println("<hr style=\"border: 1px solid #000\" />");
 		}
 		pw.println("<br><br><a href=\"" + back + "\">Back</a>");
 		
-		String[] sigs=teams[0].getSigs(type.substring(1));
-		if(sigs.length>0){
-			//TODO tidy this up a lot!
-			pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
-									"the FIRST Tech Challenge have been abided by.</b><br><br>");
-			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td>"+sigs[1]+"<hr></td><td>"+sigs[0]+"<hr></td></tr>");
-			pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
-		}
+		
 		
 		pw.println("<script>");
 		try {
@@ -1416,6 +1431,9 @@ public class Server {
 		pw.println(fullSoftware);
 		pw.println(trackField);
 		pw.println(fullField);
+		pw.println(multiHardware);
+		pw.println(multiSoftware);
+		pw.println(multiField);
 		pw.flush();
 		pw.close();
 		return true;
@@ -1427,33 +1445,45 @@ public class Server {
 	public void loadConfig(){
 		Scanner scan = Resources.getConfigScanner();
 		if(scan == null) return;
-		String event = scan.nextLine();
-		if(event != "null" && Main.events.contains(event)){
-			Server.event = event;
-		} else{
-			Server.event = null;
-			Server.addLogEntry("No Event Loaded");
+		try{
+			String event = scan.nextLine();
+			if(event != "null" && Main.events.contains(event)){
+				Server.event = event;
+			} else{
+				Server.event = null;
+				Server.addLogEntry("No Event Loaded");
+			}
+			this.setPassword(scan.nextLine());
+			trackCheckIn = scan.nextBoolean();
+			scan.nextLine();
+			trackCube = scan.nextBoolean();
+			scan.nextLine();
+			separateCube = scan.nextBoolean();
+			scan.nextLine();
+			trackHardware = scan.nextBoolean();
+			scan.nextLine();
+			fullHardware = scan.nextBoolean();
+			scan.nextLine();
+			trackSoftware = scan.nextBoolean();
+			scan.nextLine();
+			fullSoftware = scan.nextBoolean();
+			scan.nextLine();
+			trackField = scan.nextBoolean();
+			scan.nextLine();
+			fullField = scan.nextBoolean();
+			scan.nextLine();
+		
+			multiHardware = scan.nextBoolean();
+			scan.nextLine();
+			multiSoftware = scan.nextBoolean();
+			scan.hasNextLine();
+			multiField = scan.nextBoolean();
+		}catch(NoSuchElementException e){
+			System.err.println("Config File Error! Check Event Settings Tab");
+			Server.addErrorEntry("Config File Error! Check Event Settings Tab");
 		}
-		this.setPassword(scan.nextLine());
-		trackCheckIn = scan.nextBoolean();
-		scan.nextLine();
-		trackCube = scan.nextBoolean();
-		scan.nextLine();
-		separateCube = scan.nextBoolean();
-		scan.nextLine();
-		trackHardware = scan.nextBoolean();
-		scan.nextLine();
-		fullHardware = scan.nextBoolean();
-		scan.nextLine();
-		trackSoftware = scan.nextBoolean();
-		scan.nextLine();
-		fullSoftware = scan.nextBoolean();
-		scan.nextLine();
-		trackField = scan.nextBoolean();
-		scan.nextLine();
-		fullField = scan.nextBoolean();
-		scan.nextLine();
 		scan.close();
+		
 	}
 	
 	/**

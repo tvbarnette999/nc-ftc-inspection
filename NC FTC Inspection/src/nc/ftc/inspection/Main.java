@@ -256,10 +256,13 @@ public class Main extends JFrame {
 	private JCheckBox separateCube = new JCheckBox("Separate Cube from HW",true);
 	private JCheckBox trackHardware = new JCheckBox("Hardware",true);
 	private JCheckBox fullHardware = new JCheckBox("Full Hardware",true);
+	private JCheckBox multiHardware = new JCheckBox("Multi-Team", false);
 	private JCheckBox trackSoftware = new JCheckBox("Software",true);
 	private JCheckBox fullSoftware = new JCheckBox("Full Software",true);
+	private JCheckBox multiSoftware = new JCheckBox("Multi-Team", false);
 	private JCheckBox trackField = new JCheckBox("Field",true);
 	private JCheckBox fullField = new JCheckBox("Full Field",true);
+	private JCheckBox multiField = new JCheckBox("Multi-Team", true);
 	private static final int INDENT = 50;
 	
 	private void editForm(InspectionForm f){
@@ -412,6 +415,24 @@ public class Main extends JFrame {
 			Server.fullHardware = fullHardware.isSelected();
 			Server.fullSoftware = fullSoftware.isSelected();
 			Server.fullField = fullField.isSelected();
+			
+			if(!Server.fullHardware){
+				multiHardware.setSelected(false);
+				multiHardware.setEnabled(false);
+			}
+			if(!Server.fullField){
+				multiField.setSelected(false);
+				multiField.setEnabled(false);
+			}
+			if(!Server.fullSoftware){
+				multiSoftware.setSelected(false);
+				multiSoftware.setEnabled(false);
+			}
+			
+			Server.multiField = multiField.isSelected();
+			Server.multiSoftware = multiSoftware.isSelected();
+			Server.multiHardware = multiHardware.isSelected();
+			
 			Server.trackCube  = trackCube.isSelected();
 			
 			
@@ -814,17 +835,24 @@ public class Main extends JFrame {
 		trackingPanel.add(Box.createHorizontalStrut(120));
 		trackingPanel.add(Box.createHorizontalStrut(INDENT));
 		trackingPanel.add(fullHardware);
-		trackingPanel.add(Box.createHorizontalStrut(50));
+		trackingPanel.add(Box.createHorizontalStrut(100));
+		trackingPanel.add(multiHardware);
+//		trackingPanel.add(Box.createHorizontalStrut(50));
 		trackingPanel.add(trackSoftware);
 		trackingPanel.add(Box.createHorizontalStrut(120));
 		trackingPanel.add(Box.createHorizontalStrut(INDENT));
 		trackingPanel.add(fullSoftware);
-		trackingPanel.add(Box.createHorizontalStrut(50));
+		trackingPanel.add(Box.createHorizontalStrut(100));
+		trackingPanel.add(multiSoftware);
+//		trackingPanel.add(Box.createHorizontalStrut(50));
 		trackingPanel.add(trackField);
 
 		trackingPanel.add(Box.createHorizontalStrut(150));
 		trackingPanel.add(Box.createHorizontalStrut(INDENT));
 		trackingPanel.add(fullField);
+
+		trackingPanel.add(Box.createHorizontalStrut(100));
+		trackingPanel.add(multiField);
 		
 		trackCheckIn.addActionListener(trackListener);
 		trackCube.addActionListener(trackListener);
@@ -835,6 +863,9 @@ public class Main extends JFrame {
 		fullHardware.addActionListener(trackListener);
 		fullSoftware.addActionListener(trackListener);
 		fullField.addActionListener(trackListener);
+		multiHardware.addActionListener(trackListener);
+		multiSoftware.addActionListener(trackListener);
+		multiField.addActionListener(trackListener);
 		
 		
 		eventPanel.setOpaque(true);
@@ -1536,6 +1567,9 @@ public class Main extends JFrame {
 		fullSoftware.setSelected(Server.fullSoftware);
 		trackField.setSelected(Server.trackField);
 		fullField.setSelected(Server.fullField);
+		multiHardware.setSelected(Server.multiHardware);
+		multiSoftware.setSelected(Server.multiSoftware);
+		multiField.setSelected(Server.multiField);
 	}
 	
 	public boolean changeEvent(String event){

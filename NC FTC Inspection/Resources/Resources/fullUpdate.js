@@ -37,9 +37,11 @@ function fullpass(){
 	console.log(length);
 	//if HW,ask for cube index. We will skip checking that index's checkbox as it will be handled by the cube page
 	//if cube inspection not separate from hw, server will return -1.
-	var name = event.target.id;
+	var name = event.target.name;
 	var ind = name.indexOf("_");
 	var isHW = name.substring(ind + 1, ind + 3) == "HW";
+	var number = eval(name.substring(0, ind));
+	console.log("STUFF: "+ number+", "+name);
 	var cubeIndex=-1;
 	
 	if(isHW){
@@ -51,8 +53,8 @@ function fullpass(){
 	for (var i = 0; i < length; i++) {
 		if(i == cubeIndex)continue; //skip the sizing cube
 		//check value again 0 (required)
-		console.log(inputs[i].id + ", " + inputs[i].getAttribute("checked"))
-	    if(!eval(inputs[i].getAttribute("checked"))){ 
+		console.log(inputs[i].id + ", " + inputs[i].getAttribute("checked") + ", "+ number);
+	    if( number == eval(inputs[i].id.substring(0, inputs[i].id.indexOf("_"))) && !eval(inputs[i].getAttribute("checked"))){ 
 	    	allPass = false;
 	    	break;
 	    }
