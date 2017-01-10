@@ -1464,6 +1464,7 @@ public class Server {
 		pw.println(multiHardware);
 		pw.println(multiSoftware);
 		pw.println(multiField);
+		pw.println(Resources.backup);
 		pw.flush();
 		pw.close();
 		return true;
@@ -1508,9 +1509,17 @@ public class Server {
 			multiSoftware = scan.nextBoolean();
 			scan.hasNextLine();
 			multiField = scan.nextBoolean();
+			scan.nextLine();
+			
+			Resources.backup = scan.nextLine();
+			
 		}catch(NoSuchElementException e){
 			System.err.println("Config File Error! Check Event Settings Tab");
 			Server.addErrorEntry("Config File Error! Check Event Settings Tab");
+		}
+		if(Resources.backup == null || Resources.backup.equals("null")){
+			Resources.backup = null;
+			Server.addErrorEntry("WARNING! No backup drive selected!");
 		}
 		scan.close();
 		

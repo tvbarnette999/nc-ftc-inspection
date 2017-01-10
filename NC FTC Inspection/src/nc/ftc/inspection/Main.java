@@ -2,6 +2,7 @@ package nc.ftc.inspection;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.io.IOException;
@@ -192,6 +193,9 @@ public class Main extends JFrame {
 	private JLabel eventCodeLabel2 = new JLabel();
 	private JButton editEvent = new JButton();
 	private JButton changeEvent = new JButton();
+	private JLabel driveLabel = new JLabel("Select Backup Drive:");
+	private JButton driveRefresh = new JButton("Refresh");
+	private JComboBox<File> drives = new JComboBox<File>();
 	
 	private JPanel inspectionPanel = new JPanel();
 	private JPanel referencePanel = new JPanel();
@@ -447,6 +451,7 @@ public class Main extends JFrame {
 			Server.theServer.saveConfig();
 		}
 	};
+	
 	private ActionListener teamEditListener= new ActionListener(){
 		public void actionPerformed(ActionEvent e){
 			Object src = e.getSource();
@@ -869,9 +874,13 @@ public class Main extends JFrame {
 		eventPanel.setOpaque(true);
 		eventPanel.setBorder(new TitledBorder("Current Event"));
 		eventPanel.setPreferredSize(new Dimension(300, 100));
-		
+		refreshDriveList();
+		eventPanel.add(driveLabel);
+		eventPanel.add(drives);
+		eventPanel.add(driveRefresh);
 		
 		eventInfoPanel.setOpaque(true);
+		
 		//event
 		
 		
@@ -1093,6 +1102,13 @@ public class Main extends JFrame {
 //		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		//		this.pack();
 
+	}
+	
+	private void refreshDriveList(){
+		drives.removeAllItems();
+		for(File f : File.listRoots()){
+			drives.addItem(f);
+		}
 	}
 	private void refreshTeamList(){
 		teamList.setListData(Server.theServer.teams);
