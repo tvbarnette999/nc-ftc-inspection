@@ -71,6 +71,7 @@ public class Server {
 	public static final int ELECTRICAL_FORUM=22;
 	public static final int TOURNAMENT_FORUM=23;
 	public static final int JUDGING_FORUM=24;
+	public static final int SOFTWARE_FORUM = 40; //TODO come up with better system for this.
 	public static final int ADMIN = 25;
 	public static final int REFERENCE_HOME=8;
 	public static final int MANUAL1=98;
@@ -283,6 +284,9 @@ public class Server {
 			case MECHANICAL_FORUM:
 				sendPage(pw, "mechanicalForum.html");
 				break;
+			case SOFTWARE_FORUM:
+				sendPage(pw, "softwareForum.html");
+				break;
 			case JUDGING_FORUM:
 				sendPage(pw, "judgeForum.html");
 				break;
@@ -415,6 +419,7 @@ public class Server {
 			if(req.startsWith("game"))pageID=GAME_FORUM;
 			if(req.startsWith("mechanical"))pageID=MECHANICAL_FORUM;
 			if(req.startsWith("electrical"))pageID=ELECTRICAL_FORUM;
+			if(req.startsWith("software"))pageID = SOFTWARE_FORUM;
 			if(req.startsWith("tournament"))pageID=TOURNAMENT_FORUM;
 			if(req.startsWith("judge"))pageID=JUDGING_FORUM;
 			if(req.startsWith("manual1"))pageID=MANUAL1;

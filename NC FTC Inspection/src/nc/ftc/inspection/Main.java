@@ -236,6 +236,13 @@ public class Main extends JFrame {
 	private JButton softwareSelect = new JButton("Select File");
 	private JButton fieldSelect = new JButton("Select File");
 	
+	//repeat above for these and oher forums
+	private JLabel gameForumLabel = new JLabel(Resources.DEFAULT);
+	private JLabel hardwareForumLabel = new JLabel(Resources.DEFAULT);
+	private JLabel electricalForumLabel = new JLabel(Resources.DEFAULT);
+	private JLabel tournamentForumLabel = new JLabel(Resources.DEFAULT);
+	private JLabel setupForumLabel = new JLabel(Resources.DEFAULT);
+	
 	
 	
 	
