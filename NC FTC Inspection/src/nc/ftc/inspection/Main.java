@@ -1316,10 +1316,10 @@ public class Main extends JFrame {
 							}
 							append(t.number+": "+t.name, who);
 							append((t.checkedIn?"":"NOT ")+"Checked In", who);
-							append((t.cube==Server.PASS?"":"NOT")+"passed sizing cube", who);
-							append((t.hardware==Server.PASS?"":"NOT")+"passed hardware", who);
-							append((t.software==Server.PASS?"":"NOT")+"passed software", who);
-							append((t.field==Server.PASS?"":"NOT")+"passed field", who);
+							append((t.cube==Server.PASS?"":"NOT ")+"passed sizing cube", who);
+							append((t.hardware==Server.PASS?"":"NOT ")+"passed hardware", who);
+							append((t.software==Server.PASS?"":"NOT ")+"passed software", who);
+							append((t.field==Server.PASS?"":"NOT ")+"passed field", who);
 							return;
 						}
 						catch(Exception e){

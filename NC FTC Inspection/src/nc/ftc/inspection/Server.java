@@ -716,7 +716,7 @@ public class Server {
 	 * @param pw
 	 */
 	public void sendStatusPage(PrintWriter pw){
-		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\"><table border=\"3\"><tr>");
+		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\"><table border=\"3\" align=center><tr>");
 		if(trackCheckIn)pw.println("<th>CI</th>");
 		if(trackCube)pw.println("<th>SC</th>");
 		if(trackHardware)pw.println("<th>HW</th>");
