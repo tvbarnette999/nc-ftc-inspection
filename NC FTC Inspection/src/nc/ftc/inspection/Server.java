@@ -16,6 +16,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
@@ -114,9 +115,9 @@ public class Server {
 	
 
 	public static long seed = System.currentTimeMillis();
-	public static final String password="hello123";//"NCftc2016";
+	public static final String password = "hello123";//"NCftc2016";
 
-	public static String event="BCRI_16";
+	public static String event = null;//"BCRI_16";
 	public static String fullEventName;
 
 	/**Thread pool for HTTP server*/
@@ -128,11 +129,14 @@ public class Server {
 
 	public static String cookieHeader="FTC_COOKIE=";
 
-	public static Server theServer=new Server();
+	public static Server theServer = new Server();
+	
+	public static Vector<InetAddress> whiteList = new Vector<InetAddress>();
 	
 	private PrintStream commStream;
 	private String commFile;
 	private Server(){		//Singleton
+		
 		try {
 			commFile = "/log/" + Main.DATE_TIME_FORMAT.format(new Date()) + "_COMM.log";
 			commStream = new PrintStream(Resources.getPrintStream(commFile));
@@ -383,6 +387,7 @@ public class Server {
 			//e.printStackTrace();
 			//we dont have the password
 		}
+		if(whiteList.contains(sock.getInetAddress()))verified = true;
 		req=req.substring(1,req.indexOf(" "));
 		int pageID=Integer.MIN_VALUE; //default case
 		if(req.length() == 0)pageID = 0; //just localhost, show status page
@@ -486,6 +491,7 @@ public class Server {
 //				if(req.equals("checkin"))pageID=CHECKIN;
 				
 				//FOR COMPLICATED SOCKET REASONS, YOU CANNOT AUTO-REDIRECT TO THE ADMIN PAGE
+				whiteList.add(sock.getInetAddress());
 				
 			} else {
 				pageID = SEND_RESPONSE;
@@ -1102,11 +1108,20 @@ public class Server {
 		this.setPassword(password); 
 		//loadEvent(event); //loads the default event if 
 		addLogEntry("Starting server...");
+		try {
+			whiteList.add(InetAddress.getLocalHost());
+			//FIXME WhiteList localhost!? This doesnt work?
+			System.out.println(InetAddress.getLocalHost());
+			System.out.println(InetAddress.getByName("localhost"));
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		Thread serverThread=new Thread("Server"){
 			public void run(){
 				threadPool=Executors.newCachedThreadPool();
 				try {
-					ServerSocket server=new ServerSocket(port);
+					ServerSocket server = new ServerSocket(port);
 					server.setSoTimeout(1000);
 					addLogEntry("Server ready at " + InetAddress.getLocalHost().getHostAddress());
 					while(!done){
@@ -1117,7 +1132,7 @@ public class Server {
 						}
 					}
 					server.close();
-					addLogEntry("ServerSocket closed");
+					addLogEntry("Server Socket closed");
 				} catch (IOException e) {
 					e.printStackTrace();
 					addErrorEntry(e);
@@ -1168,7 +1183,7 @@ public class Server {
 			Team t = Team.getTeam(i);
 			if(t == null){
 				System.err.println("WARNING! NO TEAM " + i);
-				Server.theServer.addErrorEntry("WARNING! NO TEAM " + i +" CREATING DUMMY TEAM!");
+				Server.addErrorEntry("WARNING! NO TEAM " + i +" CREATING DUMMY TEAM!");
 				Team.registerTeam(i, null);
 				t = Team.getTeam(i);
 			}
