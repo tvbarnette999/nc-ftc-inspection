@@ -70,7 +70,7 @@ public class Resources {
 	static HashMap<String, String> fileStatus = new HashMap<String, String>();
 	/**The root save directory that is checked first. Default value: "NC Inspection" */
 	public static String root="NC Inspection";
-	public static String backup = null;//"backup"; //TODO Selection of backup drive (preferable USB)
+	public static String backup = "F://";//"backup"; //TODO Selection of backup drive (preferable USB)
 	/**
 	 * Returns a Scanner object for the given resource.
 	 * @param name the Resource to access
@@ -93,6 +93,8 @@ public class Resources {
 		}
 	}
 	public static void backup(){
+		backup = "F://";
+		System.out.println("Attempting backup! " + backup);
 		if(backup == null)return;
 		try {
 			File back = new File(backup + "/NC Inspection");
@@ -100,7 +102,7 @@ public class Resources {
 				back.mkdirs();
 			}
 			copyDirectory(new File(root), back, StandardCopyOption.REPLACE_EXISTING);
-			
+			System.out.println("SUCCES in backing up to "+back.getAbsolutePath());
 		} catch (IOException e) {
 			Server.addErrorEntry("BACKUP FAILED");
 			e.printStackTrace();

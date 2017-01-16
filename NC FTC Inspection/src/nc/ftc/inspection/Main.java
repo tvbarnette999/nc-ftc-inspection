@@ -81,6 +81,7 @@ public class Main extends JFrame {
 	public static Vector<String> events=new Vector<String>();
 	public static Thread autoSaveThread;
 	public static void main(String[] args) {
+//		System.out.println(new File("F://").exis/ts());
 		try {
 			setUpLogFiles();
 		} catch (IOException e1) {
