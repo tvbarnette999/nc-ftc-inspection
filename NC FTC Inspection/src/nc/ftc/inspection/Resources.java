@@ -93,8 +93,7 @@ public class Resources {
 		}
 	}
 	public static void backup(){
-		backup = "F://";
-		System.out.println("Attempting backup! " + backup);
+//		backup = "F://";
 		if(backup == null)return;
 		try {
 			File back = new File(backup + "/NC Inspection");
@@ -636,5 +635,9 @@ public class Resources {
 	 */
 	public static void renameResource(String file, String backup) throws IOException {
 		Files.move(new File(root + "/" + file).toPath(), new File(root + "/" + backup).toPath(), StandardCopyOption.REPLACE_EXISTING);		
+	}
+
+	public static boolean backupExists() {
+		return new File(backup).exists() && new File(backup).isDirectory();
 	}
 }

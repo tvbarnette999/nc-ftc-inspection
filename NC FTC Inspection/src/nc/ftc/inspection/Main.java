@@ -3,6 +3,7 @@ package nc.ftc.inspection;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 
 import java.io.IOException;
@@ -15,6 +16,8 @@ import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
+import javax.swing.filechooser.FileSystemView;
+
 import static nc.ftc.inspection.Resources.FD_FORM_FILE;
 import static nc.ftc.inspection.Resources.HW_FORM_FILE;
 import static nc.ftc.inspection.Resources.SW_FORM_FILE;
@@ -124,6 +127,7 @@ public class Main extends JFrame {
 			e.printStackTrace();
 			System.exit(0);
 		}
+		me.backupLocation.setText(Resources.backup);
 		autoSaveThread = new Thread("AutoSave"){
 			public void run(){
 				System.out.println("Started Autosave thread.");
@@ -194,9 +198,9 @@ public class Main extends JFrame {
 	private JLabel eventCodeLabel2 = new JLabel();
 	private JButton editEvent = new JButton();
 	private JButton changeEvent = new JButton();
-	private JLabel driveLabel = new JLabel("Select Backup Drive:");
-	private JButton driveRefresh = new JButton("Refresh");
-	private JComboBox<File> drives = new JComboBox<File>();
+	private JLabel driveLabel = new JLabel("Select Backup Location:  ");
+	private JButton driveBrowse = new JButton("Browse...");
+	private JTextField backupLocation = new JTextField();
 	
 	private JPanel inspectionPanel = new JPanel();
 	private JPanel referencePanel = new JPanel();
@@ -882,19 +886,40 @@ public class Main extends JFrame {
 		eventPanel.setOpaque(true);
 		eventPanel.setBorder(new TitledBorder("Current Event"));
 		eventPanel.setPreferredSize(new Dimension(300, 100));
-		refreshDriveList();
-		eventPanel.add(driveLabel);
-		eventPanel.add(drives);
-		eventPanel.add(driveRefresh);
+		
+		
+		JPanel backupPanel = new JPanel();
+		backupPanel.setLayout(new BorderLayout());
+		
+		backupPanel.add(driveLabel, BorderLayout.WEST);
+		backupPanel.add(backupLocation, BorderLayout.CENTER);
+		backupPanel.add(driveBrowse, BorderLayout.EAST);
+		backupPanel.setOpaque(false);
+		eventPanel.setLayout(new BorderLayout());
+		eventPanel.add(backupPanel, BorderLayout.NORTH);
 		
 		eventInfoPanel.setOpaque(true);
 		
+		
+		driveBrowse.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fc = new JFileChooser();
+				File dir = fc.getCurrentDirectory();
+				while(!FileSystemView.getFileSystemView().isFileSystemRoot(dir))dir = dir.getParentFile();
+				fc.setCurrentDirectory(dir.getParentFile() == null ? dir : dir.getParentFile());
+				fc.setDialogTitle("Select backup location");
+				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int choice = fc.showOpenDialog(Main.this);
+				if(choice == JFileChooser.APPROVE_OPTION){
+					File f = fc.getSelectedFile();
+					Resources.backup = f.getAbsolutePath();
+					backupLocation.setText(f.getAbsolutePath());
+				}
+			}
+		});
 		//event
-		
-		
-		
-		
-		
 		
 		
 		teamPanel.setOpaque(true);
@@ -1112,12 +1137,7 @@ public class Main extends JFrame {
 
 	}
 	
-	private void refreshDriveList(){
-		drives.removeAllItems();
-		for(File f : File.listRoots()){
-			drives.addItem(f);
-		}
-	}
+	
 	private void refreshTeamList(){
 		teamList.setListData(Server.theServer.teams);
 	}

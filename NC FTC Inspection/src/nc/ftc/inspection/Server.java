@@ -18,6 +18,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.nio.file.FileSystems;
+import java.nio.file.WatchService;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -1108,15 +1110,23 @@ public class Server {
 		this.setPassword(password); 
 		//loadEvent(event); //loads the default event if 
 		addLogEntry("Starting server...");
+		
 		try {
 			whiteList.add(InetAddress.getLocalHost());
+			whiteList.addElement(InetAddress.getByName("localhost"));
 			//FIXME WhiteList localhost!? This doesnt work?
-			System.out.println(InetAddress.getLocalHost());
-			System.out.println(InetAddress.getByName("localhost"));
 		} catch (UnknownHostException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		if(Resources.backupExists()){
+			addLogEntry("Backup location set to: " + Resources.backup);
+		} else{
+			addErrorEntry("Backup Location Error! (" + Resources.backup + ")");
+		}
+		
+		
+		
 		Thread serverThread=new Thread("Server"){
 			public void run(){
 				threadPool=Executors.newCachedThreadPool();
