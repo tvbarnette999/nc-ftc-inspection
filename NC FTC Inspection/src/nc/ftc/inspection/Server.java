@@ -1113,7 +1113,8 @@ public class Server {
 		
 		try {
 			whiteList.add(InetAddress.getLocalHost());
-			whiteList.addElement(InetAddress.getByName("localhost"));
+			whiteList.add(InetAddress.getByName("localhost"));
+			whiteList.add(InetAddress.getByName("0:0:0:0:0:0:0:1"));
 			//FIXME WhiteList localhost!? This doesnt work?
 		} catch (UnknownHostException e1) {
 			// TODO Auto-generated catch block
