@@ -89,12 +89,12 @@ public class Server {
 	//These parameters are set to determine whether a given event will show status for that stage and do paperless inspection.
 	
 	//These are public because getters/setters for this with GUI would be way too much code.
-	public static boolean trackCheckIn=true;
-	public static boolean trackCube=true;
-	public static boolean separateCube=true; //only relevant if trackCube
-	public static boolean trackHardware=true;
-	public static boolean fullHardware=true;
-	public static boolean multiHardware = true; //default no
+	public static boolean trackCheckIn = false;
+	public static boolean trackCube = false;
+	public static boolean separateCube = false; //only relevant if trackCube
+	public static boolean trackHardware = true;
+	public static boolean fullHardware = true;
+	public static boolean multiHardware = false; //default no
 	
 	public static boolean trackSoftware=true;
 	public static boolean fullSoftware=true;
