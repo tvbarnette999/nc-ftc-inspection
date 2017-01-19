@@ -65,6 +65,7 @@ public class Server {
 	public static final int LOG_ERROR = 11;
 	public static final int LOG_OUT = 26;
 	public static final int LOG_COMM = 27;
+	public static final int IP_PAGE = 29;
 	public static final int H204=10;
 	public static final int CUBE_INDEX_PAGE=12;
 	/**Use this to send just the first element of the Object[] as the content*/
@@ -307,7 +308,9 @@ public class Server {
 			case CUBE_INDEX_PAGE:
 				pw.println((separateCube && fullHardware )?Team.CUBE_INDEX:-1);
 				break;
-			
+			case IP_PAGE:
+				pw.println("<html><h2>Your IP is: " + sock.getInetAddress().getHostAddress() + "</h2></html>");
+				break;
 			
 			case MANUAL1:sendDocument(pw,out,"manual1.pdf");break;
 			case MANUAL2:sendDocument(pw,out,"manual2.pdf");break;
@@ -404,6 +407,7 @@ public class Server {
 		if(req.equals("reference") || req.equals("forum"))pageID = REFERENCE_HOME;
 		if(req.equals("admin"))pageID = verified?ADMIN:LOGIN;
 		if(req.equals("test"))pageID = verified?TEST:LOGIN;
+		if(req.equals("ip"))pageID = IP_PAGE;
 		
 		
 		if(req.equals("error"))pageID = verified?LOG_ERROR:LOGIN;
