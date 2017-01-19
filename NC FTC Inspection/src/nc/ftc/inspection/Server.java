@@ -1122,7 +1122,9 @@ public class Server {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		if(Resources.backupExists()){
+		if(Resources.backup == null){
+			addErrorEntry("No backup location set!");
+		}else if(Resources.backupExists()){
 			addLogEntry("Backup location set to: " + Resources.backup);
 		} else{
 			addErrorEntry("Backup Location Error! (" + Resources.backup + ")");

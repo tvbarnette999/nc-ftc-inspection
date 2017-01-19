@@ -70,7 +70,7 @@ public class Resources {
 	static HashMap<String, String> fileStatus = new HashMap<String, String>();
 	/**The root save directory that is checked first. Default value: "NC Inspection" */
 	public static String root="NC Inspection";
-	public static String backup = "F://";//"backup"; //TODO Selection of backup drive (preferable USB)
+	public static String backup = null;//"F://";//"backup"; //TODO Selection of backup drive (preferable USB)
 	/**
 	 * Returns a Scanner object for the given resource.
 	 * @param name the Resource to access
@@ -638,6 +638,7 @@ public class Resources {
 	}
 
 	public static boolean backupExists() {
+		if(backup == null)return false;
 		return new File(backup).exists() && new File(backup).isDirectory();
 	}
 }

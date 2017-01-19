@@ -1387,7 +1387,7 @@ public class Main extends JFrame {
 							
 							if(!Team.doesTeamExist(num)){
 								Team.registerTeam(num, null);
-								append("Use \"SET TEAMNAME "+num +" <NAME>\" to set team name.", who);
+								append("Use \"SET TEAMNAME "+num +" &lt;NAME&gt;\" to set team name.", who);
 								Resources.saveTeamList();
 							}
 							success = Server.theServer.teams.add(Team.getTeam(num));							
@@ -1451,7 +1451,7 @@ public class Main extends JFrame {
 							int num=Integer.parseInt(args[2]);
 							String type=args[3].toUpperCase();
 							try{
-								System.out.println("ARG 4: " + args[4]);
+//								System.out.println("ARG 4: " + args[4]);
 								int stat=Integer.parseInt(args[4]);
 								Team t = Server.theServer.getTeam(num);
 								if(t == null){
@@ -1461,10 +1461,10 @@ public class Main extends JFrame {
 								t.setStatus(type, stat);
 								success=true;
 							}catch(Exception e){
-								e.printStackTrace();
+//								e.printStackTrace();
 								//not numbe status
 								try {
-									int stat=Server.class.getDeclaredField(args[4]).getInt(null);
+									int stat=Server.class.getDeclaredField(args[4].toUpperCase()).getInt(null);
 									Server.theServer.getTeam(num).setStatus(type, stat);
 									success=true;
 								} catch (Exception e1) {
@@ -1575,7 +1575,7 @@ public class Main extends JFrame {
 				error("UNKNOW COMMAND: "+args[0], who);
 				return;
 			}
-			if(!success)append((success?"SUCCESS":"FAILED"), who);
+			append((success?"SUCCESS":"FAILED"), who);
 		}
 	}
 
