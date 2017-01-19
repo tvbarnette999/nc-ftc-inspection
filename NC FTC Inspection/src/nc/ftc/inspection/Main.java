@@ -1571,6 +1571,14 @@ public class Main extends JFrame {
 			else if(args[0].equals("UNLOAD")){
 				Server.theServer.unloadEvent();
 			}
+			else if(args[0].equals("WHITELIST")){
+				try{
+					Server.whiteList.add(InetAddress.getByName(args[1]));
+					success = true;
+				} catch(Exception e){
+					success = false;
+				}
+			}
 			else{
 				error("UNKNOW COMMAND: "+args[0], who);
 				return;
