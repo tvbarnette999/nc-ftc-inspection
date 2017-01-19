@@ -1449,12 +1449,19 @@ public class Main extends JFrame {
 					if(args[1].equals("STATUS")){
 						if(args.length>4){
 							int num=Integer.parseInt(args[2]);
-							String type=args[3];
+							String type=args[3].toUpperCase();
 							try{
+								System.out.println("ARG 4: " + args[4]);
 								int stat=Integer.parseInt(args[4]);
-								Server.theServer.getTeam(num).setStatus(type, stat);
+								Team t = Server.theServer.getTeam(num);
+								if(t == null){
+									Server.addErrorEntry("Team " + t.number +" not in event!");
+									success = false;
+								}
+								t.setStatus(type, stat);
 								success=true;
 							}catch(Exception e){
+								e.printStackTrace();
 								//not numbe status
 								try {
 									int stat=Server.class.getDeclaredField(args[4]).getInt(null);
@@ -1568,7 +1575,7 @@ public class Main extends JFrame {
 				error("UNKNOW COMMAND: "+args[0], who);
 				return;
 			}
-			append((success?"SUCCESS":"FAILED"), who);
+			if(!success)append((success?"SUCCESS":"FAILED"), who);
 		}
 	}
 

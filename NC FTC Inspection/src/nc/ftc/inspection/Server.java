@@ -91,13 +91,15 @@ public class Server {
 	//These are public because getters/setters for this with GUI would be way too much code.
 	public static boolean trackCheckIn=true;
 	public static boolean trackCube=true;
-	public static boolean separateCube=true;//only relevant if trackCube
+	public static boolean separateCube=true; //only relevant if trackCube
 	public static boolean trackHardware=true;
 	public static boolean fullHardware=true;
-	public static boolean multiHardware = true;
+	public static boolean multiHardware = true; //default no
+	
 	public static boolean trackSoftware=true;
 	public static boolean fullSoftware=true;
-	public static boolean multiSoftware = true;
+	public static boolean multiSoftware = false; //default no
+	
 	public static boolean trackField=true;
 	public static boolean fullField=true;
 	public static boolean multiField = true;
