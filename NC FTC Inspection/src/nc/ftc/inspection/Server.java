@@ -119,7 +119,7 @@ public class Server {
 	public static long seed = System.currentTimeMillis();
 	public static final String password = "hello123";//"NCftc2016";
 
-	public static String event = null;//"BCRI_16";
+	public static String event = "ASU_17";
 	public static String fullEventName;
 
 	/**Thread pool for HTTP server*/
