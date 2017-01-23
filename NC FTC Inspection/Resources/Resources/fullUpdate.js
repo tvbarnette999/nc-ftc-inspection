@@ -61,13 +61,16 @@ function fullpass(){
 	}
 	if(allPass){
 	
+		xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "../update?team="+event.target.name+"&value=3", true);
+		xhttp.send();
 		//TODO get signatures.
-		var teamsig = prompt("I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of the FIRST Tech Challenge have been abided by.\nTeam Student Representative:");
+		var teamsig = document.getElementById("sig_0").value;//prompt("I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of the FIRST Tech Challenge have been abided by.\nTeam Student Representative:");
 		if(teamsig == null || teamsig==""){
 			return;
 		}
 		
-		var inspectorsig = prompt("I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of the FIRST Tech Challenge have been abided by.\nInspector:");
+		var inspectorsig = document.getElementById("sig_1").value;// prompt("I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of the FIRST Tech Challenge have been abided by.\nInspector:");
 		if(inspectorsig == null || inspectorsig==""){
 			return;
 		}
@@ -75,9 +78,7 @@ function fullpass(){
 		xhttp.open("POST", "../sig?team="+event.target.name, true);
 		xhttp.send("XXteam=".concat(teamsig.concat("&inspector=".concat(inspectorsig.concat("&&&")))));
 		
-		xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "../update?team="+event.target.name+"&value=3", true);
-		xhttp.send();
+		
 		
 		window.location.reload(true);
 	}else{
