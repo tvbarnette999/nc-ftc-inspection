@@ -730,7 +730,9 @@ public class Server {
 	 * @param pw
 	 */
 	public void sendStatusPage(PrintWriter pw){
-		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\"><table border=\"3\" align=center><tr>");
+		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\">");
+		pw.println("<table align=center><tr><td>");
+		pw.println("<table border=\"3\"><tr>");
 		if(trackCheckIn)pw.println("<th>CI</th>");
 		if(trackCube)pw.println("<th>SC</th>");
 		if(trackHardware)pw.println("<th>HW</th>");
@@ -750,6 +752,19 @@ public class Server {
 			pw.println("<td bgcolor="+getColor(t.ready)+">"+t.name+"</td>");
 			pw.println("</tr>");
 		}
+		pw.println("</table></td><td>");
+		pw.println("<table border=\"3\" style=\"floating:left;\">");
+		pw.println("<tr><th>Symbol</th><th>Meaning</th></tr>");
+		pw.println("<tr><td bgcolor=\"#FFFFFF\"></td><td>Uninspected</td></tr>");
+		pw.println("<tr><td bgcolor=\"#00FFFF\"></td><td>In Progress</td></tr>");
+		pw.println("<tr><td bgcolor=\"#FF0000\"></td><td>Failed</td></tr>");
+		pw.println("<tr><td bgcolor=\"#00FF00\"></td><td>Passed</td></tr>");
+		if(trackCheckIn)pw.println("<tr><td>CI</td><td>Check In</td></tr>");
+		if(trackCube)pw.println("<tr><td>SC</td><td>Sizing Cube</td></tr>");
+		if(trackHardware)pw.println("<tr><td>HW</td><td>Hardware</td></tr>");
+		if(trackSoftware)pw.println("<tr><td>SW</td><td>Software</td></tr>");
+		if(trackField)pw.println("<tr><td>FD</td><td>Field</td></tr>");
+		pw.println("</table></td></tr></table>");
 		pw.println("<script>");
 		try {
 			sendPage(pw, "konami.js");
@@ -969,21 +984,27 @@ public class Server {
 		
 		pw.println(form.getFormTable(team));
 		
+		
+		
 		pw.println("<br><b>General Comments or Reasons for Failure:</b><br><textarea name="+extras+type+" id=\"note\" rows=\"4\" co"
 				+ "ls=\"100\">"+note+"</textarea>");
+		
+		String[] sigs=team.getSigs(type.substring(1));
+	//	if(sigs.length>0){
+			//TODO tidy this up a lot!
+			pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
+									"the FIRST Tech Challenge have been abided by.</b><br><br>");
+			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td><input id=sig_1 value="+(sigs.length > 1? sigs[1]:"")+"></input><hr></td><td><input id=sig_0 value="+ (sigs.length > 0 ?sigs[0]:"")+"></input><hr></td></tr>");
+			pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
+		//}
+		
+		
+		
 		pw.println("<br><br><button type=\"button\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
 		pw.println("<button type=\"button\" name=\""+extras+type+"\" onclick=\"fullfail()\">Fail</button>");
 		pw.println("<br><br><a href=\"" + back + "\">Back</a>");
 		
-		String[] sigs=team.getSigs(type.substring(1));
-		if(sigs.length>0){
-			//TODO tidy this up a lot!
-			pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
-									"the FIRST Tech Challenge have been abided by.</b><br><br>");
-			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td>"+sigs[1]+"<hr></td><td>"+sigs[0]+"<hr></td></tr>");
-			pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
-		}
-		
+
 		pw.println("<script>");
 		try {
 			sendPage(pw,"fullUpdate.js");
