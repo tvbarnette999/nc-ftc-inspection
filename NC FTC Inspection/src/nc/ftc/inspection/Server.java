@@ -569,7 +569,7 @@ public class Server {
 				String cmd = req.substring(req.indexOf("&&&") + 3);
 				cmd = cmd.substring(0, cmd.indexOf("&&&"));
 				System.out.println("CMD: " + cmd);
-				String who = getWho(req);
+				String who = getWho(sock);
 				System.out.println("WHO: " + who);
 				Main.me.handleCommand(cmd, who);
 				response = "HELLO THIS IS A RESPONSE";
@@ -597,17 +597,20 @@ public class Server {
 		}
 		sendPage(sock,pageID, extras, valid, response);	
 	}
-	/**
-	 * Returns the number assigned to this user stored in the cookie
-	 * @param req the cookie header (or more, it will filter)
-	 * @return the number assigned to this user
-	 */
-	public String getWho(String req) {
-		req = fixURI(req);
-		req = req.substring(req.indexOf(cookieHeader) + cookieHeader.length());
-		req = req.substring(1, req.indexOf("&&&"));
-		return req;
+	private String getWho(Socket sock) {
+		return sock.getInetAddress().getHostName();
 	}
+//	/**
+//	 * Returns the number assigned to this user stored in the cookie
+//	 * @param req the cookie header (or more, it will filter)
+//	 * @return the number assigned to this user
+//	 */
+//	public String getWho(String req) {
+//		req = fixURI(req);
+//		req = req.substring(req.indexOf(cookieHeader) + cookieHeader.length());
+//		req = req.substring(1, req.indexOf("&&&"));
+//		return req;
+//	}
 	/**
 	 * This replaces any %dd with the character that corresponds to the hex value of dd. This is the standard escape sequence for URI.
 	 * NOTE: While this does check for %d and will not replace it, if there is a %dd it will be replaced. Apparently chrome will convert
@@ -730,7 +733,20 @@ public class Server {
 	 * @param pw
 	 */
 	public void sendStatusPage(PrintWriter pw){
-		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\">");
+//		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\">");
+		pw.println("<html>"
+				+ "\n<script>"
+				+ "\nsetInterval(function(){"
+				+ "\n	var xhttp = new XMLHttpRequest()"
+				+ "\n	xhttp.onreadystatechange = function(){"
+				+ "\n		if (this.readyState == 4 && this.status == 200) {"
+				+ "\n			document.getElementsByTagName(\"html\")[0].innerHTML=this.responseText;"
+				+ "\n		}"
+				+ "\n	}"
+				+ "\n	xhttp.open(\"GET\", window.location.href, true);"
+				+ "\n	xhttp.send();"
+				+ "\n},15000);</script>");
+		
 		pw.println("<table align=center><tr><td>");
 		pw.println("<table border=\"3\"><tr>");
 		if(trackCheckIn)pw.println("<th>CI</th>");

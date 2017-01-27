@@ -186,7 +186,7 @@ public class InspectionForm {
 				table.append("<th>" + r.rule + "</th>");
 			}
 			else{
-				table.append("<tr bgcolor=\"#FFFFFF\">");
+				table.append("<tr bgcolor=\"#FFFFFF\"  height=\"30px\">");
 				
 				for(int param : r.param){
 					for(Team t : teams){
