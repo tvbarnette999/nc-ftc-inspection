@@ -759,11 +759,11 @@ public class Server {
 		
 		for(Team t:teams){
 			pw.println("<tr>");
-			if(trackCheckIn)pw.println("<td bgcolor="+getColor(t.checkedIn)+"></td>");
-			if(trackCube)pw.println("<td bgcolor="+getColor(t.cube)+"></td>");
-			if(trackHardware)pw.println("<td bgcolor="+getColor(t.hardware)+"></td>");
-			if(trackSoftware)pw.println("<td bgcolor="+getColor(t.software)+"></td>");
-			if(trackField)pw.println("<td bgcolor="+getColor(t.field)+"></td>");
+			if(trackCheckIn)pw.println("<td bgcolor="+getColor(t.checkedIn)+">&nbsp;</td>");
+			if(trackCube)pw.println("<td bgcolor="+getColor(t.cube)+">&nbsp;</td>");
+			if(trackHardware)pw.println("<td bgcolor="+getColor(t.hardware)+">&nbsp;</td>");
+			if(trackSoftware)pw.println("<td bgcolor="+getColor(t.software)+">&nbsp;</td>");
+			if(trackField)pw.println("<td bgcolor="+getColor(t.field)+">&nbsp;</td>");
 			pw.println("<td bgcolor="+getColor(t.ready)+">"+t.number+"</td>");
 			pw.println("<td bgcolor="+getColor(t.ready)+">"+t.name+"</td>");
 			pw.println("</tr>");
