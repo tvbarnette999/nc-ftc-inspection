@@ -1010,7 +1010,7 @@ public class Server {
 			//TODO tidy this up a lot!
 			pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
 									"the FIRST Tech Challenge have been abided by.</b><br><br>");
-			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td><input id=sig_1 value="+(sigs.length > 1? sigs[1]:"")+"></input><hr></td><td><input id=sig_0 value="+ (sigs.length > 0 ?sigs[0]:"")+"></input><hr></td></tr>");
+			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td><input id=sig_1 value=\""+(sigs.length > 1? sigs[1]:"")+"\"></input><hr></td><td><input id=sig_0 value=\""+ (sigs.length > 0 ?sigs[0]:"")+"\"></input><hr></td></tr>");
 			pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
 		//}
 		
@@ -1067,19 +1067,25 @@ public class Server {
 		
 		String extras = "TEMP"; //FIXME get rid of this
 		for(ind = 0; ind < teams.length; ind++){
+			
 			Team t = teams[ind];
+			String[] sigs = t.getSigs(type.substring(1));
 			pw.println("<h3>Team " + t.number + ":</h3>");
 			pw.println("<br><b>General Comments or Reasons for Failure:</b><br><textarea name="+t.number+type+" id=\"note\" rows=\"4\" co"
 					+ "ls=\"100\">"+notes[ind]+"</textarea>");
+			pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
+					"the FIRST Tech Challenge have been abided by.</b><br><br>");
+			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td><input id=sig_1 value=\""+(sigs.length > 1? sigs[1]:"")+"\"></input><hr></td><td><input id=sig_0 value=\""+ (sigs.length > 0 ?sigs[0]:"")+"\"></input><hr></td></tr>");
+			pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
 			pw.println("<br><br><button type=\"button\" name=\""+t.number+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
 			pw.println("<button type=\"button\" name=\""+t.number+type+"\" onclick=\"fullfail()\">Fail</button>");
-			String[] sigs = t.getSigs(type.substring(1));
-			if(sigs.length>0){
-				pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
-										"the FIRST Tech Challenge have been abided by.</b><br><br>");
-				pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td>"+sigs[1]+"<hr></td><td>"+sigs[0]+"<hr></td></tr>");
-				pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
-			}
+			
+//			if(sigs.length>0){
+//				pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
+//										"the FIRST Tech Challenge have been abided by.</b><br><br>");
+//				pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td>"+sigs[1]+"<hr></td><td>"+sigs[0]+"<hr></td></tr>");
+//				pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
+//			}
 			pw.println("<hr style=\"border: 1px solid #000\" />");
 		}
 		pw.println("<br><br><a href=\"" + back + "\">Back</a>");
