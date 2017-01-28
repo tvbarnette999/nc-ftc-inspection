@@ -1070,7 +1070,10 @@ public class Server {
 			
 			Team t = teams[ind];
 			String[] sigs = t.getSigs(type.substring(1));
-			pw.println("<h3>Team " + t.number + ":</h3>");
+			pw.println("<h3>Team <font color=");
+			if(t.getStatus(i) == PASS)pw.println("green");
+			else if(t.getStatus(i) == FAIL)pw.println("red");
+			pw.println(">" + t.number + "</font>:</h3>");
 			pw.println("<br><b>General Comments or Reasons for Failure:</b><br><textarea name="+t.number+type+" id=\"note\" rows=\"4\" co"
 					+ "ls=\"100\">"+notes[ind]+"</textarea>");
 			pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+

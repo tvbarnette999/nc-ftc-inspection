@@ -91,6 +91,7 @@ function fullfail(){
 	xhttp.open("POST", "../update?team="+event.target.name+"&value=1", true);
 	xhttp.send();
 	sendNote();
+	window.location.reload(true);
 }
 
 function sendNote(){
