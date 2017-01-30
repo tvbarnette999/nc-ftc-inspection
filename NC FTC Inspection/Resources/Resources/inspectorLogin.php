@@ -48,7 +48,10 @@ function sendPW() {
 <!-- 		</form>	 -->
 		<!-- We are shifting to this new system to avoid the problem with going back pages -->
 		<input onkeypress="test()" cols="20" rows="1" id="pw" type="password" autofocus></input>
-		<button onclick="sendPW()">Submit</button>
+		<button onclick="sendPW()" id="submitButton">Submit</button>
 		
 	</body>
+	<script>
+	document.getElementById('submitButton').onclick=sendPW;
+	</script>
 </html>

@@ -171,6 +171,7 @@ public class Server {
 		hashedPassString = "";
 		for (Byte b : hashedPass)
 			hashedPassString += (char) (((int)'a') + Math.abs(b) / 12);
+		whiteList.clear();
 	}
 	public void refreshPassword() {
 		seed = System.currentTimeMillis();
@@ -771,10 +772,10 @@ public class Server {
 		pw.println("</table></td><td>");
 		pw.println("<table border=\"3\" style=\"floating:left;\">");
 		pw.println("<tr><th>Symbol</th><th>Meaning</th></tr>");
-		pw.println("<tr><td bgcolor=\"#FFFFFF\"></td><td>Uninspected</td></tr>");
-		pw.println("<tr><td bgcolor=\"#00FFFF\"></td><td>In Progress</td></tr>");
-		pw.println("<tr><td bgcolor=\"#FF0000\"></td><td>Failed</td></tr>");
-		pw.println("<tr><td bgcolor=\"#00FF00\"></td><td>Passed</td></tr>");
+		pw.println("<tr><td bgcolor=\"#FFFFFF\">&nbsp;</td><td>Uninspected</td></tr>");
+		pw.println("<tr><td bgcolor=\"#00FFFF\">&nbsp;</td><td>In Progress</td></tr>");
+		pw.println("<tr><td bgcolor=\"#FF0000\">&nbsp;</td><td>Failed</td></tr>");
+		pw.println("<tr><td bgcolor=\"#00FF00\">&nbsp;</td><td>Passed</td></tr>");
 		if(trackCheckIn)pw.println("<tr><td>CI</td><td>Check In</td></tr>");
 		if(trackCube)pw.println("<tr><td>SC</td><td>Sizing Cube</td></tr>");
 		if(trackHardware)pw.println("<tr><td>HW</td><td>Hardware</td></tr>");
@@ -1163,15 +1164,15 @@ public class Server {
 		//loadEvent(event); //loads the default event if 
 		addLogEntry("Starting server...");
 		
-		try {
-			whiteList.add(InetAddress.getLocalHost());
-			whiteList.add(InetAddress.getByName("localhost"));
-			whiteList.add(InetAddress.getByName("0:0:0:0:0:0:0:1"));
+//		try {
+//			whiteList.add(InetAddress.getLocalHost());
+//			whiteList.add(InetAddress.getByName("localhost"));
+//			whiteList.add(InetAddress.getByName("0:0:0:0:0:0:0:1"));
 			//FIXME WhiteList localhost!? This doesnt work?
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+//		} catch (UnknownHostException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 		if(Resources.backup == null){
 			addErrorEntry("No backup location set!");
 		}else if(Resources.backupExists()){
