@@ -37,6 +37,9 @@ import java.util.regex.Pattern;
 
 import javax.swing.plaf.synth.SynthSpinnerUI;
 
+import nc.ftc.inspection.util.RedirectingPrintStream;
+import nc.ftc.inspection.util.Resources;
+
 public class Server {
 	
 	public static boolean DEBUG = false;
@@ -128,7 +131,7 @@ public class Server {
 	/**Thread pool for HTTP server*/
 	private static ExecutorService threadPool;
 
-	Vector<Team> teams=new Vector<Team>();
+	public Vector<Team> teams=new Vector<Team>();
 	
 	static Vector<String> statusLog=new Vector<String>();
 
@@ -220,7 +223,7 @@ public class Server {
 	 * @param verified Boolean for if the request is from a logged in user
 	 * @throws IOException
 	 */
-	public void sendPage(Socket sock,int i, String extras, boolean verified, Object ... other) throws IOException{
+	public void sendPage(Socket sock,int i, boolean verified, Object ... other) throws IOException{
 		OutputStream out = sock.getOutputStream();
 		PrintWriter pw = new PrintWriter(out);
 		//responding to post with data success header
@@ -251,11 +254,6 @@ public class Server {
 			
 		}
 		
-		if (extras == null){ 
-			extras = "";
-		}
-		pw.println(extras);
-		System.out.println(extras);
 		switch(i){
 			case 0:sendStatusPage(pw);break;
 			case LOGIN:sendPage(pw,"inspectorLogin.php");break;
@@ -448,8 +446,8 @@ public class Server {
 		if(req.equals("DeanKamen.jpg"))pageID = KAMEN;
 		
 		if (req.equals("firstfavicon.png")) pageID = -1;
-		if(other != null)sendPage(sock, pageID, null, verified, other);
-		else sendPage(sock, pageID, null, verified);
+		if(other != null)sendPage(sock, pageID, verified, other);
+		else sendPage(sock, pageID, verified);
 
 	}
 	/**
@@ -464,7 +462,6 @@ public class Server {
 		int pageID = 0;
 		boolean valid = false;
 		String response = "";
-		String extras = "";
 		System.out.println("POST: "+req+"\nData: ("+data.length() + ")\n" +data);
 		for(char c : data.toCharArray()){
 			System.out.print(((int) c) + " ");
@@ -596,7 +593,7 @@ public class Server {
 				pageID = H204;
 			}
 		}
-		sendPage(sock,pageID, extras, valid, response);	
+		sendPage(sock,pageID, valid, response);	
 	}
 	private String getWho(Socket sock) {
 		return sock.getInetAddress().getHostName();

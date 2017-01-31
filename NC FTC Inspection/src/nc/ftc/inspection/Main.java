@@ -1,5 +1,9 @@
 package nc.ftc.inspection;
 
+import static nc.ftc.inspection.util.Resources.FD_FORM_FILE;
+import static nc.ftc.inspection.util.Resources.HW_FORM_FILE;
+import static nc.ftc.inspection.util.Resources.SW_FORM_FILE;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -18,9 +22,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileSystemView;
 
-import static nc.ftc.inspection.Resources.FD_FORM_FILE;
-import static nc.ftc.inspection.Resources.HW_FORM_FILE;
-import static nc.ftc.inspection.Resources.SW_FORM_FILE;
+import nc.ftc.inspection.util.RedirectingPrintStream;
+import nc.ftc.inspection.util.Resources;
 
 public class Main extends JFrame {
 
@@ -298,7 +301,6 @@ public class Main extends JFrame {
 	private void restoreDefault(String file, InspectionForm form){
 		String status = Resources.getFileStatus(file);
 		String backup = Resources.getBackup(file);
-		
 		if(status == Resources.CUSTOM){
 			int choice = JOptionPane.showConfirmDialog(Main.this, "This will move the current file to " + backup, "Restore Default Form", JOptionPane.OK_CANCEL_OPTION);
 			if(choice != JOptionPane.OK_OPTION) return;

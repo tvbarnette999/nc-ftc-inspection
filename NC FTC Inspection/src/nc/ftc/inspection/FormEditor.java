@@ -37,9 +37,9 @@ public class FormEditor extends JPanel implements Scrollable {
 	//maybe store as \r,  otherwise, dont allow new lines, or just replace them with whitespace see what trey thinks
 	//TODO When saving a file, if a change in # of CB occured, handle that with all Team Objects - resize arrays immediately.
 	//TODO fix checkmarks so we dont have to replace with &#x2714; <-- this would mean checking every character, and if above u+255 converting it to that
-	InspectionForm form;
-	Vector<RowEdit> list = new Vector<RowEdit>();
-	String newDelimiter;
+	public InspectionForm form;
+	public Vector<RowEdit> list = new Vector<RowEdit>();
+	public String newDelimiter;
 	static Color back;
 	public FormEditor(){
 		
@@ -62,9 +62,9 @@ public class FormEditor extends JPanel implements Scrollable {
 		}
 		this.revalidate();
 	}
-	class RowEdit extends JPanel implements ActionListener{
-		JTextArea explain = new JTextArea();
-		JTextArea rule = new JTextArea(){
+	public class RowEdit extends JPanel implements ActionListener{
+		public JTextArea explain = new JTextArea();
+		public JTextArea rule = new JTextArea(){
 			public Dimension getPreferredSize(){
 				Dimension d = super.getPreferredSize();
 				d.width = 100;
@@ -79,11 +79,11 @@ public class FormEditor extends JPanel implements Scrollable {
 		JMenuItem delete = new JMenuItem("Delete");
 		JButton add = new JButton("+");
 		JButton more = new JButton("...");
-		JPanel left = new JPanel();
+		public JPanel left = new JPanel();
 		//TODO get rid of boxes
 		Vector<JComponent> boxes = new Vector<JComponent>(2);
 		JPopupMenu menu = new JPopupMenu("Menu");
-		boolean header;
+		public boolean header;
 		private JComboBox<CB_LEVEL> getComboBox(){
 			JComboBox<CB_LEVEL> combo = new JComboBox<CB_LEVEL>(CB_LEVEL.values());
 			combo.setSelectedItem("REQ");
