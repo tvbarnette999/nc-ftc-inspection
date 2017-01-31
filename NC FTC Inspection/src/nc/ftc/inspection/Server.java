@@ -50,33 +50,15 @@ public class Server {
 	public static final int FAIL=1;
 	public static final int PROGRESS=2;	
 	
-	public static final int LOGIN = 1;
+//	public static final int LOGIN = 1;
 	public static final int HARDWARE=2;
 	public static final int SOFTWARE=3;
 	public static final int FIELD=4;
 	public static final int CUBE=5;
 	public static final int CHECKIN=6;
-	public static final int HOME=7;
 	public static final int LOG_ERROR = 11;
 	public static final int LOG_OUT = 26;
 	public static final int LOG_COMM = 27;
-	public static final int IP_PAGE = 29;
-	public static final int H204=10;
-	public static final int CUBE_INDEX_PAGE=12;
-	/**Use this to send just the first element of the Object[] as the content*/
-	public static final int SEND_RESPONSE = 13;
-	public static final int GAME_FORUM=20;
-	public static final int MECHANICAL_FORUM=21;
-	public static final int ELECTRICAL_FORUM=22;
-	public static final int TOURNAMENT_FORUM=23;
-	public static final int JUDGING_FORUM=24;
-	public static final int SOFTWARE_FORUM = 40; //TODO come up with better system for this.
-	public static final int ADMIN = 25;
-	public static final int REFERENCE_HOME=8;
-	public static final int MANUAL1=98;
-	public static final int MANUAL2=99;
-	public static final int KAMEN = 80;
-	public static final int TEST = 28;
 	/*
 	
 	UHM PROBLEM! CMD HW DOESNT OVERRIDE FULL INSPECTION!!!!
