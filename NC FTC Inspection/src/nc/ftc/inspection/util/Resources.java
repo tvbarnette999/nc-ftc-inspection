@@ -83,7 +83,7 @@ public class Resources {
 		return new Scanner(getInputStream(name), "UTF-8");
 	}
 	public static boolean exists(String name) {
-		if (name.length() == 0 || name.endsWith(".dat") || name.endsWith(".event")) {
+		if (name == null || name.length() == 0 || name.endsWith(".dat") || name.endsWith(".event")) {
 			return false;
 		}
 		try {

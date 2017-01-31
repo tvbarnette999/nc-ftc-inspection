@@ -232,133 +232,9 @@ public class Server {
 		System.out.println("sending 204 header");
 		pw.println("HTTP/1.1 204 No Content\n");
 	}
-//	/**
-//	 * Determines how to send the requested page and calls appropriate method.
-//	 * IF sending a response, extras must be null or it breaks.
-//	 * @param sock
-//	 * @param i
-//	 * @param extras
-//	 * @param verified Boolean for if the request is from a logged in user
-//	 * @throws IOException
-//	 */
-//	public void sendPage(Socket sock,int i, boolean verified, Object ... other) throws IOException{
-//		OutputStream out = sock.getOutputStream();
-//		PrintWriter pw = new PrintWriter(out);
-//		//responding to post with data success header
-//		if(i==H204){
-//			pw.println("HTTP/1.1 204 No Content\n");
-//			pw.flush();
-//			pw.close();
-//			traffic++;
-//			return;
-//		}
-//		//respond to request for images
-//		if(i>=100){
-//			pw.println("HTTP/1.1 200 OK");
-//			pw.println("Content-Type: image/x-icon");
-//		}
-//		//respond to pdf requests
-//		else if(i>90){
-//			pw.println("HTTP/1.1 200 OK");
-//			pw.println("Content-Type: application/pdf");
-//			pw.println("Content-Disposition: inline; filename=manual1.pdf");
-//
-//		}
-//		//respond to default text/html request
-//		else{
-//			//need UTF-8, so do this: (for special characters in inspectiion form)
-//			pw = new PrintWriter(new OutputStreamWriter(out, "utf-8")); //TODO check me here: this is not a memory leak cuz closing a pw closes the underlying stream right?
-//			pw.print("HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\nCache-Control:no-store\n"); 
-//			
-//		}
-//		
-////		switch(i){
-////			case 0:sendStatusPage(pw);break;
-////			case LOGIN:sendPage(pw,"inspectorLogin.php");break;
-////			case HARDWARE: 
-////				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
-////				else if(fullHardware)sendInspectionTeamSelect(pw,i);
-////				else sendInspectionEditPage(pw,i);
-////				break;
-////			case SOFTWARE:
-////				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
-////				else if(fullSoftware)sendInspectionTeamSelect(pw,i);
-////				else sendInspectionEditPage(pw,i);
-////				break;
-////			case FIELD:
-////				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
-////				else if(fullField)sendInspectionTeamSelect(pw,i);
-////				else sendInspectionEditPage(pw,i);
-////				break;
-////			case CUBE:
-////			case CHECKIN:sendInspectionEditPage(pw,i);break;
-////			case HOME:
-////				sendHomePage(pw);
-////				break;
-////			case REFERENCE_HOME:
-////				sendPage(pw, "reference.html");
-////				break;
-////			case GAME_FORUM:
-////				sendPage(pw, "gameForum.html");
-////				break;
-////			case TOURNAMENT_FORUM:
-////				sendPage(pw, "tournamentForum.html");
-////				break;
-////			case ELECTRICAL_FORUM:
-////				sendPage(pw, "electricalForum.html");
-////				break;
-////			case MECHANICAL_FORUM:
-////				sendPage(pw, "mechanicalForum.html");
-////				break;
-////			case SOFTWARE_FORUM:
-////				sendPage(pw, "softwareForum.html");
-////				break;
-////			case JUDGING_FORUM:
-////				sendPage(pw, "judgeForum.html");
-////				break;
-//////			case ADMIN:
-//////				sendAdminPage(pw);
-//////				break;
-//////			case LOG_ERROR:
-//////			case LOG_COMM:
-//////			case LOG_OUT: sendLogPage(pw, i);break;
-////			case CUBE_INDEX_PAGE:
-////				pw.println((separateCube && fullHardware )?Team.CUBE_INDEX:-1);
-////				break;
-////			case IP_PAGE:
-////				pw.println("<html><h2>Your IP is: " + sock.getInetAddress().getHostAddress() + "</h2></html>");
-////				break;
-////			
-////			case MANUAL1:sendDocument(pw,out,"manual1.pdf");break;
-////			case MANUAL2:sendDocument(pw,out,"manual2.pdf");break;
-////			case 100:sendDocument(pw,out,"firstfavicon.ico");break;
-////			case -1:
-////				sendDocument(pw, out, "firstfavicon.png");
-////				break;
-////			case KAMEN:
-////				sendDocument(pw, out, "DeanKamen.jpg");
-////				break;
-////				//breaks if extras is not null
-////			case SEND_RESPONSE:
-////				pw.println(other[0]);
-////				break;
-////			case TEST:
-////				sendPage(pw, "test.html");
-////				break;
-////			default:
-////				//404
-////				pw.write("Error 404: Showing default<br><br>\n\n");
-////				if (verified) {
-////					sendHomePage(pw);
-////				} else {
-////					sendStatusPage(pw);
-////				}
-////		}
-////		pw.println("\n");// <html>Hello, <br>Chrome!<a href=\"/p2html\">Visit W3Schools.com!</a></html>\n");
-////		pw.flush();
-////		pw.close();
-//		traffic++;
-//	}
+	public void sendIPPage(Handler handler) {
+		handler.pw.println("<html><h2>Your IP is: " + handler.sock.getInetAddress().getHostAddress() + "</h2></html>");
+	}
 	public void sendInspectionTeamPage(Handler handler, String url) {
 		if (url.endsWith("/")) {
 			url = url.substring(0, url.length() - 1);
@@ -440,71 +316,16 @@ public class Server {
 		if(whiteList.contains(handler.sock.getInetAddress()))verified = true;
 		req=req.substring(1,req.indexOf(" "));
 		System.out.println("req: " + req);
-//		PrintWriter pw = new PrintWriter(sock.getOutputStream());
-//		PrintWriter pw = new PrintWriter(new OutputStreamWriter(sock.getOutputStream(), "utf-8"));
+		if (req.endsWith("/")) {
+			req = req.substring(0, req.length() - 1);
+		}
 		if (Resources.exists(req)) {
 			sendResource(handler.pw, handler.sock.getOutputStream(), req);
-		} else {
-			if (!urlMap.sendPage(handler, req, verified) ) {
-				send404Page(handler, verified);
-			}
+		} else if (Resources.exists(urlMap.getResource(req))) {
+			sendResource(handler.pw, handler.sock.getOutputStream(), urlMap.getResource(req));
+		} else if (!urlMap.sendPage(handler, req, verified) ) {
+			send404Page(handler, verified);
 		}
-//		System.out.println("returning"); 
-//		if (Math.random() < 2) return;
-//		int pageID=Integer.MIN_VALUE; //default case
-//		if(req.length() == 0)pageID = 0; //just localhost, show status page
-//		if(req.equals("hardware"))pageID = verified?HARDWARE:LOGIN;
-//		if(req.equals("software"))pageID = verified?SOFTWARE:LOGIN;
-//		if(req.equals("field"))pageID = verified?FIELD:LOGIN;
-//		if(req.equals("cube"))pageID = verified?CUBE:LOGIN;
-//		if(req.equals("checkin"))pageID = verified?CHECKIN:LOGIN;
-//		if(req.equals("home"))pageID = verified?HOME:LOGIN;
-//		if(req.equals("reference") || req.equals("forum"))pageID = REFERENCE_HOME;
-//		if(req.equals("admin"))pageID = verified?ADMIN:LOGIN;
-//		if(req.equals("test"))pageID = verified?TEST:LOGIN;
-//		if(req.equals("ip"))pageID = IP_PAGE;
-//		
-//		
-//		if(req.equals("error"))pageID = verified?LOG_ERROR:LOGIN;
-//		if(req.equals("out"))pageID = verified?LOG_OUT:LOGIN;
-//		if(req.equals("comm"))pageID = verified?LOG_COMM:LOGIN;
-//		
-//		if(req.startsWith("hardware/") && fullHardware){
-//			pageID=verified?HARDWARE:LOGIN;
-//			other=req.substring(req.indexOf("/")+1);			
-//		}
-//		if(req.startsWith("software/") && fullSoftware){
-//			pageID=verified?SOFTWARE:LOGIN;
-//			other=req.substring(req.indexOf("/")+1);			
-//		}
-//		if(req.startsWith("field/") && fullField){
-//			pageID=verified?FIELD:LOGIN;
-//			other=req.substring(req.indexOf("/")+1);			
-//		}
-//		//handle forums-- This is the only part of the server that acts like a real webserver
-//		if(req.startsWith("reference/")){
-//			req = req.substring(req.indexOf("/")+1);
-//			if(req.startsWith("game"))pageID=GAME_FORUM;
-//			if(req.startsWith("mechanical"))pageID=MECHANICAL_FORUM;
-//			if(req.startsWith("electrical"))pageID=ELECTRICAL_FORUM;
-//			if(req.startsWith("software"))pageID = SOFTWARE_FORUM;
-//			if(req.startsWith("tournament"))pageID=TOURNAMENT_FORUM;
-//			if(req.startsWith("judge"))pageID=JUDGING_FORUM;
-//			if(req.startsWith("manual1"))pageID=MANUAL1;
-//			if(req.startsWith("manual1"))pageID=MANUAL2;
-//			
-//		}
-//		//these do not require login
-//		if(req.equals("favicon.ico"))pageID=100;
-//		if(req.equals("manual1"))pageID=98;
-//		if(req.equals("manual2"))pageID=99;
-//
-//		if(req.equals("DeanKamen.jpg"))pageID = KAMEN;
-//		
-//		if (req.equals("firstfavicon.png")) pageID = -1;
-//		if(other != null)sendPage(sock, pageID, verified, other);
-//		else sendPage(sock, pageID, verified);
-
 	}
 	Pattern imagePattern = Pattern.compile(".+\\.(ico|png|jpg|jpeg|bmp)");
 	/**
