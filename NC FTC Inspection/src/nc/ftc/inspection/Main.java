@@ -1,9 +1,12 @@
 package nc.ftc.inspection;
 
+import static nc.ftc.inspection.util.Resources.FD_FORM_FILE;
+import static nc.ftc.inspection.util.Resources.HW_FORM_FILE;
+import static nc.ftc.inspection.util.Resources.SW_FORM_FILE;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileNotFoundException;
 
 import java.io.IOException;
@@ -18,9 +21,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileSystemView;
 
-import static nc.ftc.inspection.Resources.FD_FORM_FILE;
-import static nc.ftc.inspection.Resources.HW_FORM_FILE;
-import static nc.ftc.inspection.Resources.SW_FORM_FILE;
+import nc.ftc.inspection.util.RedirectingPrintStream;
+import nc.ftc.inspection.util.Resources;
 
 public class Main extends JFrame {
 

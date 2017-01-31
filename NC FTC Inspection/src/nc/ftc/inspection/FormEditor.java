@@ -2,44 +2,40 @@ package nc.ftc.inspection;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.PopupMenu;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.Arrays;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
 import javax.swing.Scrollable;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
 
 import nc.ftc.inspection.InspectionForm.CB_LEVEL;
 import nc.ftc.inspection.InspectionForm.HeaderRow;
 import nc.ftc.inspection.InspectionForm.Row;
 
 public class FormEditor extends JPanel implements Scrollable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3105241814963488189L;
 	//TODO open pdf by running it as a command (either cmd xxx.pf or just .pdf) runtime.exec
 	//FIXME When saving, is there is a newline, replace it with <br>!!!!!! -oh no, wont work cuz it will get replaced with &lt whn loaded.... 
 	//maybe store as \r,  otherwise, dont allow new lines, or just replace them with whitespace see what trey thinks
 	//TODO When saving a file, if a change in # of CB occured, handle that with all Team Objects - resize arrays immediately.
 	//TODO fix checkmarks so we dont have to replace with &#x2714; <-- this would mean checking every character, and if above u+255 converting it to that
-	InspectionForm form;
-	Vector<RowEdit> list = new Vector<RowEdit>();
-	String newDelimiter;
+	public InspectionForm form;
+	public Vector<RowEdit> list = new Vector<RowEdit>();
+	public String newDelimiter;
 	static Color back;
 	public FormEditor(){
 		
@@ -62,9 +58,18 @@ public class FormEditor extends JPanel implements Scrollable {
 		}
 		this.revalidate();
 	}
-	class RowEdit extends JPanel implements ActionListener{
-		JTextArea explain = new JTextArea();
-		JTextArea rule = new JTextArea(){
+	public class RowEdit extends JPanel implements ActionListener{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -6056783478857858069L;
+		public JTextArea explain = new JTextArea();
+		public JTextArea rule = new JTextArea(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -4482901210229503306L;
+
 			public Dimension getPreferredSize(){
 				Dimension d = super.getPreferredSize();
 				d.width = 100;
@@ -79,11 +84,11 @@ public class FormEditor extends JPanel implements Scrollable {
 		JMenuItem delete = new JMenuItem("Delete");
 		JButton add = new JButton("+");
 		JButton more = new JButton("...");
-		JPanel left = new JPanel();
+		public JPanel left = new JPanel();
 		//TODO get rid of boxes
 		Vector<JComponent> boxes = new Vector<JComponent>(2);
 		JPopupMenu menu = new JPopupMenu("Menu");
-		boolean header;
+		public boolean header;
 		private JComboBox<CB_LEVEL> getComboBox(){
 			JComboBox<CB_LEVEL> combo = new JComboBox<CB_LEVEL>(CB_LEVEL.values());
 			combo.setSelectedItem("REQ");
@@ -232,6 +237,11 @@ public class FormEditor extends JPanel implements Scrollable {
 					
 					for(int  i = 0; i < count; i ++){
 						JTextArea label = new JTextArea(){
+							/**
+							 * 
+							 */
+							private static final long serialVersionUID = 5422852404584104714L;
+							
 							public Dimension getPrefferedSize(){
 								Dimension d = super.getPreferredSize();
 								if(d.width < 20) d.width = 20;

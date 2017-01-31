@@ -3,7 +3,7 @@ package nc.ftc.inspection;
 import java.util.HashMap;
 
 public class Team implements Comparable<Team> {
-		int number;
+		public int number;
 		String name;
 		HashMap<String, String> sigURLs = new HashMap<String, String>(); //map from type to sig 
 		/**
@@ -36,9 +36,9 @@ public class Team implements Comparable<Team> {
 		String fdNote="",fdTeamSig="",fdInspSig="";
 		
 		//arrays for inspection
-		boolean[] hwData;
-		boolean[] swData;
-		boolean[] fdData;
+		public boolean[] hwData;
+		public boolean[] swData;
+		public boolean[] fdData;
 		private Team(int n, String name){
 			number=n;
 //			name=Main.teamData.get(number);

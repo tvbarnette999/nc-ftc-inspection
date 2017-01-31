@@ -1,7 +1,6 @@
 package nc.ftc.inspection;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static java.lang.Math.max;
 
@@ -10,7 +9,7 @@ public class InspectionForm {
 		REQUIRED  (0, "REQ"),
 		OPTIONAL (1, "OPT"),
 		NA (-1, "NA");
-		final int value;
+		public final int value;
 		final String abbrev;
 		private CB_LEVEL(int val, String abbrev){
 			this.value = val;
@@ -34,13 +33,13 @@ public class InspectionForm {
 	//TODO SIZING CUBE INDEX TO AUTOFIL FROM SEPARATE CUBE
 	
 	ArrayList<Row> rows = new ArrayList<Row>();
-	int cbTotal;
+	public int cbTotal;
 	int widestRow;
-	int type; 
-	int cubeIndex = -1;
+	public int type; 
+	public int cubeIndex = -1;
 	String delimiter;
-	String color = "#E6B222"; //the old color
-	String header;
+	public String color = "#E6B222"; //the old color
+	public String header;
 	
 	static class Row{
 		int cbCount;
@@ -85,7 +84,7 @@ public class InspectionForm {
 	}
 	
 	
-	static class HeaderRow extends Row{
+	public static class HeaderRow extends Row{
 		String[] titles;
 		
 		public HeaderRow(String[] raw){
