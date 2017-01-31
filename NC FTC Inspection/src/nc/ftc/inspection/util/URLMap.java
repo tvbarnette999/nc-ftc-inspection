@@ -20,7 +20,7 @@ public class URLMap {
 		map.put("home", new Page(true, handler->server.sendHomePage(handler)));
 		map.put("admin", new Page(true, handler->server.sendAdminPage(handler)));
 		map.put("", new Page(handler->server.sendStatusPage(handler)));
-		patternMap.put(Pattern.compile("(hardware|hw|software|sw|field|fd)/(\\d)+"), new Page(true, (handler,url)->server.sendFullInspectionPage(handler, url)));
+		patternMap.put(Pattern.compile("(hardware|hw|software|sw|field|fd)/(\\S)+((/?)(\\S)*)"), new Page(true, (handler,url)->server.sendFullInspectionPage(handler, url)));
 		patternMap.put(Pattern.compile("(hardware|hw|software|sw|field|fd)(/)*"), new Page(true, (handler,url)->server.sendInspectionTeamPage(handler, url)));
 
 	}
@@ -28,6 +28,9 @@ public class URLMap {
 	public boolean sendPage(Handler handler, String url, boolean verified) {
 		System.out.println(url);
 		Page p = map.get(url);
+		if (p == null && url.charAt(url.length() - 1) == '/') {
+			p = map.get(url.substring(0, url.length() - 1)); // check to see if there is a trailing slash
+		}
 		if (p != null) {
 			System.out.println("got page for (" + url.length() + "): " + url + " was: " + p);
 			if (p.requiresLogin && !verified) { //we don't have permission to view this

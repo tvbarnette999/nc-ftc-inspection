@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import javax.swing.JComboBox;
@@ -85,9 +86,9 @@ public class Resources {
 	public static Scanner getScanner(String name) throws FileNotFoundException{
 		return new Scanner(getInputStream(name), "UTF-8");
 	}
-	
+	private static HashSet<String> hidden = new HashSet<String>();
 	public static boolean exists(String name) {
-		if (name.length() == 0) {
+		if (name.length() == 0 || name.endsWith(".dat") || name.endsWith(".event")) {
 			return false;
 		}
 		try {

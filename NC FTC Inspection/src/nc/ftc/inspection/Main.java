@@ -301,6 +301,7 @@ public class Main extends JFrame {
 	private void restoreDefault(String file, InspectionForm form){
 		String status = Resources.getFileStatus(file);
 		String backup = Resources.getBackup(file);
+		
 		if(status == Resources.CUSTOM){
 			int choice = JOptionPane.showConfirmDialog(Main.this, "This will move the current file to " + backup, "Restore Default Form", JOptionPane.OK_CANCEL_OPTION);
 			if(choice != JOptionPane.OK_OPTION) return;
