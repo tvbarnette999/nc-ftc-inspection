@@ -87,6 +87,9 @@ public class Resources {
 	}
 	
 	public static boolean exists(String name) {
+		if (name.length() == 0) {
+			return false;
+		}
 		try {
 			if (getInputStream(name) != null) {
 				return true;

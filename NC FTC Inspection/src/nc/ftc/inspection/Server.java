@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -39,6 +40,7 @@ import javax.swing.plaf.synth.SynthSpinnerUI;
 
 import nc.ftc.inspection.util.RedirectingPrintStream;
 import nc.ftc.inspection.util.Resources;
+import nc.ftc.inspection.util.URLMap;
 
 public class Server {
 	
@@ -141,6 +143,8 @@ public class Server {
 	
 	public static Vector<InetAddress> whiteList = new Vector<InetAddress>();
 	
+	public URLMap urlMap;
+	
 	private PrintStream commStream;
 	private String commFile;
 	private Server(){		//Singleton
@@ -152,6 +156,8 @@ public class Server {
 			System.err.println("There was an error setting up the comm stream:");
 			e.printStackTrace();
 		}
+		
+		urlMap = new URLMap(this);
 	}
 	
 	private byte[] hashedPass;
@@ -214,6 +220,28 @@ public class Server {
 		System.out.println(hashedPassString);
 		return hashedPassString.equals(checkPass);
 	}
+	public void sendNormalHeader(PrintWriter pw) {
+		System.out.println("sending normal header");
+//		pw = new PrintWriter(new OutputStreamWriter(out, "utf-8")); //TODO check me here: this is not a memory leak cuz closing a pw closes the underlying stream right?
+		pw.print("HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\nCache-Control:no-store\n");
+		pw.println();
+		pw.println();
+	}
+	public void sendImageHeader(PrintWriter pw) {
+		System.out.println("sending image header");
+		pw.println("HTTP/1.1 200 OK");
+		pw.println("Content-Type: image/x-icon");
+	}
+	public void sendPDFHeader(PrintWriter pw) {
+		System.out.println("sending pdf header");
+		pw.println("HTTP/1.1 200 OK");
+		pw.println("Content-Type: application/pdf");
+		pw.println("Content-Disposition: inline; filename=manual1.pdf");
+	}
+	public void send204Header(PrintWriter pw) {
+		System.out.println("sending 204 header");
+		pw.println("HTTP/1.1 204 No Content\n");
+	}
 	/**
 	 * Determines how to send the requested page and calls appropriate method.
 	 * IF sending a response, extras must be null or it breaks.
@@ -254,98 +282,124 @@ public class Server {
 			
 		}
 		
-		switch(i){
-			case 0:sendStatusPage(pw);break;
-			case LOGIN:sendPage(pw,"inspectorLogin.php");break;
-			case HARDWARE: 
-				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
-				else if(fullHardware)sendInspectionTeamSelect(pw,i);
-				else sendInspectionEditPage(pw,i);
-				break;
-			case SOFTWARE:
-				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
-				else if(fullSoftware)sendInspectionTeamSelect(pw,i);
-				else sendInspectionEditPage(pw,i);
-				break;
-			case FIELD:
-				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
-				else if(fullField)sendInspectionTeamSelect(pw,i);
-				else sendInspectionEditPage(pw,i);
-				break;
-			case CUBE:
-			case CHECKIN:sendInspectionEditPage(pw,i);break;
-			case HOME:
-				sendHomePage(pw);
-				break;
-			case REFERENCE_HOME:
-				sendPage(pw, "reference.html");
-				break;
-			case GAME_FORUM:
-				sendPage(pw, "gameForum.html");
-				break;
-			case TOURNAMENT_FORUM:
-				sendPage(pw, "tournamentForum.html");
-				break;
-			case ELECTRICAL_FORUM:
-				sendPage(pw, "electricalForum.html");
-				break;
-			case MECHANICAL_FORUM:
-				sendPage(pw, "mechanicalForum.html");
-				break;
-			case SOFTWARE_FORUM:
-				sendPage(pw, "softwareForum.html");
-				break;
-			case JUDGING_FORUM:
-				sendPage(pw, "judgeForum.html");
-				break;
-			case ADMIN:
-				sendAdminPage(pw);
-				break;
-			case LOG_ERROR:
-			case LOG_COMM:
-			case LOG_OUT: sendLogPage(pw, i);break;
-			case CUBE_INDEX_PAGE:
-				pw.println((separateCube && fullHardware )?Team.CUBE_INDEX:-1);
-				break;
-			case IP_PAGE:
-				pw.println("<html><h2>Your IP is: " + sock.getInetAddress().getHostAddress() + "</h2></html>");
-				break;
-			
-			case MANUAL1:sendDocument(pw,out,"manual1.pdf");break;
-			case MANUAL2:sendDocument(pw,out,"manual2.pdf");break;
-			case 100:sendDocument(pw,out,"firstfavicon.ico");break;
-			case -1:
-				sendDocument(pw, out, "firstfavicon.png");
-				break;
-			case KAMEN:
-				sendDocument(pw, out, "DeanKamen.jpg");
-				break;
-				//breaks if extras is not null
-			case SEND_RESPONSE:
-				pw.println(other[0]);
-				break;
-			case TEST:
-				sendPage(pw, "test.html");
-				break;
-			default:
-				//404
-				pw.write("Error 404: Showing default<br><br>\n\n");
-				if (verified) {
-					sendHomePage(pw);
-				} else {
-					sendStatusPage(pw);
-				}
-		}
-		pw.println("\n");// <html>Hello, <br>Chrome!<a href=\"/p2html\">Visit W3Schools.com!</a></html>\n");
-		pw.flush();
-		pw.close();
+//		switch(i){
+//			case 0:sendStatusPage(pw);break;
+//			case LOGIN:sendPage(pw,"inspectorLogin.php");break;
+//			case HARDWARE: 
+//				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
+//				else if(fullHardware)sendInspectionTeamSelect(pw,i);
+//				else sendInspectionEditPage(pw,i);
+//				break;
+//			case SOFTWARE:
+//				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
+//				else if(fullSoftware)sendInspectionTeamSelect(pw,i);
+//				else sendInspectionEditPage(pw,i);
+//				break;
+//			case FIELD:
+//				if(other.length>0)sendFullInspectionPage(pw,i,other[0].toString());
+//				else if(fullField)sendInspectionTeamSelect(pw,i);
+//				else sendInspectionEditPage(pw,i);
+//				break;
+//			case CUBE:
+//			case CHECKIN:sendInspectionEditPage(pw,i);break;
+//			case HOME:
+//				sendHomePage(pw);
+//				break;
+//			case REFERENCE_HOME:
+//				sendPage(pw, "reference.html");
+//				break;
+//			case GAME_FORUM:
+//				sendPage(pw, "gameForum.html");
+//				break;
+//			case TOURNAMENT_FORUM:
+//				sendPage(pw, "tournamentForum.html");
+//				break;
+//			case ELECTRICAL_FORUM:
+//				sendPage(pw, "electricalForum.html");
+//				break;
+//			case MECHANICAL_FORUM:
+//				sendPage(pw, "mechanicalForum.html");
+//				break;
+//			case SOFTWARE_FORUM:
+//				sendPage(pw, "softwareForum.html");
+//				break;
+//			case JUDGING_FORUM:
+//				sendPage(pw, "judgeForum.html");
+//				break;
+////			case ADMIN:
+////				sendAdminPage(pw);
+////				break;
+////			case LOG_ERROR:
+////			case LOG_COMM:
+////			case LOG_OUT: sendLogPage(pw, i);break;
+//			case CUBE_INDEX_PAGE:
+//				pw.println((separateCube && fullHardware )?Team.CUBE_INDEX:-1);
+//				break;
+//			case IP_PAGE:
+//				pw.println("<html><h2>Your IP is: " + sock.getInetAddress().getHostAddress() + "</h2></html>");
+//				break;
+//			
+//			case MANUAL1:sendDocument(pw,out,"manual1.pdf");break;
+//			case MANUAL2:sendDocument(pw,out,"manual2.pdf");break;
+//			case 100:sendDocument(pw,out,"firstfavicon.ico");break;
+//			case -1:
+//				sendDocument(pw, out, "firstfavicon.png");
+//				break;
+//			case KAMEN:
+//				sendDocument(pw, out, "DeanKamen.jpg");
+//				break;
+//				//breaks if extras is not null
+//			case SEND_RESPONSE:
+//				pw.println(other[0]);
+//				break;
+//			case TEST:
+//				sendPage(pw, "test.html");
+//				break;
+//			default:
+//				//404
+//				pw.write("Error 404: Showing default<br><br>\n\n");
+//				if (verified) {
+//					sendHomePage(pw);
+//				} else {
+//					sendStatusPage(pw);
+//				}
+//		}
+//		pw.println("\n");// <html>Hello, <br>Chrome!<a href=\"/p2html\">Visit W3Schools.com!</a></html>\n");
+//		pw.flush();
+//		pw.close();
 		traffic++;
+	}
+	public void sendInspectionTeamPage(Handler handler, String url) {
+		if (url.endsWith("/")) {
+			url = url.substring(0, url.length() - 1);
+		}
+		if (url.equals("hardware") || url.equals("hw")) {
+			if (fullHardware) {
+				sendInspectionTeamSelect(handler.pw, FIELD);
+			} else {
+				sendInspectionEditPage(handler.pw, HARDWARE);
+			}
+		} else if (url.equals("software") || url.equals("sw")) {
+			if (fullSoftware) {
+				sendInspectionTeamSelect(handler.pw, FIELD);
+			} else {
+				sendInspectionEditPage(handler.pw, SOFTWARE);
+			}
+		} else if (url.equals("field") || url.equals("fd")) {
+			if (fullField) {
+				sendInspectionTeamSelect(handler.pw, FIELD);
+			} else {
+				sendInspectionEditPage(handler.pw, FIELD);
+			}
+		}
 	}
 	/**
 	 * Sends the admin page to the given printWriter
 	 * @param pw The PrintWriter to send to it
 	 */
-	private void sendAdminPage(PrintWriter pw) {
+	public void sendAdminPage(Handler handler) {
+		PrintWriter pw = handler.pw;
+		sendNormalHeader(pw);
 		pw.println("<html><body bgcolor=#000><div style=\" overflow-y: auto; overflow-x:auto;\">");
 		pw.println(Main.me.consoleTextArea.getPlainText());
 		pw.println("</div><br>");
@@ -380,7 +434,7 @@ public class Server {
 	 * @param fullReq 
 	 * @throws IOException
 	 */
-	public void get(String req,Socket sock, String fullReq) throws IOException{
+	public void get(String req,Handler handler, String fullReq) throws IOException{
 		String other=null;
 		String check = fullReq;
 		boolean verified = false;
@@ -393,8 +447,18 @@ public class Server {
 			//e.printStackTrace();
 			//we dont have the password
 		}
-		if(whiteList.contains(sock.getInetAddress()))verified = true;
+		if(whiteList.contains(handler.sock.getInetAddress()))verified = true;
 		req=req.substring(1,req.indexOf(" "));
+		System.out.println("req: " + req);
+//		PrintWriter pw = new PrintWriter(sock.getOutputStream());
+//		PrintWriter pw = new PrintWriter(new OutputStreamWriter(sock.getOutputStream(), "utf-8"));
+		if (Resources.exists(req)) {
+			sendResource(handler.pw, handler.sock.getOutputStream(), req);
+		} else {
+			urlMap.sendPage(handler, req, verified);
+		}
+		System.out.println("returning"); 
+		if (Math.random() < 2) return;
 		int pageID=Integer.MIN_VALUE; //default case
 		if(req.length() == 0)pageID = 0; //just localhost, show status page
 		if(req.equals("hardware"))pageID = verified?HARDWARE:LOGIN;
@@ -446,9 +510,33 @@ public class Server {
 		if(req.equals("DeanKamen.jpg"))pageID = KAMEN;
 		
 		if (req.equals("firstfavicon.png")) pageID = -1;
-		if(other != null)sendPage(sock, pageID, verified, other);
-		else sendPage(sock, pageID, verified);
+//		if(other != null)sendPage(sock, pageID, verified, other);
+//		else sendPage(sock, pageID, verified);
 
+	}
+	Pattern imagePattern = Pattern.compile(".+\\.(ico|png|jpg|jpeg|bmp)");
+	/**
+	 * Sends the proper HTTP header and then the resource
+	 * @param pw
+	 * @param req
+	 */
+	private void sendResource(PrintWriter pw, OutputStream out,  String req) {
+		System.out.println("sending resource: " + req);
+		if (imagePattern.matcher(req).matches()) {
+			sendImageHeader(pw);
+			sendDocument(pw, out, req);
+		} else if (req.endsWith(".pdf")) {
+			sendPDFHeader(pw);
+			sendDocument(pw, out, req);
+		} else {
+			sendNormalHeader(pw);
+			sendPage(pw, req);
+		}
+		
+	}
+	public void sendCubeIndexPage(Handler handler) {
+		sendNormalHeader(handler.pw);
+		handler.pw.println((separateCube && fullHardware )?Team.CUBE_INDEX:-1);
 	}
 	/**
 	 * This method handles POST requests. It should be passes the request, the data line, and the Socket.
@@ -458,10 +546,11 @@ public class Server {
 	 * @param sock
 	 * @throws IOException
 	 */
-	public void post(String req, String data,Socket sock) throws IOException{
+	public void post(String req, String data,Handler handler) throws IOException{
 		int pageID = 0;
 		boolean valid = false;
 		String response = "";
+		Socket sock = handler.sock;
 		System.out.println("POST: "+req+"\nData: ("+data.length() + ")\n" +data);
 		for(char c : data.toCharArray()){
 			System.out.print(((int) c) + " ");
@@ -488,7 +577,7 @@ public class Server {
 //				System.out.println(req +"  "+req.indexOf("/")+"  "+req.indexOf(" "));
 //				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
 //				System.out.println("REQ:"+req);
-				pageID = SEND_RESPONSE;
+//				pageID = SEND_RESPONSE;
 //				if(req.equals("hardware"))pageID=HARDWARE;
 //				if(req.equals("field"))pageID=FIELD;
 //				if(req.equals("home"))pageID=HOME;
@@ -497,13 +586,14 @@ public class Server {
 //				if(req.equals("checkin"))pageID=CHECKIN;
 				
 				//FOR COMPLICATED SOCKET REASONS, YOU CANNOT AUTO-REDIRECT TO THE ADMIN PAGE
-				whiteList.add(sock.getInetAddress());
-				
+				whiteList.add(handler.sock.getInetAddress());
+				sendResponse(handler, response);
 			} else {
 				pageID = SEND_RESPONSE;
 				response = "window.alert('Incorrect Password');";
 //				pw.println("window.alert('Incorrect Password');");
 //				pw.flush();
+				sendResponse(handler, response);
 				return;
 //				extras = generateExtrasPopup("Incorrect Password");
 			}
@@ -517,7 +607,8 @@ public class Server {
 			req=req.substring(1);
 //			System.out.println("VERIFIED "+req);
 			if(req.startsWith("cubeindex?")){//js is asking what the cube index is before passing the team
-				pageID = CUBE_INDEX_PAGE;
+//				pageID = CUBE_INDEX_PAGE;
+				sendCubeIndexPage(handler);
 			}
 			else if(req.startsWith("update?")){//These are requests that contain a state change for a team for a level of inspection.
 				System.out.println("LINE 389: " + req);
@@ -527,7 +618,8 @@ public class Server {
 				String v = s.substring(s.indexOf("=")+1);
 				v = v.substring(0, v.indexOf(" "));
 				getTeam(t).setStatus(type, Integer.parseInt(v));
-				pageID=H204;
+//				pageID=H204;
+				send204Header(handler.pw);
 			}
 			else if(req.startsWith("fullupdate?")){//full inspection state change
 				String s = req.substring(req.indexOf("=")+1);
@@ -540,7 +632,8 @@ public class Server {
 				getTeam(t).setInspectionIndex(type,index,Boolean.parseBoolean(v));
 				//send conf wth id of td containing the checkbox and the data we received(v)
 				response = t + "_" + type + index + "=" + v;
-				pageID = SEND_RESPONSE;
+//				pageID = SEND_RESPONSE;
+				sendResponse(handler, response);
 			}
 			else if(req.startsWith("note?")){
 				String s=req.substring(req.indexOf("=")+1);
@@ -549,7 +642,8 @@ public class Server {
 				System.out.println("NOTE DATA:"+data);
 				String note=data.substring(0, data.indexOf("&&&"));
 				getTeam(t).setNote(type,note);
-				pageID=H204;
+//				pageID=H204;
+				send204Header(handler.pw);
 			}
 			else if(req.startsWith("sig?")){
 				String s=req.substring(req.indexOf("=")+1);
@@ -560,7 +654,8 @@ public class Server {
 				String inpSig=data.substring(data.indexOf("inspector=")+10,data.indexOf("&&&"));
 				System.out.println(t+" "+type+": "+teamSig+", "+inpSig);
 				getTeam(t).setSignature(type, teamSig, inpSig);
-				pageID=H204;
+//				pageID=H204;
+				send204Header(handler.pw);
 			}
 			else if (req.startsWith("admin?")) {
 				req = fixURI(req);
@@ -571,7 +666,8 @@ public class Server {
 				System.out.println("WHO: " + who);
 				Main.me.handleCommand(cmd, who);
 				response = "HELLO THIS IS A RESPONSE";
-				pageID = SEND_RESPONSE;
+//				pageID = SEND_RESPONSE;
+				sendResponse(handler, response);
 			}
 			else if (req.startsWith("fancySig")) {
 				int x = 0;
@@ -590,13 +686,18 @@ public class Server {
 			}
 			else{
 				System.out.println("NOTHIN!");
-				pageID = H204;
+//				pageID = H204;
+				send204Header(handler.pw);
 			}
 		}
-		sendPage(sock,pageID, valid, response);	
+//		sendPage(sock,pageID, valid, response);	
 	}
 	private String getWho(Socket sock) {
 		return sock.getInetAddress().getHostName();
+	}
+	public void sendResponse(Handler handler, String response) {
+		sendNormalHeader(handler.pw);
+		handler.pw.println(response);
 	}
 //	/**
 //	 * Returns the number assigned to this user stored in the cookie
@@ -641,7 +742,11 @@ public class Server {
 	public String generateExtrasPopup(String popup) {
 		return "\n\n<script> window.alert(\"" + popup + "\") </script>";
 	}
-	
+	public void sendLoginPage(Handler handler) {
+		PrintWriter pw = handler.pw;
+		sendNormalHeader(pw);
+		sendPage(pw, "inspectorLogin.php");
+	}
 	/**
 	 * This is for sending an html webpage that is completely contained within the file. (No real-time generation by this server). 
 	 * NOTE: this does not replace newlines with <br> or other such niceties, to do that see sendPageAsHTML
@@ -649,10 +754,20 @@ public class Server {
 	 * @param f
 	 * @throws IOException
 	 */
-	public void sendPage(PrintWriter pw,String f) throws IOException{
-		Scanner s=Resources.getScanner(f);
-		while(s.hasNextLine())pw.println(s.nextLine());
-		s.close();
+	public void sendPage(PrintWriter pw,String f) {
+		Scanner s;
+		try {
+			s = Resources.getScanner(f);
+			while(s.hasNextLine()){
+//				String ss = s.nextLine();
+//				pw.println(ss);
+//				System.out.println(ss);
+				pw.println(s.nextLine());
+			}
+			s.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -673,9 +788,8 @@ public class Server {
 	 * @param pw
 	 * @param out
 	 * @param f
-	 * @throws IOException
 	 */
-	public void sendDocument(PrintWriter pw,OutputStream out,String f) throws IOException{
+	public void sendDocument(PrintWriter pw,OutputStream out,String f) {
 		//if(f.substring(f.lastIndexOf(".")+1).equals("pdf")){
 		try{
 
@@ -730,7 +844,9 @@ public class Server {
 	 * Sends the status page, which is a table with colors to indicate how far a team is through inspection
 	 * @param pw
 	 */
-	public void sendStatusPage(PrintWriter pw){
+	public void sendStatusPage(Handler handler){
+		PrintWriter pw = handler.pw;
+		sendNormalHeader(pw);
 //		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\">");
 		pw.println("<html>"
 				+ "\n<script>"
@@ -780,13 +896,9 @@ public class Server {
 		if(trackField)pw.println("<tr><td>FD</td><td>Field</td></tr>");
 		pw.println("</table></td></tr></table>");
 		pw.println("<script>");
-		try {
 			sendPage(pw, "konami.js");
-		} catch (IOException e) {
-		
-			e.printStackTrace();
-		}
 		pw.println("</script>");
+//		pw.flush();
 //		pw.println("<img src=\"firstfavicon.png\"></html>");
 	}
 	/**
@@ -795,7 +907,7 @@ public class Server {
 	 * @param i
 	 * @throws IOException
 	 */
-	public void sendInspectionEditPage(PrintWriter pw, int i) throws IOException{
+	public void sendInspectionEditPage(PrintWriter pw, int i) {
 		
 		/*
 		 * Check if doing a full inspection for that type
@@ -836,7 +948,6 @@ public class Server {
 			pw.println("</tr>");
 		}
 		pw.println("</table><script>");
-		try {
 			//OLD protocol
 //			switch(i){
 //				case 0:type="_CI";break;
@@ -846,12 +957,6 @@ public class Server {
 //				case 4:sendPage(pw,"Resources/fieldUpdate.js");break;
 //			}
 			sendPage(pw,"update.js");
-			
-			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			addErrorEntry(e);
-		}
 
 		pw.println("</script></body></html>");
 	}
@@ -920,11 +1025,7 @@ public class Server {
 		System.out.println("HI?");
 		
 		pw.println("<html><style>");
-		try {
 			sendPage(pw, "multi_select.css");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		pw.println("</style><h1>Select Teams to Inspect</h1><body><table>");
 		pw.println("<tr><th>Available Teams</th><th>Selected Teams</th></tr>");
 		pw.println("<tr><td><ul id=\"out\">");
@@ -933,15 +1034,26 @@ public class Server {
 		}
 		pw.println("</ul></td><td align = center><table id=\"in\" class=\"t2\"><tr><th>Index</th><th>Team Number</th><th/><th/><th/></tr></table><br><button onclick=inspect()>Inspect</button></td>");
 		pw.println("<tr></table><script>");
-		try {
 			sendPage(pw, "multi_select.js");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		pw.println("</script></body></html>");
 		pw.flush();
 	}
 	
+	public void sendFullInspectionPage(Handler handler, String url) {
+		PrintWriter pw = handler.pw;
+		//FIXME move this into the body of the other method.
+		int kind = -1;
+		String type = url.substring(0, url.indexOf('/'));
+		String team = url.substring(url.indexOf('/') + 1);
+		if (type.equals("hardware") || type.equals("hw")) {
+			kind = HARDWARE;
+		} else if (type.equals("software") || type.equals("sw")) {
+			kind = SOFTWARE;
+		} else if (type.equals("field") || type.equals("fd")) {
+			kind = FIELD;
+		}
+		sendFullInspectionPage(pw, kind, team);
+	}
 	/**
 	 * Sends the full inspection page for the given team.
 	 * @param pw
@@ -1020,12 +1132,7 @@ public class Server {
 		
 
 		pw.println("<script>");
-		try {
 			sendPage(pw,"fullUpdate.js");
-		} catch (IOException e) {
-			e.printStackTrace();
-			addErrorEntry(e);
-		}
 		pw.println("</script></body></html>");
 		pw.flush();
 	}
@@ -1094,12 +1201,7 @@ public class Server {
 		
 		
 		pw.println("<script>");
-		try {
 			sendPage(pw,"fullUpdate.js");
-		} catch (IOException e) {
-			e.printStackTrace();
-			addErrorEntry(e);
-		}
 		pw.println("</script></body></html>");
 		pw.flush();
 	}
@@ -1107,7 +1209,8 @@ public class Server {
 	 * Sends the inspection home page, which has a menu to choose inspection
 	 * @param pw The writer to send to
 	 */
-	public void sendHomePage(PrintWriter pw){
+	public void sendHomePage(Handler handler){
+		PrintWriter pw = handler.pw;
 		//TODO make this page better
 		pw.println("<html>\n<body>");
 		if(trackCheckIn)pw.println("<a href=\"/checkin\">Checkin</a>");
@@ -1130,7 +1233,9 @@ public class Server {
 	 * Sends the log page
 	 * @param pw The writer to send to
 	 */
-	public void sendLogPage(PrintWriter pw, int which) {
+	public void sendLogPage(Handler handler, int which) {
+		PrintWriter pw = handler.pw;
+		sendNormalHeader(pw);
 		pw.println("<html><body bgcolor=\"#000000\">");
 		try {
 			if (which == LOG_ERROR) {
@@ -1338,8 +1443,18 @@ public class Server {
 	 */
 	public class Handler implements Runnable{
 		Socket sock;
+		PrintWriter pw;
 		public Handler(Socket s){
 			sock=s;
+			try {
+				pw = new PrintWriter(new OutputStreamWriter(sock.getOutputStream(), "utf-8"));
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		public void run(){
 			try{
@@ -1376,7 +1491,7 @@ public class Server {
 				if(type == null)return;
 				if(type.startsWith("GET")){
 					commStream.println("<div name=\"" + sock.getInetAddress().getHostAddress() + "\" class=\"GET\">" + sock.getInetAddress().getHostAddress() + "<br>" + full + "<br><hr><br></div>");
-					get(type.substring(4),sock, full.toString());
+					get(type.substring(4),this, full.toString());
 				} else{
 					for(int i = 0; i < len; i++){
 						char c = (char)in.read();
@@ -1391,8 +1506,10 @@ public class Server {
 				if(type.startsWith("POST")){			
 					
 //					System.out.println("POST: " + type + '\n' + "DATA:" + data.toString());
-					post(type.substring(5), data.toString(), sock);
-				} 											
+					post(type.substring(5), data.toString(), this);
+				}
+				pw.flush();
+				pw.close();
 				sock.close();
 			}catch(Exception e){
 				e.printStackTrace();
