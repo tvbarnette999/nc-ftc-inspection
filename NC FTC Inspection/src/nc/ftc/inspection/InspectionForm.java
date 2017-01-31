@@ -196,7 +196,7 @@ public class InspectionForm {
 							table.append(">NA");						
 						} else{
 							
-							table.append(" id=" + t.number + type + cbIndex);
+							table.append(" id=\"" + t.number + type + cbIndex + "\"");
 							table.append(" colspan=\"" + span + "\"");
 							//table.append("<input type=\"checkbox\"");
 	//						table.append(" name=\"" + team.number + type + cbIndex + "\" ");

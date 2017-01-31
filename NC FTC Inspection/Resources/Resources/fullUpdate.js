@@ -11,11 +11,14 @@ function update(){
 	}
 	//response text should be id=v
 	xhttp.onreadystatechange = function() {
+		console.log(xhttp.readyState + ' ' + xhttp.status + ' ' + xhttp.responseText);
+		console.log(xhttp.responseText.substring(0, xhttp.responseText.indexOf("=")));
 		 if (xhttp.readyState == 4 && xhttp.status == 200){
 			  var resp = xhttp.responseText;
 			  var ind =  resp.indexOf("=");
-			  var id = resp.substring(0,ind);
+			  var id = resp.substring(0,ind).trim();
 			  var v = resp.substring(ind + 1);
+			  console.log("Trying to find \"" + id + "\"");
 			  if(eval(v) == eval(document.getElementById(id).getAttribute("checked"))){// document.getElementsByName(id.substring(2))[0].checked){
 				  document.getElementById(id).bgColor = "#FFFFFF";
 			  }
