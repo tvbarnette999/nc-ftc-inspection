@@ -8,26 +8,22 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Scanner;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextArea;
 
 import nc.ftc.inspection.FormEditor;
-import nc.ftc.inspection.InspectionForm;
 import nc.ftc.inspection.Main;
 import nc.ftc.inspection.Server;
 import nc.ftc.inspection.Team;
 import nc.ftc.inspection.FormEditor.RowEdit;
 import nc.ftc.inspection.InspectionForm.CB_LEVEL;
-import nc.ftc.inspection.InspectionForm.HeaderRow;
 
 /**A class with static methods for accessing Resources. The root directory is specified at runtime or in configuration, and 
  * is where the data is saved. It defaults to "NC Inspection" adjacent to .jar. It is the first place checked for any 
@@ -86,7 +82,6 @@ public class Resources {
 	public static Scanner getScanner(String name) throws FileNotFoundException{
 		return new Scanner(getInputStream(name), "UTF-8");
 	}
-	private static HashSet<String> hidden = new HashSet<String>();
 	public static boolean exists(String name) {
 		if (name.length() == 0 || name.endsWith(".dat") || name.endsWith(".event")) {
 			return false;

@@ -10,33 +10,23 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.nio.file.FileSystems;
-import java.nio.file.WatchService;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.swing.plaf.synth.SynthSpinnerUI;
 
 import nc.ftc.inspection.util.RedirectingPrintStream;
 import nc.ftc.inspection.util.Resources;
@@ -558,8 +548,8 @@ public class Server {
 	 * @throws IOException
 	 */
 	public void post(String req, String data,Handler handler) throws IOException{
-		int pageID = 0;
-		boolean valid = false;
+//		int pageID = 0;
+//		boolean valid = false;
 		String response = "";
 		Socket sock = handler.sock;
 		System.out.println("POST: "+req+"\nData: ("+data.length() + ")\n" +data);
@@ -574,15 +564,15 @@ public class Server {
 		if(req.contains("password")){
 			String pass=req.substring(req.indexOf("password")+9);
 			pass=pass.substring(0, pass.indexOf("&"));
-			OutputStream out=sock.getOutputStream();
-			PrintWriter pw=new PrintWriter(out);
+//			OutputStream out=sock.getOutputStream();
+//			PrintWriter pw=new PrintWriter(out);
 			if(checkPassword(pass)){
 //				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
 //				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";</script>";
 				cookieCount++;
 //				pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: " + cookieHeader + hashedPassString + "\"\n\n    \n");
 //				pw.flush();
-				valid=true;
+//				valid=true;
 //				System.out.println("VERIFIED PASSWORD");
 				response = "document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";";
 //				System.out.println(req +"  "+req.indexOf("/")+"  "+req.indexOf(" "));
@@ -600,7 +590,7 @@ public class Server {
 				whiteList.add(handler.sock.getInetAddress());
 				sendResponse(handler, response);
 			} else {
-				pageID = SEND_RESPONSE;
+//				pageID = SEND_RESPONSE;
 				response = "window.alert('Incorrect Password');";
 //				pw.println("window.alert('Incorrect Password');");
 //				pw.flush();
@@ -1157,7 +1147,7 @@ public class Server {
 		
 		InspectionForm form = null;
 		String type = "";
-		String note = "";
+//		String note = "";
 		String head = "Appendix ";
 		String back = ""; //TODO update note ad pas fail part
 		String[] notes = new String[teams.length];
@@ -1186,7 +1176,7 @@ public class Server {
 		
 		pw.println(form.getFormTable(teams));
 		
-		String extras = "TEMP"; //FIXME get rid of this
+//		String extras = "TEMP"; //FIXME get rid of this
 		for(ind = 0; ind < teams.length; ind++){
 			
 			Team t = teams[ind];
@@ -1386,7 +1376,7 @@ public class Server {
 		//load status data if exists
 		scan = Resources.getStatusScanner();
 		if(scan == null)return;//were done here- no data
-		String[] line;
+//		String[] line;
 		while(scan.hasNextLine()){
 			Team.loadDataFromString(scan.nextLine());		
 		}
