@@ -224,21 +224,25 @@ public class Server {
 		if (url.equals("hardware") || url.equals("hw")) {
 			if (fullHardware) {
 				sendInspectionTeamSelect(handler.pw, HARDWARE);
-			} else {
+			} else if(trackHardware){
 				sendInspectionEditPage(handler.pw, HARDWARE);
 			}
 		} else if (url.equals("software") || url.equals("sw")) {
 			if (fullSoftware) {
 				sendInspectionTeamSelect(handler.pw, SOFTWARE);
-			} else {
+			} else if(trackSoftware){
 				sendInspectionEditPage(handler.pw, SOFTWARE);
 			}
 		} else if (url.equals("field") || url.equals("fd")) {
 			if (fullField) {
 				sendInspectionTeamSelect(handler.pw, FIELD);
-			} else {
+			} else if(trackField){
 				sendInspectionEditPage(handler.pw, FIELD);
 			}
+		} else if(url.equals("checkin") || url.equals("ci")){
+			if(trackCheckIn)sendInspectionEditPage(handler.pw, CHECKIN);
+		} else if(url.equals("cube") || url.equals("sc")){
+			if(trackCube)sendInspectionEditPage(handler.pw, CUBE);
 		}
 	}
 	/**

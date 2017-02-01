@@ -33,7 +33,7 @@ public class URLMap {
 		resourceMap.put("reference/manual1", "manual1.pdf");
 		resourceMap.put("reference/manual2", "manual2.pdf");
 		patternMap.put(Pattern.compile("(hardware|hw|software|sw|field|fd)/(\\S)+((/?)(\\S)*)"), new Page(true, (handler,url)->server.sendFullInspectionPage(handler, url)));
-		patternMap.put(Pattern.compile("(hardware|hw|software|sw|field|fd)(/)*"), new Page(true, (handler,url)->server.sendInspectionTeamPage(handler, url)));
+		patternMap.put(Pattern.compile("(hardware|hw|software|sw|field|fd|ci|checkin|cube|sc)(/)*"), new Page(true, (handler,url)->server.sendInspectionTeamPage(handler, url)));
 	}
 
 	public boolean sendPage(Handler handler, String url, boolean verified) {

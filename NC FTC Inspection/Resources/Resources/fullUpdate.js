@@ -99,5 +99,5 @@ function sendNote(){
 	var xhttp = new XMLHttpRequest();
 	xhttp.open("POST", "../note?team="+n.name, true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("XX".concat(n.value.concat("&&&")));
+	xhttp.send(n.value.concat("&&&"));
 }
