@@ -205,7 +205,8 @@ public class InspectionForm {
 							table.append(" class=" + CB_LEVEL.get(param)); //todo change to req vs opt to simplify
 							table.append(" align=\"center\"");
 							table.append(" onclick=\"update()\">");
-							table.append(t.getStatus(this.type,cbIndex) ? '\u2713' : " "); 
+//							table.append(t.getStatus(this.type,cbIndex) ? "&#x2713;" : " ");
+							table.append(t.getStatus(this.type,cbIndex) ? '\u2713' : " ");
 	//						table.append("</label>");
 							
 						}
