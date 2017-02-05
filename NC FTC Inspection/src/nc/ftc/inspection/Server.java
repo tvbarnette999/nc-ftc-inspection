@@ -215,6 +215,7 @@ public class Server {
 		pw.println("HTTP/1.1 204 No Content\n");
 	}
 	public void sendIPPage(Handler handler) {
+		sendNormalHeader(handler.pw);
 		handler.pw.println("<html><h2>Your IP is: " + handler.sock.getInetAddress().getHostAddress() + "</h2></html>");
 	}
 	public void sendInspectionTeamPage(Handler handler, String url) {
@@ -341,7 +342,7 @@ public class Server {
 		sendNormalHeader(handler.pw);
 		handler.pw.write("Error 404: Showing default<br><br>\n\n");
 		if (verified) {
-			sendHomePage(handler);
+			sendHomePageNoHeader(handler);
 		} else {
 			sendStatusPageNoHeader(handler);
 		}
@@ -720,7 +721,7 @@ public class Server {
 	 * @throws IOException
 	 */
 	public void sendInspectionEditPage(PrintWriter pw, int i) {
-		
+		sendNormalHeader(pw);
 		/*
 		 * Check if doing a full inspection for that type
 		 * 				-if so, send list of teams and button to inspect them, which loads /hardware/#####
@@ -836,7 +837,7 @@ public class Server {
 	 */
 	public void sendMultiTeamSelect(PrintWriter pw, int i) {
 		System.out.println("HI?");
-		
+		sendNormalHeader(pw);
 		pw.println("<html><style>");
 			sendPage(pw, "multi_select.css");
 		pw.println("</style><h1>Select Teams to Inspect</h1><body><table>");
@@ -854,6 +855,7 @@ public class Server {
 	
 	public void sendFullInspectionPage(Handler handler, String url) {
 		PrintWriter pw = handler.pw;
+		sendNormalHeader(pw);
 		//FIXME move this into the body of the other method.
 		int kind = -1;
 		String type = url.substring(0, url.indexOf('/'));
@@ -1018,11 +1020,7 @@ public class Server {
 		pw.println("</script></body></html>");
 		pw.flush();
 	}
-	/**
-	 * Sends the inspection home page, which has a menu to choose inspection
-	 * @param pw The writer to send to
-	 */
-	public void sendHomePage(Handler handler){
+	public void sendHomePageNoHeader(Handler handler) {
 		PrintWriter pw = handler.pw;
 		//TODO make this page better
 		pw.println("<html>"
@@ -1032,7 +1030,7 @@ public class Server {
 				+ "}"
 				+ "\n</style>"
 				+ "\n<body>");
-	
+
 		if(trackCheckIn)pw.println("<a href=\"/checkin\">Checkin</a>");
 		pw.println("<br><br>");
 		if(trackCube)pw.println("<a href=\"/cube\">Sizing Cube</a>");
@@ -1048,6 +1046,14 @@ public class Server {
 		pw.println("<a href=\"reference\">Manuals and Forums");
 		pw.println("</body></html>");
 		pw.flush();
+	}
+	/**
+	 * Sends the inspection home page, which has a menu to choose inspection
+	 * @param pw The writer to send to
+	 */
+	public void sendHomePage(Handler handler){
+		sendNormalHeader(handler.pw);
+		sendHomePageNoHeader(handler);
 	}
 	/**
 	 * Sends the log page
