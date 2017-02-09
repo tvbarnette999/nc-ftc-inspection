@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -28,6 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import nc.ftc.inspection.util.HTTPPrintWriter;
 import nc.ftc.inspection.util.RedirectingPrintStream;
 import nc.ftc.inspection.util.Resources;
 import nc.ftc.inspection.util.URLMap;
@@ -192,30 +192,8 @@ public class Server {
 		System.out.println(hashedPassString);
 		return hashedPassString.equals(checkPass);
 	}
-	public void sendNormalHeader(PrintWriter pw) {
-		System.out.println("sending normal header");
-//		pw = new PrintWriter(new OutputStreamWriter(out, "utf-8")); //TODO check me here: this is not a memory leak cuz closing a pw closes the underlying stream right?
-		pw.print("HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\nCache-Control:no-store\n");
-		pw.println();
-		pw.println();
-	}
-	public void sendImageHeader(PrintWriter pw) {
-		System.out.println("sending image header");
-		pw.println("HTTP/1.1 200 OK");
-		pw.println("Content-Type: image/x-icon");
-	}
-	public void sendPDFHeader(PrintWriter pw) {
-		System.out.println("sending pdf header");
-		pw.println("HTTP/1.1 200 OK");
-		pw.println("Content-Type: application/pdf");
-		pw.println("Content-Disposition: inline; filename=manual1.pdf");
-	}
-	public void send204Header(PrintWriter pw) {
-		System.out.println("sending 204 header");
-		pw.println("HTTP/1.1 204 No Content\n");
-	}
 	public void sendIPPage(Handler handler) {
-		sendNormalHeader(handler.pw);
+//		handler.pw.sendNormalHeader();
 		handler.pw.println("<html><h2>Your IP is: " + handler.sock.getInetAddress().getHostAddress() + "</h2></html>");
 	}
 	public void sendInspectionTeamPage(Handler handler, String url) {
@@ -247,12 +225,12 @@ public class Server {
 		}
 	}
 	/**
-	 * Sends the admin page to the given printWriter
-	 * @param pw The PrintWriter to send to it
+	 * Sends the admin page to the given HTTPPrintWriter
+	 * @param pw The HTTPPrintWriter to send to it
 	 */
 	public void sendAdminPage(Handler handler) {
-		PrintWriter pw = handler.pw;
-		sendNormalHeader(pw);
+		HTTPPrintWriter pw = handler.pw;
+		pw.sendNormalHeader();
 		pw.println("<html><body bgcolor=#000><div style=\" overflow-y: auto; overflow-x:auto;\">");
 		pw.println(Main.me.consoleTextArea.getPlainText());
 		pw.println("</div><br>");
@@ -306,12 +284,21 @@ public class Server {
 		if (req.endsWith("/")) {
 			req = req.substring(0, req.length() - 1);
 		}
-		if (Resources.exists(req)) {
-			sendResource(handler.pw, handler.sock.getOutputStream(), req);
-		} else if (Resources.exists(urlMap.getResource(req))) {
-			sendResource(handler.pw, handler.sock.getOutputStream(), urlMap.getResource(req));
-		} else if (!urlMap.sendPage(handler, req, verified) ) {
-			send404Page(handler, verified);
+//		if (Resources.exists(req)) {
+//			sendResource(handler.pw, handler.sock.getOutputStream(), req);
+//		} else if (Resources.exists(urlMap.getResource(req))) {
+//			sendResource(handler.pw, handler.sock.getOutputStream(), urlMap.getResource(req));
+//		} else if (!urlMap.sendPage(handler, req, verified) ) {
+//			send404Page(handler, verified);
+//		}
+		if (!urlMap.sendPage(handler, req, verified)) { //we tried to send the page from the URL map and failed
+			if (Resources.exists(req)) {
+				sendResource(handler.pw, handler.sock.getOutputStream(), req);
+			} else if (Resources.exists(urlMap.getResource(req))) {
+				sendResource(handler.pw, handler.sock.getOutputStream(), urlMap.getResource(req));
+			} else {
+				send404Page(handler, verified);
+			}
 		}
 	}
 	Pattern imagePattern = Pattern.compile(".+\\.(ico|png|jpg|jpeg|bmp)");
@@ -320,27 +307,27 @@ public class Server {
 	 * @param pw
 	 * @param req
 	 */
-	private void sendResource(PrintWriter pw, OutputStream out,  String req) {
+	private void sendResource(HTTPPrintWriter pw, OutputStream out,  String req) {
 		System.out.println("sending resource: " + req);
 		if (imagePattern.matcher(req).matches()) {
-			sendImageHeader(pw);
+			pw.sendImageHeader();
 			sendDocument(pw, out, req);
 		} else if (req.endsWith(".pdf")) {
-			sendPDFHeader(pw);
+			pw.sendPDFHeader();
 			sendDocument(pw, out, req);
 		} else {
-			sendNormalHeader(pw);
+			pw.sendNormalHeader();
 			sendPage(pw, req);
 		}
 		
 	}
 	public void sendCubeIndexPage(Handler handler) {
-		sendNormalHeader(handler.pw);
+		handler.pw.sendNormalHeader();
 		handler.pw.println((separateCube && fullHardware )?Team.CUBE_INDEX:-1);
 	}
 	public void send404Page(Handler handler, boolean verified) {
-		sendNormalHeader(handler.pw);
-		handler.pw.write("Error 404: Showing default<br><br>\n\n");
+		handler.pw.sendNormalHeader();
+		handler.pw.print("Error 404: Showing default<br><br>\n\n");
 		if (verified) {
 			sendHomePageNoHeader(handler);
 		} else {
@@ -373,7 +360,7 @@ public class Server {
 			String pass=req.substring(req.indexOf("password")+9);
 			pass=pass.substring(0, pass.indexOf("&"));
 //			OutputStream out=sock.getOutputStream();
-//			PrintWriter pw=new PrintWriter(out);
+//			HTTPPrintWriter pw=new HTTPPrintWriter(out);
 			if(checkPassword(pass)){
 //				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
 //				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";</script>";
@@ -428,7 +415,7 @@ public class Server {
 				v = v.substring(0, v.indexOf(" "));
 				getTeam(t).setStatus(type, Integer.parseInt(v));
 //				pageID=H204;
-				send204Header(handler.pw);
+				handler.pw.send204Header();
 			}
 			else if(req.startsWith("fullupdate?")){//full inspection state change
 				String s = req.substring(req.indexOf("=")+1);
@@ -452,7 +439,7 @@ public class Server {
 				String note=data.substring(0, data.indexOf("&&&"));
 				getTeam(t).setNote(type,note);
 //				pageID=H204;
-				send204Header(handler.pw);
+				handler.pw.send204Header();
 			}
 			else if(req.startsWith("sig?")){
 				String s=req.substring(req.indexOf("=")+1);
@@ -464,7 +451,7 @@ public class Server {
 				System.out.println(t+" "+type+": "+teamSig+", "+inpSig);
 				getTeam(t).setSignature(type, teamSig, inpSig);
 //				pageID=H204;
-				send204Header(handler.pw);
+				handler.pw.send204Header();
 			}
 			else if (req.startsWith("admin?")) {
 				req = fixURI(req);
@@ -496,7 +483,7 @@ public class Server {
 			else{
 				System.out.println("NOTHIN!");
 //				pageID = H204;
-				send204Header(handler.pw);
+				handler.pw.send204Header();
 			}
 		}
 //		sendPage(sock,pageID, valid, response);	
@@ -505,7 +492,7 @@ public class Server {
 		return sock.getInetAddress().getHostName();
 	}
 	public void sendResponse(Handler handler, String response) {
-		sendNormalHeader(handler.pw);
+		handler.pw.sendNormalHeader();
 		handler.pw.println(response);
 	}
 //	/**
@@ -552,8 +539,8 @@ public class Server {
 		return "\n\n<script> window.alert(\"" + popup + "\") </script>";
 	}
 	public void sendLoginPage(Handler handler) {
-		PrintWriter pw = handler.pw;
-		sendNormalHeader(pw);
+		HTTPPrintWriter pw = handler.pw;
+		pw.sendNormalHeader();
 		sendPage(pw, "inspectorLogin.php");
 	}
 	/**
@@ -563,7 +550,7 @@ public class Server {
 	 * @param f
 	 * @throws IOException
 	 */
-	public void sendPage(PrintWriter pw,String f) {
+	public void sendPage(HTTPPrintWriter pw,String f) {
 		Scanner s;
 		try {
 			s = Resources.getScanner(f);
@@ -580,12 +567,12 @@ public class Server {
 	}
 	
 	/**
-	 * This sends the file specified to the printwriter, replacing all instances of \n with <br> and \t with four spaces
+	 * This sends the file specified to the HTTPPrintWriter, replacing all instances of \n with <br> and \t with four spaces
 	 * @param pw
 	 * @param f
 	 * @throws IOException
 	 */
-	public void sendPageAsHTML(PrintWriter pw, String f) throws IOException {
+	public void sendPageAsHTML(HTTPPrintWriter pw, String f) throws IOException {
 		Scanner s=Resources.getScanner(f);
 		while(s.hasNextLine())pw.println(s.nextLine().replaceAll("\t", TAB) + "<br>");
 		s.close();
@@ -598,7 +585,7 @@ public class Server {
 	 * @param out
 	 * @param f
 	 */
-	public void sendDocument(PrintWriter pw,OutputStream out,String f) {
+	public void sendDocument(HTTPPrintWriter pw,OutputStream out,String f) {
 		//if(f.substring(f.lastIndexOf(".")+1).equals("pdf")){
 		try{
 
@@ -654,12 +641,11 @@ public class Server {
 	 * @param pw
 	 */
 	public void sendStatusPage(Handler handler){
-		PrintWriter pw = handler.pw;
-		sendNormalHeader(pw);
+		handler.pw.sendNormalHeader();
 		sendStatusPageNoHeader(handler);
 	}
 	public void sendStatusPageNoHeader(Handler handler) {
-		PrintWriter pw = handler.pw;
+		HTTPPrintWriter pw = handler.pw;
 //		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\">");
 		pw.println("<html>"
 				+ "\n<script>"
@@ -720,8 +706,7 @@ public class Server {
 	 * @param i
 	 * @throws IOException
 	 */
-	public void sendInspectionEditPage(PrintWriter pw, int i) {
-		sendNormalHeader(pw);
+	public void sendInspectionEditPage(HTTPPrintWriter pw, int i) {
 		/*
 		 * Check if doing a full inspection for that type
 		 * 				-if so, send list of teams and button to inspect them, which loads /hardware/#####
@@ -787,10 +772,10 @@ public class Server {
 	
 	/**
 	 * Sends the page to select the team to inspect. Displays current status behind their numbers to prevent multiple inspections
-	 * @param pw The printwriter to send the page through
+	 * @param pw The HTTPPrintWriter to send the page through
 	 * @param i The inspection type
 	 */
-	public void sendInspectionTeamSelect(PrintWriter pw, int i){
+	public void sendInspectionTeamSelect(HTTPPrintWriter pw, int i){
 		
 		String type="";
 		switch(i){
@@ -835,9 +820,9 @@ public class Server {
 	 * @param i
 	 * @throws IOException 
 	 */
-	public void sendMultiTeamSelect(PrintWriter pw, int i) {
+	public void sendMultiTeamSelect(HTTPPrintWriter pw, int i) {
 		System.out.println("HI?");
-		sendNormalHeader(pw);
+		pw.sendNormalHeader();
 		pw.println("<html><style>");
 			sendPage(pw, "multi_select.css");
 		pw.println("</style><h1>Select Teams to Inspect</h1><body><table>");
@@ -854,8 +839,8 @@ public class Server {
 	}
 	
 	public void sendFullInspectionPage(Handler handler, String url) {
-		PrintWriter pw = handler.pw;
-		sendNormalHeader(pw);
+		HTTPPrintWriter pw = handler.pw;
+		pw.sendNormalHeader();
 		//FIXME move this into the body of the other method.
 		int kind = -1;
 		String type = url.substring(0, url.indexOf('/'));
@@ -875,7 +860,7 @@ public class Server {
 	 * @param i The inspection type (FD, HW, SW)
 	 * @param extras The team number being inspected
 	 */
-	public void sendFullInspectionPage(PrintWriter pw, int i, String extras){
+	public void sendFullInspectionPage(HTTPPrintWriter pw, int i, String extras){
 		
 		//when submit button clicked, send note and thats how you know IP->fail (or pass)
 		//note beng reason for failure as prescribed 
@@ -952,7 +937,7 @@ public class Server {
 		pw.flush();
 	}
 	
-	public void sendMultiInspectionPage(PrintWriter pw, int i, Team[] teams){
+	public void sendMultiInspectionPage(HTTPPrintWriter pw, int i, Team[] teams){
 		
 		InspectionForm form = null;
 		String type = "";
@@ -1021,7 +1006,7 @@ public class Server {
 		pw.flush();
 	}
 	public void sendHomePageNoHeader(Handler handler) {
-		PrintWriter pw = handler.pw;
+		HTTPPrintWriter pw = handler.pw;
 		//TODO make this page better
 		pw.println("<html>"
 				+ "\n<style>"
@@ -1052,7 +1037,7 @@ public class Server {
 	 * @param pw The writer to send to
 	 */
 	public void sendHomePage(Handler handler){
-		sendNormalHeader(handler.pw);
+		handler.pw.sendNormalHeader();
 		sendHomePageNoHeader(handler);
 	}
 	/**
@@ -1060,8 +1045,8 @@ public class Server {
 	 * @param pw The writer to send to
 	 */
 	public void sendLogPage(Handler handler, int which) {
-		PrintWriter pw = handler.pw;
-		sendNormalHeader(pw);
+		HTTPPrintWriter pw = handler.pw;
+		pw.sendNormalHeader();
 		pw.println("<html><body bgcolor=\"#000000\">");
 		try {
 			if (which == LOG_ERROR) {
@@ -1077,7 +1062,7 @@ public class Server {
 			}
 		} catch (Exception e) {
 			pw.println("There was an error rendering the log page:");
-			e.printStackTrace(pw);
+			pw.printStackTrace(e);
 		}
 		pw.println("</font></body></html>");
 		pw.flush();
@@ -1269,11 +1254,11 @@ public class Server {
 	 */
 	public class Handler implements Runnable{
 		Socket sock;
-		PrintWriter pw;
+		HTTPPrintWriter pw;
 		public Handler(Socket s){
 			sock=s;
 			try {
-				pw = new PrintWriter(new OutputStreamWriter(sock.getOutputStream(), "utf-8"));
+				pw = new HTTPPrintWriter(s);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

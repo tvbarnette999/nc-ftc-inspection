@@ -149,7 +149,7 @@ public class Resources {
 				}
 				fileStatus.put(name, DEFAULT);
 			}catch(FileNotFoundException e1){
-				System.err.println("Unable to load Resource: " + name);
+				System.out.println("No Resource found with name: " + name);
 				throw new FileNotFoundException("Could not find resource: " + name);
 			}
 		}
