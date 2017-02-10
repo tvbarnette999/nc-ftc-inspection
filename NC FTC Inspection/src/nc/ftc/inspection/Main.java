@@ -1529,13 +1529,7 @@ public class Main extends JFrame {
 						Resources.deleteDirectory("log", "log");
 						append("Old logs cleared, current session logs untouched", who);
 						return;
-					} else
-					if (args[1].equals("COOKIES")) {
-						Server.theServer.refreshPassword();
-						append("Cookies cleared, all users unauthenticated", who);
-						return;
-					}
-					else{
+					} else {
 						append("USAGE: CLEAR [CONSOLE | COOKIES | DATA | LOGS]", who);
 						return;
 					}

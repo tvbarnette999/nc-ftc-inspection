@@ -13,8 +13,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.nio.ByteBuffer;
-import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Calendar;
@@ -32,6 +30,7 @@ import nc.ftc.inspection.util.HTTPPrintWriter;
 import nc.ftc.inspection.util.RedirectingPrintStream;
 import nc.ftc.inspection.util.Resources;
 import nc.ftc.inspection.util.URLMap;
+import nc.ftc.inspection.util.User;
 
 public class Server {
 	
@@ -85,20 +84,14 @@ public class Server {
 	
 	private boolean done=false;
 	
-	//TODO add sections to the form data to handle new one, accommodate for dual columned entries like new SW
-//	public static Vector<String> HWForm=new Vector<String>();
-//	public static Vector<String> SWForm=new Vector<String>();
-//	public static Vector<String> FDForm=new Vector<String>();
-	
 	public static InspectionForm hardwareForm = new InspectionForm(HARDWARE);
 	public static InspectionForm softwareForm = new InspectionForm(SOFTWARE);
 	public static InspectionForm fieldForm = new InspectionForm(FIELD);
 	
 	
-	
-
-	public static long seed = System.currentTimeMillis();
-	public static final String password = "hello123";//"NCftc2016";
+	public static String password = "hello123";//"NCftc2016";
+	public static String adminPassword = "123hello";
+	public static String teamPassword = "team";
 
 	public static String event = "KMS_17";
 	public static String fullEventName;
@@ -133,50 +126,10 @@ public class Server {
 		urlMap = new URLMap(this);
 	}
 	
-	private byte[] hashedPass;
-	private String hashedPassString;
-	private String currentPasswordPlaintext;
 	
 	private int cookieCount;
 	private int traffic;
 	
-	public void setPassword(String password) {
-		currentPasswordPlaintext = password;
-		cookieCount = 0;
-		SecureRandom rand = new SecureRandom();
-		ByteBuffer buff = ByteBuffer.allocate(Long.BYTES + password.getBytes().length);
-		buff.putLong(seed);
-		buff.put(password.getBytes());
-		rand.setSeed(buff.array());
-		hashedPass = new byte[32];
-		rand.nextBytes(hashedPass);
-		hashedPassString = "";
-		for (Byte b : hashedPass)
-			hashedPassString += (char) (((int)'a') + Math.abs(b) / 12);
-		whiteList.clear();
-	}
-	public void refreshPassword() {
-		seed = System.currentTimeMillis();
-		setPassword(currentPasswordPlaintext);
-	}
-	public boolean checkPassword(String password) {
-//		System.out.println("Check Password: " + password);
-		SecureRandom rand = new SecureRandom();
-		ByteBuffer buff = ByteBuffer.allocate(Long.BYTES + password.getBytes().length);
-		buff.putLong(seed);
-		buff.put(password.getBytes());
-		rand.setSeed(buff.array());
-		byte[] checkPass = new byte[hashedPass.length];
-		rand.nextBytes(checkPass);
-//		System.out.println(Arrays.toString(hashedPass));
-//		System.out.println(Arrays.toString(checkPass));
-//		System.out.println(Arrays.toString(hashedPass));
-//		System.out.println(Arrays.toString(checkPass));
-		for (int i = 0; i < checkPass.length; i++)
-			if (checkPass[i] != hashedPass[i])
-				return false;
-		return true;
-	}
 	public int getTraffic() {
 		int temp = traffic;
 		traffic = 0;
@@ -185,16 +138,7 @@ public class Server {
 	public int getCookieCount() {
 		return cookieCount;
 	}
-	public boolean checkHash(String checkPass) {
-		System.out.println("CHECKING HASH");
-		System.out.println();
-		System.out.println(checkPass);
-		System.out.println();
-		System.out.println(hashedPassString);
-		return hashedPassString.equals(checkPass);
-	}
 	public void sendIPPage(Handler handler) {
-//		handler.pw.sendNormalHeader();
 		handler.pw.println("<html><h2>Your IP is: " + handler.sock.getInetAddress().getHostAddress() + "</h2></html>");
 	}
 	public void sendInspectionTeamPage(Handler handler, String url) {
@@ -266,40 +210,23 @@ public class Server {
 	 * @param fullReq 
 	 * @throws IOException
 	 */
-	public void get(String req,Handler handler, String fullReq, String user, String pass) throws IOException{
-//		String other=null;
-//		String check = fullReq;
-		boolean verified = pass.equals(password);
-//		try {
-//			check = check.substring(check.indexOf(cookieHeader) + cookieHeader.length() + 1);
-//			check = check.substring(check.indexOf("&&&") + 3, check.indexOf('\"')); // also take off [ ]
-//			verified = checkHash(check) || DEBUG;
-//		} catch (Exception e) {
-//			verified = DEBUG;
-//			//e.printStackTrace();
-//			//we dont have the password
-//		}
-		if(whiteList.contains(handler.sock.getInetAddress()))verified = true;
+	public void get(String req,Handler handler, String fullReq, User user) throws IOException{
+
+		if(whiteList.contains(handler.sock.getInetAddress())){
+			user = new User("whitelist", password);
+		}
 		req=req.substring(1,req.indexOf(" "));
 		System.out.println("req: " + req);
 		if (req.endsWith("/")) {
 			req = req.substring(0, req.length() - 1);
 		}
-//		if (Resources.exists(req)) {
-//			sendResource(handler.pw, handler.sock.getOutputStream(), req);
-//		} else if (Resources.exists(urlMap.getResource(req))) {
-//			sendResource(handler.pw, handler.sock.getOutputStream(), urlMap.getResource(req));
-//		} else if (!urlMap.sendPage(handler, req, verified) ) {
-//			send404Page(handler, verified);
-//		}
-
-		if (!urlMap.sendPage(handler, req, verified)) { //we tried to send the page from the URL map and failed
+		if (!urlMap.sendPage(handler, req, user)) { //we tried to send the page from the URL map and failed
 			if (Resources.exists(req)) {
 				sendResource(handler.pw, handler.sock.getOutputStream(), req);
 			} else if (Resources.exists(urlMap.getResource(req))) {
 				sendResource(handler.pw, handler.sock.getOutputStream(), urlMap.getResource(req));
 			} else {
-				send404Page(handler, verified);
+				send404Page(handler, user);
 			}
 		}
 	}
@@ -327,13 +254,13 @@ public class Server {
 		handler.pw.sendNormalHeader();
 		handler.pw.println((separateCube && fullHardware )?Team.CUBE_INDEX:-1);
 	}
-	public void send404Page(Handler handler, boolean verified) {
+	public void send404Page(Handler handler, User user) {
 		handler.pw.sendNormalHeader();
 		handler.pw.print("Error 404: Showing default<br><br>\n\n");
-		if (verified) {
-			sendHomePageNoHeader(handler);
+		if (user.level > User.GENERAL) {
+			sendHomePage(handler);
 		} else {
-			sendStatusPageNoHeader(handler);
+			sendStatusPage(handler);
 		}
 	}
 	/**
@@ -344,9 +271,7 @@ public class Server {
 	 * @param sock
 	 * @throws IOException
 	 */
-	public void post(String req, String data,Handler handler, String user, String pass) throws IOException{
-//		int pageID = 0;
-//		boolean valid = false;
+	public void post(String req, String data,Handler handler, User user) throws IOException{
 		String response = "";
 		Socket sock = handler.sock;
 		System.out.println("POST: "+req+"\nData: ("+data.length() + ")\n" +data);
@@ -354,61 +279,12 @@ public class Server {
 			System.out.print(((int) c) + " ");
 		}
 		System.out.println();
-		/*
-		 * if the data contains a password, its from the login page.
-		 * That means we can send it a secured page.
-		 */
-//		if(req.contains("password")){
-//			String pass=req.substring(req.indexOf("password")+9);
-//			pass=pass.substring(0, pass.indexOf("&"));
-////			OutputStream out=sock.getOutputStream();
-////			HTTPPrintWriter pw=new HTTPPrintWriter(out);
-//			if(checkPassword(pass)){
-////				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
-////				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";</script>";
-//				cookieCount++;
-////				pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: " + cookieHeader + hashedPassString + "\"\n\n    \n");
-////				pw.flush();
-////				valid=true;
-////				System.out.println("VERIFIED PASSWORD");
-//				response = "document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";";
-////				System.out.println(req +"  "+req.indexOf("/")+"  "+req.indexOf(" "));
-////				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
-////				System.out.println("REQ:"+req);
-////				pageID = SEND_RESPONSE;
-////				if(req.equals("hardware"))pageID=HARDWARE;
-////				if(req.equals("field"))pageID=FIELD;
-////				if(req.equals("home"))pageID=HOME;
-////				if(req.equals("software"))pageID=SOFTWARE;
-////				if(req.equals("cube"))pageID=CUBE;
-////				if(req.equals("checkin"))pageID=CHECKIN;
-//				
-//				//FOR COMPLICATED SOCKET REASONS, YOU CANNOT AUTO-REDIRECT TO THE ADMIN PAGE
-//				whiteList.add(handler.sock.getInetAddress());
-//				sendResponse(handler, response);
-//			} else {
-////				pageID = SEND_RESPONSE;
-//				response = "window.alert('Incorrect Password');";
-////				pw.println("window.alert('Incorrect Password');");
-////				pw.flush();
-//				sendResponse(handler, response);
-//				return;
-////				extras = generateExtrasPopup("Incorrect Password");
-//			}
-//			//else, no password, pageID stays 0 (the status page)
-//		}
-//		/*If there is no password, then the POST's source is a page that already required authentication,
-//		 * therefore, we can handle it appropriately
-//		 */
-//		else{
-			//HANDLE POST FROM VERIFIED INSPECTOR
+
 			req=req.substring(1);
-//			System.out.println("VERIFIED "+req);
-			if(req.startsWith("cubeindex?")){//js is asking what the cube index is before passing the team
-//				pageID = CUBE_INDEX_PAGE;
+			if(req.startsWith("cubeindex?") && user.is(User.INSPECTOR)){//js is asking what the cube index is before passing the team
 				sendCubeIndexPage(handler);
 			}
-			else if(req.startsWith("update?")){//These are requests that contain a state change for a team for a level of inspection.
+			else if(req.startsWith("update?") && user.is(User.INSPECTOR)){//These are requests that contain a state change for a team for a level of inspection.
 				System.out.println("LINE 389: " + req);
 				String s = req.substring(req.indexOf("=") + 1);
 				int t = Integer.parseInt(s.substring(0, s.indexOf("_")));
@@ -416,10 +292,9 @@ public class Server {
 				String v = s.substring(s.indexOf("=")+1);
 				v = v.substring(0, v.indexOf(" "));
 				getTeam(t).setStatus(type, Integer.parseInt(v));
-//				pageID=H204;
 				handler.pw.send204Header();
 			}
-			else if(req.startsWith("fullupdate?")){//full inspection state change
+			else if(req.startsWith("fullupdate?") && user.is(User.INSPECTOR)){//full inspection state change
 				String s = req.substring(req.indexOf("=")+1);
 				int t = Integer.parseInt(s.substring(0, s.indexOf("_")));
 				String type = s.substring(s.indexOf("_")+1,s.indexOf("&"));
@@ -430,20 +305,18 @@ public class Server {
 				getTeam(t).setInspectionIndex(type,index,Boolean.parseBoolean(v));
 				//send conf wth id of td containing the checkbox and the data we received(v)
 				response = t + "_" + type + index + "=" + v;
-//				pageID = SEND_RESPONSE;
 				sendResponse(handler, response);
 			}
-			else if(req.startsWith("note?")){
+			else if(req.startsWith("note?") && user.is(User.INSPECTOR)){
 				String s=req.substring(req.indexOf("=")+1);
 				int t=Integer.parseInt(s.substring(0, s.indexOf("_")));
 				String type=s.substring(s.indexOf("_")+1,s.indexOf(" "));
 				System.out.println("NOTE DATA:"+data);
 				String note=data.substring(0, data.indexOf("&&&"));
 				getTeam(t).setNote(type,note);
-//				pageID=H204;
 				handler.pw.send204Header();
 			}
-			else if(req.startsWith("sig?")){
+			else if(req.startsWith("sig?") && user.is(User.INSPECTOR)){
 				String s=req.substring(req.indexOf("=")+1);
 				int t=Integer.parseInt(s.substring(0,s.indexOf("_")));
 				String type=s.substring(s.indexOf("_")+1,s.indexOf(" "));
@@ -452,10 +325,9 @@ public class Server {
 				String inpSig=data.substring(data.indexOf("inspector=")+10,data.indexOf("&&&"));
 				System.out.println(t+" "+type+": "+teamSig+", "+inpSig);
 				getTeam(t).setSignature(type, teamSig, inpSig);
-//				pageID=H204;
 				handler.pw.send204Header();
 			}
-			else if (req.startsWith("admin?")) {
+			else if (req.startsWith("admin?") && user.is(User.ADMIN)) {
 				req = fixURI(req);
 				String cmd = req.substring(req.indexOf("&&&") + 3);
 				cmd = cmd.substring(0, cmd.indexOf("&&&"));
@@ -464,10 +336,9 @@ public class Server {
 				System.out.println("WHO: " + who);
 				Main.me.handleCommand(cmd, who);
 				response = "HELLO THIS IS A RESPONSE";
-//				pageID = SEND_RESPONSE;
 				sendResponse(handler, response);
 			}
-			else if (req.startsWith("fancySig")) {
+			else if (req.startsWith("fancySig") && user.is(User.INSPECTOR)) {
 				int x = 0;
 				String img = req.substring((x = req.indexOf('?')) + 1, req.indexOf(" HTTP"));
 				req = req.substring(0, x);
@@ -484,11 +355,8 @@ public class Server {
 			}
 			else{
 				System.out.println("NOTHIN!");
-//				pageID = H204;
 				handler.pw.send204Header();
 			}
-//		}
-//		sendPage(sock,pageID, valid, response);	
 	}
 	private String getWho(Socket sock) {
 		return sock.getInetAddress().getHostName();
@@ -497,17 +365,6 @@ public class Server {
 		handler.pw.sendNormalHeader();
 		handler.pw.println(response);
 	}
-//	/**
-//	 * Returns the number assigned to this user stored in the cookie
-//	 * @param req the cookie header (or more, it will filter)
-//	 * @return the number assigned to this user
-//	 */
-//	public String getWho(String req) {
-//		req = fixURI(req);
-//		req = req.substring(req.indexOf(cookieHeader) + cookieHeader.length());
-//		req = req.substring(1, req.indexOf("&&&"));
-//		return req;
-//	}
 	/**
 	 * This replaces any %dd with the character that corresponds to the hex value of dd. This is the standard escape sequence for URI.
 	 * NOTE: While this does check for %d and will not replace it, if there is a %dd it will be replaced. Apparently chrome will convert
@@ -639,15 +496,6 @@ public class Server {
 	public String getColor(boolean b){
 		return getColor(b?3:0);
 	}
-	/**
-	 * Sends the status page, which is a table with colors to indicate how far a team is through inspection
-	 * @param pw
-	 */
-	public void sendStatusPage(Handler handler){
-		handler.pw.sendNormalHeader();
-		sendStatusPageNoHeader(handler);
-	}
-	
 	public void sendStatusTableHead(HTTPPrintWriter pw){
 		pw.println("<table border=\"3\"><tr>");
 		if(trackCheckIn)pw.println("<th>CI</th>");
@@ -660,7 +508,7 @@ public class Server {
 		
 	}
 	
-	public void sendStatusPageNoHeader(Handler handler) {
+	public void sendStatusPage(Handler handler) {
 		HTTPPrintWriter pw = handler.pw;
 //		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\">");
 		pw.println("<html>"
@@ -1035,7 +883,7 @@ public class Server {
 		pw.println("</script></body></html>");
 		pw.flush();
 	}
-	public void sendHomePageNoHeader(Handler handler) {
+	public void sendHomePage(Handler handler) {
 		HTTPPrintWriter pw = handler.pw;
 		//TODO make this page better
 		pw.println("<html>"
@@ -1061,14 +909,6 @@ public class Server {
 		pw.println("<a href=\"reference\">Manuals and Forums");
 		pw.println("</body></html>");
 		pw.flush();
-	}
-	/**
-	 * Sends the inspection home page, which has a menu to choose inspection
-	 * @param pw The writer to send to
-	 */
-	public void sendHomePage(Handler handler){
-		handler.pw.sendNormalHeader();
-		sendHomePageNoHeader(handler);
 	}
 	/**
 	 * Sends the log page
@@ -1165,6 +1005,9 @@ public class Server {
 		
 	}
 
+	void setPassword(String password) {
+		Server.password = password;
+	}
 	/**
 	 * Loads event data- name, code, and teams.
 	 * file name: EVENTCODE ex:BCRI2017, NCCMP2016, CGHS
@@ -1327,17 +1170,21 @@ public class Server {
 					}
 				}catch(SocketTimeoutException e){}//there has got to be a better way
 				String fullReq = full.toString();
+				User userObj;
 				if (fullReq.contains("Authorization: Basic ")) {
 					String accept = fullReq.substring(fullReq.indexOf("Authorization: Basic ") + "Authorization: Basic ".length());
 					accept = accept.substring(0, accept.indexOf('\n'));
 					user = new String(Base64.getDecoder().decode(accept));
 					pass = user.substring(user.indexOf(':') + 1);
 					user = user.substring(0, user.indexOf(':'));
+					userObj = new User(user, pass);
+				} else {
+					userObj = new User();
 				}
 				if(type == null)return;
 				if(type.startsWith("GET")){
 					commStream.println("<div name=\"" + sock.getInetAddress().getHostAddress() + "\" class=\"GET\">" + sock.getInetAddress().getHostAddress() + "<br>" + full + "<br><hr><br></div>");
-					get(type.substring(4),this, fullReq, user, pass);
+					get(type.substring(4),this, fullReq, userObj);
 				} else{
 					for(int i = 0; i < len; i++){
 						char c = (char)in.read();
@@ -1352,7 +1199,7 @@ public class Server {
 				if(type.startsWith("POST")){			
 					
 //					System.out.println("POST: " + type + '\n' + "DATA:" + data.toString());
-					post(type.substring(5), data.toString(), this, user, pass);
+					post(type.substring(5), data.toString(), this, userObj);
 				}
 				pw.flush();
 				pw.close();
@@ -1497,7 +1344,7 @@ public class Server {
 		PrintWriter pw = Resources.getConfigWriter();
 		if(pw == null)return false;
 		pw.println(event);
-		pw.println(currentPasswordPlaintext);
+		pw.println(password);
 		pw.println(trackCheckIn);
 		pw.println(trackCube);
 		pw.println(separateCube);
