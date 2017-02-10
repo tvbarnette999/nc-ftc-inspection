@@ -15,6 +15,7 @@ public class URLMap {
 	private Page def;
 	public URLMap(Server server) {
 		def = new Page(handler->server.sendLoginPage(handler));
+		map.put("login", def);
 		map.put("error", new Page(User.INSPECTOR, handler->server.sendLogPage(handler, Server.LOG_ERROR)));
 		map.put("out", new Page(User.INSPECTOR, handler->server.sendLogPage(handler, Server.LOG_OUT)));
 		map.put("comm", new Page(User.INSPECTOR, handler->server.sendLogPage(handler, Server.LOG_COMM)));

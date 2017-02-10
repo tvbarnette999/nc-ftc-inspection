@@ -212,9 +212,6 @@ public class Server {
 	 */
 	public void get(String req,Handler handler, String fullReq, User user) throws IOException{
 
-		if(whiteList.contains(handler.sock.getInetAddress())){
-			user = new User("whitelist", password);
-		}
 		req=req.substring(1,req.indexOf(" "));
 		System.out.println("req: " + req);
 		if (req.endsWith("/")) {
@@ -389,18 +386,7 @@ public class Server {
 		sb.append(ss[ss.length - 1]);
 		return sb.toString();
 	}
-	/**
-	 * Use extras = generateExtrasPopup(popup) to render a javascript pop up on the page
-	 * @param popup The string to render
-	 * @return The extra to show the pop up
-	 */
-	public String generateExtrasPopup(String popup) {
-		return "\n\n<script> window.alert(\"" + popup + "\") </script>";
-	}
 	public void sendLoginPage(Handler handler) {
-//		HTTPPrintWriter pw = handler.pw;
-//		pw.sendNormalHeader();
-//		sendPage(pw, "inspectorLogin.php");
 		handler.pw.sendUnauthorizedHeader();
 	}
 	/**
@@ -415,9 +401,6 @@ public class Server {
 		try {
 			s = Resources.getScanner(f);
 			while(s.hasNextLine()){
-//				String ss = s.nextLine();
-//				pw.println(ss);
-//				System.out.println(ss);
 				pw.println(s.nextLine());
 			}
 			s.close();
@@ -952,15 +935,6 @@ public class Server {
 		//loadEvent(event); //loads the default event if 
 		addLogEntry("Starting server...");
 		
-//		try {
-//			whiteList.add(InetAddress.getLocalHost());
-//			whiteList.add(InetAddress.getByName("localhost"));
-//			whiteList.add(InetAddress.getByName("0:0:0:0:0:0:0:1"));
-			//FIXME WhiteList localhost!? This doesnt work?
-//		} catch (UnknownHostException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
 		if(Resources.backup == null){
 			addErrorEntry("No backup location set!");
 		}else if(Resources.backupExists()){
@@ -1052,7 +1026,6 @@ public class Server {
 		//load status data if exists
 		scan = Resources.getStatusScanner();
 		if(scan == null)return;//were done here- no data
-//		String[] line;
 		while(scan.hasNextLine()){
 			Team.loadDataFromString(scan.nextLine());		
 		}
@@ -1182,9 +1155,14 @@ public class Server {
 					user = new String(Base64.getDecoder().decode(accept));
 					pass = user.substring(user.indexOf(':') + 1);
 					user = user.substring(0, user.indexOf(':'));
+					System.out.println("user: " + user + " pass: " + pass);
 					userObj = new User(user, pass);
 				} else {
-					userObj = new User();
+					if(whiteList.contains(sock.getInetAddress())){
+						userObj = new User("whitelist", password);
+					} else {
+						userObj = new User();
+					}
 				}
 				if(type == null)return;
 				if(type.startsWith("GET")){
@@ -1199,11 +1177,8 @@ public class Server {
 					commStream.println("<div name=\"" + sock.getInetAddress().getHostAddress() + "\" class=\"POST\">" + sock.getInetAddress().getHostAddress() + "<br>" + full + "<br><hr><br></div>");
 				}
 				
-//				System.out.println("FULL REQUEST: " + full.toString() +"\n END FULL REQ");
 				
 				if(type.startsWith("POST")){			
-					
-//					System.out.println("POST: " + type + '\n' + "DATA:" + data.toString());
 					post(type.substring(5), data.toString(), this, userObj);
 				}
 				pw.flush();

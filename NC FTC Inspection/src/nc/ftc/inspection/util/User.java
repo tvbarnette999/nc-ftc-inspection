@@ -11,6 +11,8 @@ public class User {
 	public String pass;
 	public int level = User.GENERAL;
 	public User(String user, String pass) {
+		this.user = user;
+		this.pass = pass;
 		if (pass.equals(Server.password)) {
 			level = User.INSPECTOR;
 		} else if (user.equals("admin") && pass.equals(Server.adminPassword)){
