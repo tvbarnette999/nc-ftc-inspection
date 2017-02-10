@@ -33,9 +33,13 @@ import nc.ftc.inspection.util.Resources;
 import nc.ftc.inspection.util.URLMap;
 import nc.ftc.inspection.util.User;
 
+/**
+ *Server class... its the server.... Handles all the comms with clients and generates any responses needed. Also handles authentication of users.
+ * @author Thomas
+ *
+ */
 public class Server {
 	
-	public static boolean DEBUG = false;
 	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat ("[hh:mm:ss] ");
 	
@@ -94,7 +98,7 @@ public class Server {
 	public static String adminPassword = "123hello";
 	public static String teamPassword = "team";
 
-	public static String event = "KMS_17";
+	public static String event = "NCCMP_17"; //default event
 	public static String fullEventName;
 
 	/**Thread pool for HTTP server*/
@@ -500,6 +504,10 @@ public class Server {
 		
 	}
 	
+	/**
+	 * Sends the grid page with the colored squares for each team's status.
+	 * @param handler
+	 */
 	public void sendStatusPage(Handler handler) {
 		HTTPPrintWriter pw = handler.pw;
 //		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\">");
