@@ -112,7 +112,7 @@ public class Team implements Comparable<Team> {
 		 */
 		public int getStatus(int i){
 			switch(i){
-				case Server.CHECKIN:return checkedIn || Server.trackCheckIn?Server.PASS:0;
+				case Server.CHECKIN:return checkedIn ? Server.PASS : Server.NO_DATA;// || Server.trackCheckIn?Server.PASS:0;
 				case Server.CUBE:return Server.trackCube ? cube : Server.PASS;
 				case Server.HARDWARE:return Server.trackHardware ? hardware : Server.PASS;
 				case Server.SOFTWARE:return Server.trackSoftware ? software : Server.PASS;
@@ -149,7 +149,7 @@ public class Team implements Comparable<Team> {
 		 * @param i
 		 */
 		public void setStatus(String type, int i) {
-			if(type.equals("CI"))this.checkedIn = i==3 ? true : false;
+			if(type.equals("CI"))this.checkedIn = i==Server.PASS ? true : false;
 			if(type.equals("SC")){
 				this.cube = i;
 				if(this.cube == Server.PASS && !Server.separateCube){

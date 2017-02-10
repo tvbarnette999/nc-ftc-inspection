@@ -72,7 +72,7 @@ public class Main extends JFrame {
 	 *
 	 *TODO static import constants where used multiple times (ie Server.HARDWARE)
 	 *
-	 *
+	 *TODO convert save files to human readable (like .ini for config)
 	 *
 	 *
 	 */

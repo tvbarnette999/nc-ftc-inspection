@@ -680,6 +680,7 @@ public class Server {
 		for(int i = 0; i < teams.size() / 2; i++){
 			Team t = teams.get(i);
 			pw.println("<tr>");
+			if(t.number == 731)System.out.println("CI= "+getColor(t.checkedIn));
 			if(trackCheckIn)pw.println("<td bgcolor="+getColor(t.checkedIn)+">&nbsp;</td>");
 			if(trackCube)pw.println("<td bgcolor="+getColor(t.cube)+">&nbsp;</td>");
 			if(trackHardware)pw.println("<td bgcolor="+getColor(t.hardware)+">&nbsp;</td>");
