@@ -524,6 +524,7 @@ public class Server {
 				+ "\n	xhttp.send();"
 				+ "\n},15000);</script>");
 		
+		pw.println("<h1 align=center>" + Server.fullEventName + "</h1>");
 		pw.println("<table align=center><tr><td>");
 		
 		sendStatusTableHead(pw);
@@ -802,7 +803,11 @@ public class Server {
 			pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
 		//}
 		
-		
+			pw.println("<br>Team Inspection Status: <font color = ");// + getColor(team.getStatus(type)));
+
+			if(team.getStatus(i) == PASS)pw.println("green>PASSED");
+			else if(team.getStatus(i) == FAIL)pw.println("red>FAILED");
+			pw.println("</font>");
 		
 		pw.println("<br><br><button type=\"button\" name=\""+extras+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
 		pw.println("<button type=\"button\" name=\""+extras+type+"\" onclick=\"fullfail()\">Fail</button>");
