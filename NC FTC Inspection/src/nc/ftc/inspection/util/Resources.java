@@ -1,11 +1,16 @@
 package nc.ftc.inspection.util;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -14,8 +19,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Vector;
 
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
 import nc.ftc.inspection.FormEditor;
@@ -69,6 +76,9 @@ public class Resources {
 	public static final String SW_FORM_FILE = "swform.dat";
 	public static final String FD_FORM_FILE = "fdform.dat";
 	
+	public static final String REFERENCE_LINKS = "referenceLinks.dat";
+	public static HashMap<String, Vector<URL>> referenceLinks = new HashMap<String, Vector<URL>>();
+	public static HashMap<String, String> referenceMap = new HashMap<String, String>();
 	static HashMap<String, String> fileStatus = new HashMap<String, String>();
 	/**The root save directory that is checked first. Default value: "NC Inspection" */
 	public static String root="NC Inspection";
@@ -655,5 +665,89 @@ public class Resources {
 	public static boolean backupExists() {
 		if(backup == null)return false;
 		return new File(backup).exists() && new File(backup).isDirectory();
+	}
+	
+	public static void loadReferenceMap() throws FileNotFoundException{
+		Scanner scan = getScanner(REFERENCE_LINKS);
+		String name = null, file = null;
+		Vector<URL> urls = new Vector<URL>();
+		while(scan.hasNextLine()){
+			String line = scan.nextLine();
+			if(line.startsWith("$")){
+				int div = line.indexOf("::");
+				if(name != null){ //weve hit the end of the prev forum, add the link map
+					referenceLinks.put(name, urls);
+				}
+				urls = new Vector<URL>();
+				name = line.substring(1, div);
+				file = line.substring(div + 2);
+				referenceMap.put(name, file);
+			} else{
+				try {
+					urls.add(new URL(line));
+				} catch (MalformedURLException e) {
+					System.err.print("Invalid Reference URL: " + name + "\r\n"+line);
+					e.printStackTrace();
+				}
+			}
+		}
+		if(name != null){ //weve hit the end of the last forum, add the link map
+			referenceLinks.put(name, urls);
+		}
+		scan.close();
+	}
+	
+	public static void saveReferenceMap() throws IOException{
+		PrintWriter pw = Resources.getWriter(REFERENCE_LINKS);
+		for(String name : referenceMap.keySet()){
+			pw.println('$' + name + "::" + referenceMap.get(name));
+			for(URL url : referenceLinks.get(name)){
+				pw.println(url);
+			}
+		}
+	}
+	
+	public static boolean updateReference(String name){
+		System.out.println("Checking for update: " + name);
+		String file = referenceMap.get(name);
+		int ind = file.lastIndexOf('.');
+		try {
+			File temp = File.createTempFile(file.substring(0,ind), file.substring(ind));
+			FileOutputStream out = new FileOutputStream(temp);
+			boolean diff = false;
+			BufferedInputStream curr = null;
+			try{
+				curr = new BufferedInputStream(getInputStream(file));	
+			}catch(FileNotFoundException e){
+				diff = true; //one doesnt exist, thus they are different.
+				System.out.println("No current reference for " + name);
+			}
+			for(URL url : referenceLinks.get(name)){
+				System.out.println("Conecting to " + url);
+				URLConnection conn = url.openConnection();
+				InputStream in = conn.getInputStream();
+				int i = 0;
+				while((i = in.read()) != -1){
+					if(!diff && i != curr.read()) diff = true; //file is different
+					out.write(i);
+				}
+				in.close();
+			}
+			out.write(-1);
+			out.flush();
+			out.close();
+			
+			if(diff){//replace existing one with new one.
+				Files.move(temp.toPath(),new File( root + "/" + file).toPath(), StandardCopyOption.REPLACE_EXISTING);
+				System.out.println("Updated " + name);
+				return true;
+			} else{
+				System.out.println(name + " up to date.");
+			}
+			
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(Main.me, e.toString());
+		}
+		return false;
 	}
 }

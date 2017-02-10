@@ -125,7 +125,7 @@ public class InspectionForm {
 			if(split[0].startsWith("I")){
 				//metadata row.
 				for(String data : split){
-					System.out.println("Data Line: "+data);
+					//System.out.println("Data Line: "+data);
 					if(data.startsWith("color=")){
 						color = data.substring(data.indexOf("=") + 1);
 					}

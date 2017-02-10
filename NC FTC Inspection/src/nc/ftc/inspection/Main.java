@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -85,8 +86,18 @@ public class Main extends JFrame {
 	public static Main me;
 	public static Vector<String> events=new Vector<String>();
 	public static Thread autoSaveThread;
+	
 	public static void main(String[] args) {
 //		System.out.println(new File("F://").exis/ts());
+//		try {
+//			Resources.loadReferenceMap();
+//		} catch (FileNotFoundException e2) {
+//			System.err.println("Failed to load reference links");
+//			e2.printStackTrace();
+//		}
+//		for(String name : Resources.referenceMap.keySet()){
+//			Resources.updateReference(name);
+//		}
 		try {
 			setUpLogFiles();
 		} catch (IOException e1) {
@@ -131,13 +142,18 @@ public class Main extends JFrame {
 		}
 		me.backupLocation.setText(Resources.backup);
 		autoSaveThread = new Thread("AutoSave"){
+			int count = 0;
 			public void run(){
 				System.out.println("Started Autosave thread.");
 				while(true){
 					try{
 						Thread.sleep(autoSave);
 						Server.save();
-						Resources.backup();
+						count++;  //backup every 5 autosaves. (its a heavy op)
+						if(count >= 5){
+							Resources.backup();
+							count = 0;
+						}
 						System.out.println("AutoSave");
 					}catch(InterruptedException e){
 						return;
@@ -204,6 +220,7 @@ public class Main extends JFrame {
 	private JButton driveBrowse = new JButton("Browse...");
 	private JTextField backupLocation = new JTextField();
 	
+	private JPanel resourcePanel = new JPanel();
 	private JPanel inspectionPanel = new JPanel();
 	private JPanel referencePanel = new JPanel();
 	private JPanel formEditPanel = new JPanel();
@@ -994,12 +1011,14 @@ public class Main extends JFrame {
 		
 		
 		
-		inspectionPanel.setPreferredSize(new Dimension(450,200));
+		inspectionPanel.setPreferredSize(new Dimension(450,170));
 		inspectionPanel.setBorder(new TitledBorder("Inspection Forms"));
 		inspectionPanel.add(hardwarePanel);
 		inspectionPanel.add(softwarePanel);
 		inspectionPanel.add(fieldPanel);
-
+		
+		referencePanel.setBorder(new TitledBorder("Reference Material"));
+		
 		refreshFormStatus();
 		
 //		formEditTable.set
@@ -1024,7 +1043,12 @@ public class Main extends JFrame {
 		
 		
 		resourceManagerPanel.setLayout(new BorderLayout());
-		resourceManagerPanel.add(inspectionPanel, BorderLayout.WEST);
+
+		resourcePanel.setLayout(new BorderLayout());
+		resourcePanel.add(inspectionPanel, BorderLayout.NORTH);
+		resourcePanel.add(referencePanel, BorderLayout.CENTER);
+		
+		resourceManagerPanel.add(resourcePanel, BorderLayout.WEST);
 		resourceManagerPanel.add(formEditPanel, BorderLayout.CENTER);
 		
 		
