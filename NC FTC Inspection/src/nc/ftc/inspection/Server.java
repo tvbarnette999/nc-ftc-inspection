@@ -16,6 +16,7 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -291,6 +292,18 @@ public class Server {
 //		} else if (!urlMap.sendPage(handler, req, verified) ) {
 //			send404Page(handler, verified);
 //		}
+		if (fullReq.contains("Authorization: Basic ")) {
+			String accept = fullReq.substring(fullReq.indexOf("Authorization: Basic ") + "Authorization: Basic ".length());
+			System.out.println("Accept: " + accept);
+			accept = accept.substring(0, accept.indexOf('\n'));
+			System.out.println("accept: " + accept);
+			String user = new String(Base64.getDecoder().decode(accept));
+			String pass = user.substring(user.indexOf(':') + 1);
+			user = user.substring(0, user.indexOf(':'));
+			System.out.println("user: " + user);
+			System.out.println("pass: " + pass);
+			verified = pass.equals(password);
+		}
 		if (!urlMap.sendPage(handler, req, verified)) { //we tried to send the page from the URL map and failed
 			if (Resources.exists(req)) {
 				sendResource(handler.pw, handler.sock.getOutputStream(), req);
@@ -539,9 +552,10 @@ public class Server {
 		return "\n\n<script> window.alert(\"" + popup + "\") </script>";
 	}
 	public void sendLoginPage(Handler handler) {
-		HTTPPrintWriter pw = handler.pw;
-		pw.sendNormalHeader();
-		sendPage(pw, "inspectorLogin.php");
+//		HTTPPrintWriter pw = handler.pw;
+//		pw.sendNormalHeader();
+//		sendPage(pw, "inspectorLogin.php");
+		handler.pw.sendUnauthorizedHeader();
 	}
 	/**
 	 * This is for sending an html webpage that is completely contained within the file. (No real-time generation by this server). 
@@ -1295,7 +1309,8 @@ public class Server {
 						full.append('\n');
 					}
 				}catch(SocketTimeoutException e){}//there has got to be a better way
-				
+				System.out.println("Full Req:");
+				System.out.println(full);
 				if(type == null)return;
 				if(type.startsWith("GET")){
 					commStream.println("<div name=\"" + sock.getInetAddress().getHostAddress() + "\" class=\"GET\">" + sock.getInetAddress().getHostAddress() + "<br>" + full + "<br><hr><br></div>");

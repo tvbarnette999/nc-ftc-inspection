@@ -13,7 +13,14 @@ public class HTTPPrintWriter {
 	}
 
 	private boolean hasSentHeader = false;
-	
+	public void sendUnauthorizedHeader() {
+		if (hasSentHeader) return;
+		hasSentHeader = true;
+		System.out.println("Sending unauthorized header");
+		print("HTTP/1.1 401 Access Denied\nWWW-Authenticate: Basic realm=\"NC FTC Inspection\"\nContent-Length: 0");
+		println();
+		println();
+	}
 	public void sendNormalHeader() {
 		if (hasSentHeader) return;
 		hasSentHeader = true;
