@@ -13,6 +13,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Calendar;
@@ -108,6 +109,14 @@ public class Server {
 	public static Server theServer = new Server();
 	
 	public static Vector<InetAddress> whiteList = new Vector<InetAddress>();
+	
+	static {
+		try {
+			whiteList.add(InetAddress.getByName("0:0:0:0:0:0:0:1"));
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public URLMap urlMap;
 	
@@ -1158,6 +1167,7 @@ public class Server {
 					System.out.println("user: " + user + " pass: " + pass);
 					userObj = new User(user, pass);
 				} else {
+					System.out.println(sock.getInetAddress().getHostName());
 					if(whiteList.contains(sock.getInetAddress())){
 						userObj = new User("whitelist", password);
 					} else {
