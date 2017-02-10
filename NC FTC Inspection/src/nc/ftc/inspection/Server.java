@@ -266,19 +266,19 @@ public class Server {
 	 * @param fullReq 
 	 * @throws IOException
 	 */
-	public void get(String req,Handler handler, String fullReq) throws IOException{
+	public void get(String req,Handler handler, String fullReq, String user, String pass) throws IOException{
 //		String other=null;
-		String check = fullReq;
-		boolean verified = false;
-		try {
-			check = check.substring(check.indexOf(cookieHeader) + cookieHeader.length() + 1);
-			check = check.substring(check.indexOf("&&&") + 3, check.indexOf('\"')); // also take off [ ]
-			verified = checkHash(check) || DEBUG;
-		} catch (Exception e) {
-			verified = DEBUG;
-			//e.printStackTrace();
-			//we dont have the password
-		}
+//		String check = fullReq;
+		boolean verified = pass.equals(password);
+//		try {
+//			check = check.substring(check.indexOf(cookieHeader) + cookieHeader.length() + 1);
+//			check = check.substring(check.indexOf("&&&") + 3, check.indexOf('\"')); // also take off [ ]
+//			verified = checkHash(check) || DEBUG;
+//		} catch (Exception e) {
+//			verified = DEBUG;
+//			//e.printStackTrace();
+//			//we dont have the password
+//		}
 		if(whiteList.contains(handler.sock.getInetAddress()))verified = true;
 		req=req.substring(1,req.indexOf(" "));
 		System.out.println("req: " + req);
@@ -292,18 +292,7 @@ public class Server {
 //		} else if (!urlMap.sendPage(handler, req, verified) ) {
 //			send404Page(handler, verified);
 //		}
-		if (fullReq.contains("Authorization: Basic ")) {
-			String accept = fullReq.substring(fullReq.indexOf("Authorization: Basic ") + "Authorization: Basic ".length());
-			System.out.println("Accept: " + accept);
-			accept = accept.substring(0, accept.indexOf('\n'));
-			System.out.println("accept: " + accept);
-			String user = new String(Base64.getDecoder().decode(accept));
-			String pass = user.substring(user.indexOf(':') + 1);
-			user = user.substring(0, user.indexOf(':'));
-			System.out.println("user: " + user);
-			System.out.println("pass: " + pass);
-			verified = pass.equals(password);
-		}
+
 		if (!urlMap.sendPage(handler, req, verified)) { //we tried to send the page from the URL map and failed
 			if (Resources.exists(req)) {
 				sendResource(handler.pw, handler.sock.getOutputStream(), req);
@@ -355,7 +344,7 @@ public class Server {
 	 * @param sock
 	 * @throws IOException
 	 */
-	public void post(String req, String data,Handler handler) throws IOException{
+	public void post(String req, String data,Handler handler, String user, String pass) throws IOException{
 //		int pageID = 0;
 //		boolean valid = false;
 		String response = "";
@@ -369,49 +358,49 @@ public class Server {
 		 * if the data contains a password, its from the login page.
 		 * That means we can send it a secured page.
 		 */
-		if(req.contains("password")){
-			String pass=req.substring(req.indexOf("password")+9);
-			pass=pass.substring(0, pass.indexOf("&"));
-//			OutputStream out=sock.getOutputStream();
-//			HTTPPrintWriter pw=new HTTPPrintWriter(out);
-			if(checkPassword(pass)){
-//				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
-//				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";</script>";
-				cookieCount++;
-//				pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: " + cookieHeader + hashedPassString + "\"\n\n    \n");
-//				pw.flush();
-//				valid=true;
-//				System.out.println("VERIFIED PASSWORD");
-				response = "document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";";
-//				System.out.println(req +"  "+req.indexOf("/")+"  "+req.indexOf(" "));
-//				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
-//				System.out.println("REQ:"+req);
-//				pageID = SEND_RESPONSE;
-//				if(req.equals("hardware"))pageID=HARDWARE;
-//				if(req.equals("field"))pageID=FIELD;
-//				if(req.equals("home"))pageID=HOME;
-//				if(req.equals("software"))pageID=SOFTWARE;
-//				if(req.equals("cube"))pageID=CUBE;
-//				if(req.equals("checkin"))pageID=CHECKIN;
-				
-				//FOR COMPLICATED SOCKET REASONS, YOU CANNOT AUTO-REDIRECT TO THE ADMIN PAGE
-				whiteList.add(handler.sock.getInetAddress());
-				sendResponse(handler, response);
-			} else {
-//				pageID = SEND_RESPONSE;
-				response = "window.alert('Incorrect Password');";
-//				pw.println("window.alert('Incorrect Password');");
-//				pw.flush();
-				sendResponse(handler, response);
-				return;
-//				extras = generateExtrasPopup("Incorrect Password");
-			}
-			//else, no password, pageID stays 0 (the status page)
-		}
-		/*If there is no password, then the POST's source is a page that already required authentication,
-		 * therefore, we can handle it appropriately
-		 */
-		else{
+//		if(req.contains("password")){
+//			String pass=req.substring(req.indexOf("password")+9);
+//			pass=pass.substring(0, pass.indexOf("&"));
+////			OutputStream out=sock.getOutputStream();
+////			HTTPPrintWriter pw=new HTTPPrintWriter(out);
+//			if(checkPassword(pass)){
+////				extras = "Set-Cookie: " + cookieHeader + hashedPassString + "\"\n";
+////				extras  = "\n\n<script>document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";</script>";
+//				cookieCount++;
+////				pw.print("HTTP/1.1 200 OK\nContent-Type: text/html\nSet-Cookie: " + cookieHeader + hashedPassString + "\"\n\n    \n");
+////				pw.flush();
+////				valid=true;
+////				System.out.println("VERIFIED PASSWORD");
+//				response = "document.cookie = \"" + cookieHeader  + "\\\"" + sock.getInetAddress().getHostAddress() /*cookieCount++*/ + "&&&" + hashedPassString + "\\\";path=/\";";
+////				System.out.println(req +"  "+req.indexOf("/")+"  "+req.indexOf(" "));
+////				req=req.substring(req.indexOf("/")+1, req.indexOf(" "));
+////				System.out.println("REQ:"+req);
+////				pageID = SEND_RESPONSE;
+////				if(req.equals("hardware"))pageID=HARDWARE;
+////				if(req.equals("field"))pageID=FIELD;
+////				if(req.equals("home"))pageID=HOME;
+////				if(req.equals("software"))pageID=SOFTWARE;
+////				if(req.equals("cube"))pageID=CUBE;
+////				if(req.equals("checkin"))pageID=CHECKIN;
+//				
+//				//FOR COMPLICATED SOCKET REASONS, YOU CANNOT AUTO-REDIRECT TO THE ADMIN PAGE
+//				whiteList.add(handler.sock.getInetAddress());
+//				sendResponse(handler, response);
+//			} else {
+////				pageID = SEND_RESPONSE;
+//				response = "window.alert('Incorrect Password');";
+////				pw.println("window.alert('Incorrect Password');");
+////				pw.flush();
+//				sendResponse(handler, response);
+//				return;
+////				extras = generateExtrasPopup("Incorrect Password");
+//			}
+//			//else, no password, pageID stays 0 (the status page)
+//		}
+//		/*If there is no password, then the POST's source is a page that already required authentication,
+//		 * therefore, we can handle it appropriately
+//		 */
+//		else{
 			//HANDLE POST FROM VERIFIED INSPECTOR
 			req=req.substring(1);
 //			System.out.println("VERIFIED "+req);
@@ -498,7 +487,7 @@ public class Server {
 //				pageID = H204;
 				handler.pw.send204Header();
 			}
-		}
+//		}
 //		sendPage(sock,pageID, valid, response);	
 	}
 	private String getWho(Socket sock) {
@@ -1296,6 +1285,7 @@ public class Server {
 	public class Handler implements Runnable{
 		Socket sock;
 		HTTPPrintWriter pw;
+		String user, pass;
 		public Handler(Socket s){
 			sock=s;
 			try {
@@ -1336,12 +1326,18 @@ public class Server {
 						full.append('\n');
 					}
 				}catch(SocketTimeoutException e){}//there has got to be a better way
-				System.out.println("Full Req:");
-				System.out.println(full);
+				String fullReq = full.toString();
+				if (fullReq.contains("Authorization: Basic ")) {
+					String accept = fullReq.substring(fullReq.indexOf("Authorization: Basic ") + "Authorization: Basic ".length());
+					accept = accept.substring(0, accept.indexOf('\n'));
+					user = new String(Base64.getDecoder().decode(accept));
+					pass = user.substring(user.indexOf(':') + 1);
+					user = user.substring(0, user.indexOf(':'));
+				}
 				if(type == null)return;
 				if(type.startsWith("GET")){
 					commStream.println("<div name=\"" + sock.getInetAddress().getHostAddress() + "\" class=\"GET\">" + sock.getInetAddress().getHostAddress() + "<br>" + full + "<br><hr><br></div>");
-					get(type.substring(4),this, full.toString());
+					get(type.substring(4),this, fullReq, user, pass);
 				} else{
 					for(int i = 0; i < len; i++){
 						char c = (char)in.read();
@@ -1356,7 +1352,7 @@ public class Server {
 				if(type.startsWith("POST")){			
 					
 //					System.out.println("POST: " + type + '\n' + "DATA:" + data.toString());
-					post(type.substring(5), data.toString(), this);
+					post(type.substring(5), data.toString(), this, user, pass);
 				}
 				pw.flush();
 				pw.close();
