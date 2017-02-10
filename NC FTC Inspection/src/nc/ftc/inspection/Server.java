@@ -644,6 +644,19 @@ public class Server {
 		handler.pw.sendNormalHeader();
 		sendStatusPageNoHeader(handler);
 	}
+	
+	public void sendStatusTableHead(HTTPPrintWriter pw){
+		pw.println("<table border=\"3\"><tr>");
+		if(trackCheckIn)pw.println("<th>CI</th>");
+		if(trackCube)pw.println("<th>SC</th>");
+		if(trackHardware)pw.println("<th>HW</th>");
+		if(trackSoftware)pw.println("<th>SW</th>");
+		if(trackField)pw.println("<th>FD</th>");
+		pw.println("<th>Team #</th><th>Team name</th></tr>");
+		
+		
+	}
+	
 	public void sendStatusPageNoHeader(Handler handler) {
 		HTTPPrintWriter pw = handler.pw;
 //		pw.println("<html><meta http-equiv=\"refresh\" content=\"15\">");
@@ -661,16 +674,11 @@ public class Server {
 				+ "\n},15000);</script>");
 		
 		pw.println("<table align=center><tr><td>");
-		pw.println("<table border=\"3\"><tr>");
-		if(trackCheckIn)pw.println("<th>CI</th>");
-		if(trackCube)pw.println("<th>SC</th>");
-		if(trackHardware)pw.println("<th>HW</th>");
-		if(trackSoftware)pw.println("<th>SW</th>");
-		if(trackField)pw.println("<th>FD</th>");
-		pw.println("<th>Team #</th><th>Team name</th></tr>");
 		
+		sendStatusTableHead(pw);
 		
-		for(Team t:teams){
+		for(int i = 0; i < teams.size() / 2; i++){
+			Team t = teams.get(i);
 			pw.println("<tr>");
 			if(trackCheckIn)pw.println("<td bgcolor="+getColor(t.checkedIn)+">&nbsp;</td>");
 			if(trackCube)pw.println("<td bgcolor="+getColor(t.cube)+">&nbsp;</td>");
@@ -682,6 +690,23 @@ public class Server {
 			pw.println("</tr>");
 		}
 		pw.println("</table></td><td>");
+		
+		//this is new
+		sendStatusTableHead(pw);
+		for(int i = teams.size() / 2; i < teams.size(); i++){
+			Team t = teams.get(i);
+			pw.println("<tr>");
+			if(trackCheckIn)pw.println("<td bgcolor="+getColor(t.checkedIn)+">&nbsp;</td>");
+			if(trackCube)pw.println("<td bgcolor="+getColor(t.cube)+">&nbsp;</td>");
+			if(trackHardware)pw.println("<td bgcolor="+getColor(t.hardware)+">&nbsp;</td>");
+			if(trackSoftware)pw.println("<td bgcolor="+getColor(t.software)+">&nbsp;</td>");
+			if(trackField)pw.println("<td bgcolor="+getColor(t.field)+">&nbsp;</td>");
+			pw.println("<td bgcolor="+getColor(t.ready)+">"+t.number+"</td>");
+			pw.println("<td bgcolor="+getColor(t.ready)+">"+t.name+"</td>");
+			pw.println("</tr>");
+		}
+		
+		/*
 		pw.println("<table border=\"3\" style=\"floating:left;\">");
 		pw.println("<tr><th>Symbol</th><th>Meaning</th></tr>");
 		pw.println("<tr><td bgcolor=\"#FFFFFF\">&nbsp;</td><td>Uninspected</td></tr>");
@@ -693,6 +718,7 @@ public class Server {
 		if(trackHardware)pw.println("<tr><td>HW</td><td>Hardware</td></tr>");
 		if(trackSoftware)pw.println("<tr><td>SW</td><td>Software</td></tr>");
 		if(trackField)pw.println("<tr><td>FD</td><td>Field</td></tr>");
+		*/
 		pw.println("</table></td></tr></table>");
 		pw.println("<script>");
 			sendPage(pw, "konami.js");
@@ -1201,7 +1227,7 @@ public class Server {
 				//in the team's .ins file
 				addErrorEntry("Inspection File Mismatch: " + t.number + " HW");
 			}
-			scan.close();
+			if(scan != null)scan.close();
 			
 			scan= Resources.getSoftwareScanner(t.number);
 			try{
@@ -1219,9 +1245,9 @@ public class Server {
 					t.swNote += scan.nextLine() + "\n";
 				}
 			}catch(Exception e){
-				addErrorEntry("Inspection File Mismatch: " + t.number + "HW");
+				addErrorEntry("Inspection File Mismatch: " + t.number + "SW");
 			}
-			scan.close();
+			if(scan != null)scan.close();
 			
 			scan= Resources.getFieldScanner(t.number);
 			try{
@@ -1239,9 +1265,9 @@ public class Server {
 					t.fdNote += scan.nextLine()+"\n";
 				}
 			}catch(Exception e){
-				addErrorEntry("Inspection File Mismatch: " + t.number + "HW");
+				addErrorEntry("Inspection File Mismatch: " + t.number + "FD");
 			}
-			scan.close();
+			if(scan != null)scan.close();
 		}
 		
 		
