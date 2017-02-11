@@ -21,6 +21,7 @@ public class URLMap {
 		map.put("comm", new Page(User.INSPECTOR, handler->server.sendLogPage(handler, Server.LOG_COMM)));
 		map.put("home", new Page(User.INSPECTOR, handler->server.sendHomePage(handler)));
 		map.put("admin", new Page(User.ADMIN, handler->server.sendAdminPage(handler)));
+		map.put("override", new Page(User.ADMIN, handler->server.sendOverridePage(handler)));
 		map.put("ip", new Page(handler->server.sendIPPage(handler)));
 		map.put("", new Page(handler->server.sendStatusPage(handler)));
 		resourceMap.put("reference", "reference.html");

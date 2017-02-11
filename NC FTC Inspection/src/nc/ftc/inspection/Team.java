@@ -298,5 +298,9 @@ public class Team implements Comparable<Team> {
 			return sigURLs.get(type);
 		}
 
+		public static Team getTeam(String s) {
+			return getTeam(Integer.parseInt(s));
+		}
+
 		
 }

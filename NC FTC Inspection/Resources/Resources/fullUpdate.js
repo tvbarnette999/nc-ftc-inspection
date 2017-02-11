@@ -99,8 +99,12 @@ function fullfail(){
 
 function sendNote(){
 	var n=document.getElementById("note");
-	var xhttp = new XMLHttpRequest();
+	if (n.value == null || n.value == ""){
+		return;
+	}
+ 	var xhttp = new XMLHttpRequest();
 	xhttp.open("POST", "../note?team="+n.name, true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send(n.value.concat("&&&"));
 }
+
