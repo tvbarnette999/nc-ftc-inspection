@@ -68,12 +68,11 @@ function fullpass(){
 		xhttp.open("POST", "../update?team="+event.target.name+"&value=3", true);
 		xhttp.send();
 		//TODO get signatures.
-		var teamsig = document.getElementById("sig_0").value;//prompt("I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of the FIRST Tech Challenge have been abided by.\nTeam Student Representative:");
+		var teamsig = document.getElementById("sig_0_".concat(event.target.name)).value;//prompt("I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of the FIRST Tech Challenge have been abided by.\nTeam Student Representative:");
 		if(teamsig == null || teamsig==""){
 			return;
 		}
-		
-		var inspectorsig = document.getElementById("sig_1").value;// prompt("I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of the FIRST Tech Challenge have been abided by.\nInspector:");
+		var inspectorsig = document.getElementById("sig_1_".concat(event.target.name)).value;// prompt("I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of the FIRST Tech Challenge have been abided by.\nInspector:");
 		if(inspectorsig == null || inspectorsig==""){
 			return;
 		}
@@ -98,7 +97,7 @@ function fullfail(){
 }
 
 function sendNote(){
-	var n=document.getElementById("note");
+	var n=document.getElementById("note_"+event.target.name);
 	var xhttp = new XMLHttpRequest();
 	xhttp.open("POST", "../note?team="+n.name, true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");

@@ -791,7 +791,7 @@ public class Server {
 		
 		
 		
-		pw.println("<br><b>General Comments or Reasons for Failure:</b><br><textarea name="+extras+type+" id=\"note\" rows=\"4\" co"
+		pw.println("<br><b>General Comments or Reasons for Failure:</b><br><textarea name="+extras+type+" id=\"note_"+extras+type+"\" rows=\"4\" co"
 				+ "ls=\"100\">"+note+"</textarea>");
 		
 		String[] sigs=team.getSigs(type.substring(1));
@@ -799,7 +799,7 @@ public class Server {
 			//TODO tidy this up a lot!
 			pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
 									"the FIRST Tech Challenge have been abided by.</b><br><br>");
-			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td><input id=sig_1 value=\""+(sigs.length > 1? sigs[1]:"")+"\"></input><hr></td><td><input id=sig_0 value=\""+ (sigs.length > 0 ?sigs[0]:"")+"\"></input><hr></td></tr>");
+			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td><input id=sig_1_"+extras+type+" value=\""+(sigs.length > 1? sigs[1]:"")+"\"></input><hr></td><td><input id=sig_0_"+extras+type+" value=\""+ (sigs.length > 0 ?sigs[0]:"")+"\"></input><hr></td></tr>");
 			pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
 		//}
 		
@@ -862,11 +862,11 @@ public class Server {
 			if(t.getStatus(i) == PASS)pw.println("green");
 			else if(t.getStatus(i) == FAIL)pw.println("red");
 			pw.println(">" + t.number + "</font>:</h3>");
-			pw.println("<br><b>General Comments or Reasons for Failure:</b><br><textarea name="+t.number+type+" id=\"note\" rows=\"4\" co"
+			pw.println("<br><b>General Comments or Reasons for Failure:</b><br><textarea name="+t.number+type+" id=\"note_"+t.number+type+"\" rows=\"4\" co"
 					+ "ls=\"100\">"+notes[ind]+"</textarea>");
 			pw.println("<br><br><b>I hereby state that all of the above is true, and to the best of my knowledge all rules and regulations of"+
 					"the FIRST Tech Challenge have been abided by.</b><br><br>");
-			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td><input id=sig_1 value=\""+(sigs.length > 1? sigs[1]:"")+"\"></input><hr></td><td><input id=sig_0 value=\""+ (sigs.length > 0 ?sigs[0]:"")+"\"></input><hr></td></tr>");
+			pw.println("<table width=\"100%\" cellspacing=\"20\"><tr><td><input id=sig_1_"+t.number+type+" value=\""+(sigs.length > 1? sigs[1]:"")+"\"></input><hr></td><td><input id=sig_0_"+t.number+type+" value=\""+ (sigs.length > 0 ?sigs[0]:"")+"\"></input><hr></td></tr>");
 			pw.println("<tr><td>FTC Inspector</td><td>Team Student Representative</td></tr></table>");
 			pw.println("<br><br><button type=\"button\" name=\""+t.number+type+"\" onclick=\"fullpass()\">Pass</button>&nbsp;&nbsp;&nbsp;");
 			pw.println("<button type=\"button\" name=\""+t.number+type+"\" onclick=\"fullfail()\">Fail</button>");
@@ -1286,7 +1286,7 @@ public class Server {
 	 * @return
 	 */
 	public static boolean save(){
-		Resources.saveEventFile();
+		Resources.saveEventFile(); //TODO dont save this unless change
 		theServer.saveConfig();
 		PrintWriter pw = Resources.getStatusWriter();
 		if(pw == null)return false;
@@ -1440,5 +1440,6 @@ public class Server {
 		}
 		return false;
 	}
+	
 	
 }
