@@ -27,6 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import nc.ftc.inspection.Server.Handler;
 import nc.ftc.inspection.util.HTTPPrintWriter;
 import nc.ftc.inspection.util.RedirectingPrintStream;
 import nc.ftc.inspection.util.Resources;
@@ -100,6 +101,7 @@ public class Server {
 
 	public static String event = "NCCMP_17"; //default event
 	public static String fullEventName;
+	public boolean twoColumn = true;
 
 	/**Thread pool for HTTP server*/
 	private static ExecutorService threadPool;
@@ -337,6 +339,74 @@ public class Server {
 				getTeam(t).setSignature(type, teamSig, inpSig);
 				handler.pw.send204Header();
 			}
+			else if (req.startsWith("override?") && user.is(User.ADMIN)) {
+				String s = req.substring(req.indexOf("=") + 1, req.indexOf(' '));
+				Team t = Team.getTeam(s.substring(0, s.indexOf('_')));
+				System.out.println(s);
+				System.out.println(s.substring(s.indexOf('_') + 1));
+				switch (s.substring(s.indexOf('_') + 1)) {
+				case "CI":
+					t.checkedIn = !t.checkedIn;
+					break;
+				case "SC":
+					switch (t.cube) {
+					case NO_DATA:
+					case PROGRESS:
+						t.cube = PASS;
+						break;
+					case PASS:
+						t.cube = FAIL;
+						break;
+					case FAIL:
+						t.cube = NO_DATA;
+						break;
+					}
+					break;
+				case "HW":
+					switch (t.hardware) {
+					case NO_DATA:
+					case PROGRESS:
+						t.hardware = PASS;
+						break;
+					case PASS:
+						t.hardware = FAIL;
+						break;
+					case FAIL:
+						t.hardware = NO_DATA;
+						break;
+					}
+					break;
+				case "SW":
+					switch (t.software) {
+					case NO_DATA:
+					case PROGRESS:
+						t.software = PASS;
+						break;
+					case PASS:
+						t.software = FAIL;
+						break;
+					case FAIL:
+						t.software = NO_DATA;
+						break;
+					}
+					break;
+				case "FD":
+					switch (t.field) {
+					case NO_DATA:
+					case PROGRESS:
+						t.field = PASS;
+						break;
+					case PASS:
+						t.field = FAIL;
+						break;
+					case FAIL:
+						t.field = NO_DATA;
+						break;
+					}
+					break;
+				}
+				handler.pw.send204Header();
+			}
 			else if (req.startsWith("admin?") && user.is(User.ADMIN)) {
 				req = fixURI(req);
 				String cmd = req.substring(req.indexOf("&&&") + 3);
@@ -477,10 +547,10 @@ public class Server {
 	 */
 	public String getColor(int i){
 		switch(i){
-			case 0:return WHITE;
-			case 1:return RED;
-			case 2:return CYAN;
-			case 3:return GREEN;
+			case NO_DATA:return WHITE;
+			case FAIL:return RED;
+			case PROGRESS:return CYAN;
+			case PASS:return GREEN;
 		}
 		return "black";
 	}
@@ -529,31 +599,18 @@ public class Server {
 		
 		sendStatusTableHead(pw);
 		
-		for(int i = 0; i < teams.size() / 2; i++){
+		for(int i = 0; i < teams.size(); i++){
+			if (i == teams.size() / 2 && twoColumn) { //divide the table in two
+				pw.println("</table></td><td>");
+				sendStatusTableHead(pw);
+			}
 			Team t = teams.get(i);
 			pw.println("<tr>");
-			if(t.number == 731)System.out.println("CI= "+getColor(t.checkedIn));
-			if(trackCheckIn)pw.println("<td bgcolor="+getColor(t.checkedIn)+">&nbsp;</td>");
-			if(trackCube)pw.println("<td bgcolor="+getColor(t.cube)+">&nbsp;</td>");
-			if(trackHardware)pw.println("<td bgcolor="+getColor(t.hardware)+">&nbsp;</td>");
-			if(trackSoftware)pw.println("<td bgcolor="+getColor(t.software)+">&nbsp;</td>");
-			if(trackField)pw.println("<td bgcolor="+getColor(t.field)+">&nbsp;</td>");
-			pw.println("<td bgcolor="+getColor(t.ready)+">"+t.number+"</td>");
-			pw.println("<td bgcolor="+getColor(t.ready)+">"+t.name+"</td>");
-			pw.println("</tr>");
-		}
-		pw.println("</table></td><td>");
-		
-		//this is new
-		sendStatusTableHead(pw);
-		for(int i = teams.size() / 2; i < teams.size(); i++){
-			Team t = teams.get(i);
-			pw.println("<tr>");
-			if(trackCheckIn)pw.println("<td bgcolor="+getColor(t.checkedIn)+">&nbsp;</td>");
-			if(trackCube)pw.println("<td bgcolor="+getColor(t.cube)+">&nbsp;</td>");
-			if(trackHardware)pw.println("<td bgcolor="+getColor(t.hardware)+">&nbsp;</td>");
-			if(trackSoftware)pw.println("<td bgcolor="+getColor(t.software)+">&nbsp;</td>");
-			if(trackField)pw.println("<td bgcolor="+getColor(t.field)+">&nbsp;</td>");
+			if(trackCheckIn)pw.println("<td bgcolor="+getColor(t.checkedIn)+" onclick=\"handle()\" id=\"" +t.number + "_CI\">&nbsp;</td>");
+			if(trackCube)pw.println("<td bgcolor="+getColor(t.cube)+" onclick=\"handle()\" id=\"" +t.number + "_SC\">&nbsp;</td>");
+			if(trackHardware)pw.println("<td bgcolor="+getColor(t.hardware)+" onclick=\"handle()\" id=\"" +t.number + "_HW\">&nbsp;</td>");
+			if(trackSoftware)pw.println("<td bgcolor="+getColor(t.software)+" onclick=\"handle()\" id=\"" +t.number + "_SW\">&nbsp;</td>");
+			if(trackField)pw.println("<td bgcolor="+getColor(t.field)+" onclick=\"handle()\" id=\"" +t.number + "_FD\">&nbsp;</td>");
 			pw.println("<td bgcolor="+getColor(t.ready)+">"+t.number+"</td>");
 			pw.println("<td bgcolor="+getColor(t.ready)+">"+t.name+"</td>");
 			pw.println("</tr>");
@@ -576,8 +633,6 @@ public class Server {
 		pw.println("<script>");
 			sendPage(pw, "konami.js");
 		pw.println("</script>");
-//		pw.flush();
-//		pw.println("<img src=\"firstfavicon.png\"></html>");
 	}
 	/**
 	 * Send page to edit the status of a team's inspection
@@ -1439,6 +1494,12 @@ public class Server {
 			case CUBE: return trackCube;
 		}
 		return false;
+	}
+	public void sendOverridePage(Handler handler) {
+		handler.pw.print("<script>");
+		sendPage(handler.pw, "override.js");
+		handler.pw.print("</script>");
+		sendStatusPage(handler);
 	}
 	
 	

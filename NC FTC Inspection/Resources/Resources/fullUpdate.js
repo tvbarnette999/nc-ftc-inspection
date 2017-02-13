@@ -97,9 +97,18 @@ function fullfail(){
 }
 
 function sendNote(){
+<<<<<<< HEAD
 	var n=document.getElementById("note_"+event.target.name);
 	var xhttp = new XMLHttpRequest();
+=======
+	var n=document.getElementById("note");
+	if (n.value == null || n.value == ""){
+		return;
+	}
+ 	var xhttp = new XMLHttpRequest();
+>>>>>>> branch 'master' of https://github.com/tvbarnette999/nc-ftc-inspection.git
 	xhttp.open("POST", "../note?team="+n.name, true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send(n.value.concat("&&&"));
 }
+
