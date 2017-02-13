@@ -765,7 +765,7 @@ public class Server {
 		for(Team t : teams){
 			pw.println("<li id=\"" + t.number + "\"><button onclick=add()>" + t.number + "</button></li>");
 		}
-		pw.println("</ul></td><td align = center><table id=\"in\" class=\"t2\"><tr><th>Index</th><th>Team Number</th><th/><th/><th/></tr></table><br><button onclick=inspect()>Inspect</button></td>");
+		pw.println("</ul></td><td align =\"center\" valign=top ><table id=\"in\" class=\"t2\"><tr><th>Index</th><th>Team Number</th><th/><th/><th/></tr></table><br><button onclick=inspect()>Inspect</button></td>");
 		pw.println("<tr></table>"+"<a href=\"/home\">Home</a>"+"<script>");
 			sendPage(pw, "multi_select.js");
 		pw.println("</script></body></html>");

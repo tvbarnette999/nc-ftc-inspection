@@ -20,6 +20,7 @@ function add(){ //TODO fix index number on add and remove
 		//add down arrow to one above it
 		var downButton = document.createElement("button");
 		downButton.setAttribute("onclick", "down()");
+		downButton.setAttribute("align", "center");
 		downButton.innerHTML = "&dArr;"
 		var nodes = document.getElementById("in").childNodes;
 		nodes[nodes.length - 1].childNodes[3].appendChild(downButton);
