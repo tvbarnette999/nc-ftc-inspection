@@ -89,16 +89,22 @@ public class Main extends JFrame {
 	
 	public static void main(String[] args) {
 //		System.out.println(new File("F://").exis/ts());
+		
+		//DONT DELETE THIS
 //		
-//		try {
-//			Resources.loadReferenceMap();
-//		} catch (FileNotFoundException e2) {
-//			System.err.println("Failed to load reference links");
-//			e2.printStackTrace();
-//		}
-//		for(String name : Resources.referenceMap.keySet()){
-//			Resources.updateReference(name);
-//		}
+		try {
+			Resources.loadReferenceMap();
+		} catch (FileNotFoundException e2) {
+			System.err.println("Failed to load reference links");
+			e2.printStackTrace();
+		}
+//		
+		try {
+			setUpLogFiles();
+		} catch (IOException e1) {
+			System.err.println("Unable to redirect syserr or sysout");
+			e1.printStackTrace();
+		}
 		try {
 			setUpLogFiles();
 		} catch (IOException e1) {
@@ -1565,6 +1571,11 @@ public class Main extends JFrame {
 			}
 			else if(args[0].equals("SAVE")){
 				success=Server.save();
+			}
+			else if(args[0].equals("UPDATE")){
+				for(String name : Resources.referenceMap.keySet()){
+					Resources.updateReference(name);
+				}
 			}
 			else if(args[0].equals("IP")){
 				try {
