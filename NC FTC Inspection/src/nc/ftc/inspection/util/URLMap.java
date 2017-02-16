@@ -31,7 +31,7 @@ public class URLMap {
 		resourceMap.put("reference/electrical", "electricalForum.html");
 		resourceMap.put("reference/software", "softwareForum.html");
 		resourceMap.put("reference/tournament", "tournamentForum.html");
-		resourceMap.put("reference/judge", "judgeForum.html");
+		resourceMap.put("reference/judge", "judgingForum.html");
 		resourceMap.put("reference/manual1", "manual1.pdf");
 		resourceMap.put("reference/manual2", "manual2.pdf");
 		patternMap.put(Pattern.compile("(hardware|hw|software|sw|field|fd)/(\\S)+((/?)(\\S)*)"), new Page(User.TEAM, (handler,url)->server.sendFullInspectionPage(handler, url)));
