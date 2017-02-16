@@ -10,10 +10,10 @@
 </head>
 <body>
 <div class="pagebody">
-<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=836acda1c2d429e564543fb3866b64ca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=836acda1c2d429e564543fb3866b64ca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-184.html?s=836acda1c2d429e564543fb3866b64ca">Robot Inspection and Build Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-205.html?s=836acda1c2d429e564543fb3866b64ca">Answers - Robot Electrical Parts and Materials Rules</a> &gt;  Miscellaneous Robot Electrical Parts and Materials - Answer Thread</div>
+<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=eab4e96bb680496e79ff69cf34fa1cca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=eab4e96bb680496e79ff69cf34fa1cca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-184.html?s=eab4e96bb680496e79ff69cf34fa1cca">Robot Inspection and Build Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-205.html?s=eab4e96bb680496e79ff69cf34fa1cca">Answers - Robot Electrical Parts and Materials Rules</a> &gt;  Miscellaneous Robot Electrical Parts and Materials - Answer Thread</div>
 <hr />
-<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6883.html?s=836acda1c2d429e564543fb3866b64ca&amp;pda=1" rel="nofollow">PDA</a></div>
-<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6883-Miscellaneous-Robot-Electrical-Parts-and-Materials-Answer-Thread&amp;s=836acda1c2d429e564543fb3866b64ca">Miscellaneous Robot Electrical Parts and Materials - Answer Thread</a></p>
+<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6883.html?s=eab4e96bb680496e79ff69cf34fa1cca&amp;pda=1" rel="nofollow">PDA</a></div>
+<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6883-Miscellaneous-Robot-Electrical-Parts-and-Materials-Answer-Thread&amp;s=eab4e96bb680496e79ff69cf34fa1cca">Miscellaneous Robot Electrical Parts and Materials - Answer Thread</a></p>
 <hr />
 <div class="floatcontainer">  </div><br />
 <div class="post"><div class="posttop"><div class="username">Administrator</div><div class="date">09-12-2016, 01:37 PM</div></div><div class="posttext">Answers to questions posted pertaining to Miscellaneous Robot Electrical Parts and Materials.</div></div><hr />
@@ -267,6 +267,31 @@ Answer 3: We are not able to comment on the legality of each individual possible
 <br />
 Answer 4: It is not safe to cross wire between a motor controller and the CPDM. If an LED is being controlled by a motor controller, all connections to the LED should come from the motor controller.  Furthermore, it is not safe to cross wire multiple motor controller outputs to a single device of any sort.</div></div><hr />
 
+
+<div class="post"><div class="posttop"><div class="username">Wil Wheaton</div><div class="date">01-23-2017, 11:20 PM</div></div><div class="posttext">We'd still like some clarification of the use of decorative or signal common cathode LED light strips as questioned in part 4 of post 24.   http://ftcforum.usfirst.org/showthread.php?6883-Miscellaneous-Robot-Electrical-Parts-and-Materials-Answer-Thread&amp;p=33859&amp;viewfull=1#post33859<br />
+<br />
+<br />
+Certainly we could plug in one cathode/anode pair into the  CDM or a motor controller port, and physically change the colors between matches, this seems perfectly legal, but not very interesting.<br />
+<br />
+We had tried cross wiring between the CDM and Motor controller, but see in the above post that this not legal.  <br />
+<br />
+1 - Another option is to use transistors or relays to control the power via a port on the DIM, but wonder if that would be considered a circuit rather than 'passive' electronics, and thus not allowed?  (Or if passive electronics even apply since the LED's are not sensors?)<br />
+<br />
+2- If we used diodes (passive) to prevent back feed and wired two motor outputs to the common cathode, would this be legal, or is this considered cross-wiring?<br />
+<br />
+3- If both of the above answers are no,  Is there any legal way to control the colors of a common cathode LED strip other than physically changing the inputs?<br />
+<br />
+Answer 1: This does not fit the passive electronics that are allowed by &lt;RE11&gt; and is therefore a custom circuit and not allowed per &lt;RE17&gt;<br />
+<br />
+Answer 2: This does not fit the passive electronics that are allowed by &lt;RE11&gt; and is therefore a custom circuit and not allowed per &lt;RE17&gt;<br />
+<br />
+Answer 3: Answers to robot design questions are outside the scope of what we can provide.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Wil Wheaton</div><div class="date">02-16-2017, 02:19 AM</div></div><div class="posttext">Are LEDs that are fully powered by the 12 battery on our robot controlled by the PWM ports on our core device interface module using transistors allowed?<br />
+<br />
+Answer: No.. Transistors fall under &lt;RE17&gt; &quot;Additional Electronics&quot; and are not allowed.</div></div><hr />
+
  
 <div id="copyright">Powered by vBulletin&reg; Version 4.2.0 Copyright &copy; 2017 vBulletin Solutions, Inc. All rights reserved.</div>
 </div>
@@ -283,10 +308,10 @@ Answer 4: It is not safe to cross wire between a motor controller and the CPDM. 
 </head>
 <body>
 <div class="pagebody">
-<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=836acda1c2d429e564543fb3866b64ca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=836acda1c2d429e564543fb3866b64ca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-184.html?s=836acda1c2d429e564543fb3866b64ca">Robot Inspection and Build Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-205.html?s=836acda1c2d429e564543fb3866b64ca">Answers - Robot Electrical Parts and Materials Rules</a> &gt;  Control System - Answer Thread</div>
+<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=eab4e96bb680496e79ff69cf34fa1cca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=eab4e96bb680496e79ff69cf34fa1cca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-184.html?s=eab4e96bb680496e79ff69cf34fa1cca">Robot Inspection and Build Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-205.html?s=eab4e96bb680496e79ff69cf34fa1cca">Answers - Robot Electrical Parts and Materials Rules</a> &gt;  Control System - Answer Thread</div>
 <hr />
-<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6882.html?s=836acda1c2d429e564543fb3866b64ca&amp;pda=1" rel="nofollow">PDA</a></div>
-<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6882-Control-System-Answer-Thread&amp;s=836acda1c2d429e564543fb3866b64ca">Control System - Answer Thread</a></p>
+<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6882.html?s=eab4e96bb680496e79ff69cf34fa1cca&amp;pda=1" rel="nofollow">PDA</a></div>
+<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6882-Control-System-Answer-Thread&amp;s=eab4e96bb680496e79ff69cf34fa1cca">Control System - Answer Thread</a></p>
 <hr />
 <div class="floatcontainer">  </div><br />
 <div class="post"><div class="posttop"><div class="username">Administrator</div><div class="date">09-12-2016, 01:36 PM</div></div><div class="posttext">Answers to questions posted pertaining to the Control System.</div></div><hr />
@@ -398,9 +423,40 @@ Answer: the only allowed controllers are the two listed in &lt;RE16&gt; Driver S
  Xbox 360 Controller for Windows (Part# 52A-00004)</div></div><hr />
 
 
+<div class="post"><div class="posttop"><div class="username">Wil Wheaton</div><div class="date">01-11-2017, 05:14 PM</div></div><div class="posttext">Is a wifi-disabled tablet allowed in the driver's station area?<br />
+It would be used for data entry and data analyses during a game.<br />
+<br />
+Team #11115 - Gluten Free<br />
+<br />
+Answer: No.  Rule &lt;G1&gt; provides clear guidance that any device that may be mistaken by a casual observer to be a electronic communication device is not allowed.</div></div><hr />
+
+
 <div class="post"><div class="posttop"><div class="username">Wil Wheaton</div><div class="date">01-19-2017, 12:46 PM</div></div><div class="posttext">Are the motor and servo controllers from last year still legal?<br />
 <br />
 Answer: Yes.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Wil Wheaton</div><div class="date">02-16-2017, 02:11 AM</div></div><div class="posttext">Hi,<br />
+<br />
+1. Can we run a Service (that we created) on the Driver Station phone that is completely separate from the FTC Driver Station app during a tournament match?<br />
+2. If so, can we set-up a socket connection between the Service and the Robot Controller app (by creating DatagramSocket objects in both applications)?<br />
+3. If so, can we transmit messages from the Robot Controller phone and the Driver Station phone and have the Driver Station phone read the messages aloud (via the TextToSpeech object)?<br />
+<br />
+We want to do this because, during a match, our drivers/field coach are focused on the game in front of them. When, for example, a ball is collected by the robot on the far side of the field (so we can't see it), Telemetry doesn't effectively notify us about it. If we had the Driver Station phone speak the message out loud, we'd know that a ball has been collected very quickly.<br />
+<br />
+To be clear, we have not modified the FTC Driver Station app nor the FTC Robot Controller's Wifi Direct Connection. We've merely created a second socket connection.<br />
+<br />
+Thanks,<br />
+FIX IT 3491<br />
+<br />
+Answer 1: No. Communication between the robot and driver station is only allowed via the robot controller and driver station applications.<br />
+Answer 2: n/a<br />
+Answer 3: n/a</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Wil Wheaton</div><div class="date">02-16-2017, 02:24 AM</div></div><div class="posttext">Is the drive team allowed to hold the driver station phone and USB hub during the teleoperated period?<br />
+<br />
+Answer: Yes.  There is nothing in the rules that prohibits members of the drive team from holding the driver station phone during the driver controlled period.</div></div><hr />
 
  
 <div id="copyright">Powered by vBulletin&reg; Version 4.2.0 Copyright &copy; 2017 vBulletin Solutions, Inc. All rights reserved.</div>
@@ -418,10 +474,10 @@ Answer: Yes.</div></div><hr />
 </head>
 <body>
 <div class="pagebody">
-<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=836acda1c2d429e564543fb3866b64ca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=836acda1c2d429e564543fb3866b64ca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-184.html?s=836acda1c2d429e564543fb3866b64ca">Robot Inspection and Build Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-205.html?s=836acda1c2d429e564543fb3866b64ca">Answers - Robot Electrical Parts and Materials Rules</a> &gt;  Motors and Servos - Answer Thread</div>
+<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=eab4e96bb680496e79ff69cf34fa1cca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=eab4e96bb680496e79ff69cf34fa1cca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-184.html?s=eab4e96bb680496e79ff69cf34fa1cca">Robot Inspection and Build Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-205.html?s=eab4e96bb680496e79ff69cf34fa1cca">Answers - Robot Electrical Parts and Materials Rules</a> &gt;  Motors and Servos - Answer Thread</div>
 <hr />
-<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6881.html?s=836acda1c2d429e564543fb3866b64ca&amp;pda=1" rel="nofollow">PDA</a></div>
-<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6881-Motors-and-Servos-Answer-Thread&amp;s=836acda1c2d429e564543fb3866b64ca">Motors and Servos - Answer Thread</a></p>
+<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6881.html?s=eab4e96bb680496e79ff69cf34fa1cca&amp;pda=1" rel="nofollow">PDA</a></div>
+<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6881-Motors-and-Servos-Answer-Thread&amp;s=eab4e96bb680496e79ff69cf34fa1cca">Motors and Servos - Answer Thread</a></p>
 <hr />
 <div class="floatcontainer">  </div><br />
 <div class="post"><div class="posttop"><div class="username">Administrator</div><div class="date">09-12-2016, 01:35 PM</div></div><div class="posttext">Answers to questions posted pertaining to Motors and Servos.</div></div><hr />
@@ -548,6 +604,16 @@ FTC Team 8391, W-Prime<br />
 <br />
 Answer: Yes.  All motors on the robot count towards the 8-motor limit, regardless of their current usage status.</div></div><hr />
 
+
+<div class="post"><div class="posttop"><div class="username">Sheldon</div><div class="date">01-30-2017, 01:59 PM</div></div><div class="posttext">Hi,<br />
+<br />
+This is a strange question. When our team was at a qualifying tournament, the lead inspector told us that since we had 8 motors on our robot, that if by chance we had an extra motor on our robot cart, not on the robot, when we left the queuing area to compete, we would be disqualified. He went so far as to say, if we even left a spare motor in the queuing area on the way to compete, we would be disqualified. It this true? And if it is, does this extend to servos and batteries as well? We always carry a spare battery on our cart just in case.<br />
+<br />
+Thanks in advance,<br />
+Team 11703<br />
+<br />
+A: Rule &lt;RE09&gt; refers only to the motors that are part of a legal Robot.  Teams are allowed to bring as many spare motors, servos, batteries, etc. as they wish on the Robot cart.</div></div><hr />
+
  
 <div id="copyright">Powered by vBulletin&reg; Version 4.2.0 Copyright &copy; 2017 vBulletin Solutions, Inc. All rights reserved.</div>
 </div>
@@ -564,10 +630,10 @@ Answer: Yes.  All motors on the robot count towards the 8-motor limit, regardles
 </head>
 <body>
 <div class="pagebody">
-<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=836acda1c2d429e564543fb3866b64ca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=836acda1c2d429e564543fb3866b64ca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-184.html?s=836acda1c2d429e564543fb3866b64ca">Robot Inspection and Build Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-205.html?s=836acda1c2d429e564543fb3866b64ca">Answers - Robot Electrical Parts and Materials Rules</a> &gt;  Sensors - Answer Thread</div>
+<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=eab4e96bb680496e79ff69cf34fa1cca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=eab4e96bb680496e79ff69cf34fa1cca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-184.html?s=eab4e96bb680496e79ff69cf34fa1cca">Robot Inspection and Build Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-205.html?s=eab4e96bb680496e79ff69cf34fa1cca">Answers - Robot Electrical Parts and Materials Rules</a> &gt;  Sensors - Answer Thread</div>
 <hr />
-<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6880.html?s=836acda1c2d429e564543fb3866b64ca&amp;pda=1" rel="nofollow">PDA</a></div>
-<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6880-Sensors-Answer-Thread&amp;s=836acda1c2d429e564543fb3866b64ca">Sensors - Answer Thread</a></p>
+<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6880.html?s=eab4e96bb680496e79ff69cf34fa1cca&amp;pda=1" rel="nofollow">PDA</a></div>
+<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6880-Sensors-Answer-Thread&amp;s=eab4e96bb680496e79ff69cf34fa1cca">Sensors - Answer Thread</a></p>
 <hr />
 <div class="floatcontainer">  </div><br />
 <div class="post"><div class="posttop"><div class="username">Administrator</div><div class="date">09-12-2016, 01:35 PM</div></div><div class="posttext">Answers to questions posted pertaining to Sensors.</div></div><hr />
@@ -687,6 +753,77 @@ Answer: Yes, as long as the switch is wired as a sensor to a CDIM as allowed in 
 <br />
 Answer: Yes, as long as the potentiometer is wired to a CDIM as allowed in &lt;RE11&gt;</div></div><hr />
 
+
+<div class="post"><div class="posttop"><div class="username">Wil Wheaton</div><div class="date">01-31-2017, 12:08 AM</div></div><div class="posttext">According to rule RE11a, &quot;Compatible sensors from any manufacturer may be connected to the Core Device Interface Module&quot; are allowed. What level of documentation is need for inspection to verify that a sensor is compatible? Is it not enough to show that the sensor is directly connected to the CDIM?<br />
+<br />
+Thanks in advance,<br />
+Team 3525<br />
+<br />
+Answer:  There is no documentation requirement. Sensors should be such that they work electrically (and where appropriate, logically) with the ports on the Core Device Interface Module; i.e. operate within the correct voltage ranges, operate within the current limitations, etc.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Wil Wheaton</div><div class="date">02-08-2017, 07:43 PM</div></div><div class="posttext">Hello <br />
+<br />
+Can we use the generic HC-SR04 sensor?<br />
+<br />
+It is this:<br />
+https://i.stack.imgur.com/X2dK8.jpg<br />
+<br />
+Answer: As long as the sensor is electrically compatible with the Core Device Interface Module and can be connected to/controlled by the CDIM it is legal</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Wil Wheaton</div><div class="date">02-16-2017, 02:05 AM</div></div><div class="posttext">We saw that a standard USB mouse or trackball is not allowed under current rules even though it works. We urge this be reconsidered in the future. So many great possibilities.<br />
+<br />
+Our team is considering a trackball as an omnidirectional movement sensor to correct for drift caused by intermittent lag across motor controllers in our mecanum drive. We have discovered some trackballs that have an i2c chip that we might be able to connect to. Is it legal to connect a trackball originally made for USB to (only) the CDIM module?<br />
+<br />
+Alternately, we could make our own trackball using encoders as the rollers. We saw another post where 3rd party encoders sold by Mouser were not allowed to be connected to encoder ports on a motor controller. But what if we are using the standard motor encoders sold by Tetrix - which the motor controllers were designed to use. Can we connect those to a motor controller?<br />
+<br />
+Thank you<br />
+<br />
+Answer Modification of a trackball to use as a sensor would not be allowed per &lt;RE15&gt;. There is nothing in the rules that requires you to use the Tetrix encoders as they were intended.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Wil Wheaton</div><div class="date">02-16-2017, 02:16 AM</div></div><div class="posttext">As long as you publish the http://www.firstinspires.org/sites/default/files/uploads/resource_library/ftc/2016-2017-season/legal-illegal-parts-list.pdf and not mention MR others sensors like Gyro, ODS, infra red locator and etc manufacture from Modern Robotics, you only mention Color sensor in the list is this means others sensor not allowed<br />
+<br />
+Answer:  Per &lt;RE11&gt;.a, compatible sensors from any manufacturer may be connected to the Core Device Interface Module.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Wil Wheaton</div><div class="date">02-16-2017, 02:22 AM</div></div><div class="posttext">Is it allowed to have a red/blue physical switch on the robot.  We would use this to switch our robot from blue alliance to red alliance for our autonomous code?<br />
+<br />
+Answer: Yes</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Wil Wheaton</div><div class="date">02-16-2017, 02:35 AM</div></div><div class="posttext">Hello,<br />
+<br />
+<br />
+<br />
+We're wondering about the legality of the Avago ADNS3080 high-performance optical mouse sensor, available on a breakout module with level-shifting designed by 3D Robotics. <br />
+<br />
+Can be purchased at https://goo.gl/7EqwPD (and from many other suppliers)<br />
+IC datasheet: https://goo.gl/EHWYIx<br />
+<br />
+The ADNS3080 is the kind of sensor that can be found in any optical computer mouse, whose task is to track the mouse's movement relative to the surface below it. This is done optically, using a 30x30-pixel grayscale image sensor and onboard algorithm for motion estimation. This sensor is not user-programmable. The lens provided on this particular carrier PCB is used for the focusing of the sensor on a surface. Our question is: is a 30x30-pixel grayscale image sensor a 'camera'? Is this module allowed?<br />
+<br />
+<br />
+<br />
+<br />
+The ADNS3080 communicates over SPI. The Modern Robotics Core Device Interface does not have an SPI bus exposed, and as such we'd also like to ask about the legality of the SC18IS602 I2C/SPI bridge IC, which is available on a breakout module from Sandbox Electronics.<br />
+<br />
+Can be purchased at https://goo.gl/zmzvg5<br />
+IC datasheet: https://goo.gl/rBpmEP<br />
+<br />
+This module's only purpose is to provide an SPI bus 'passthrough' via I2C, allowing an I2C-capable device like the Core Device Interface to communicate with an SPI device. In this case, we'd use it with the ADNS3080, but this module could also be used to connect a variety of other SPI-only sensors to the Device Interface as well. (Only one SPI bus is provided by this breakout; it is not a 'sensor hub'). This module is not user-programmable. Is it legal to simply wire it between the Device Interface and ADNS3080 (if the ADNS3080 is allowed)? 5V, GND, SDA, and SCL would be directly connected between the Device Interface and the bridge module, and 5V, GND, MISO, MOSI, SCK, and SS would be directly connected between the bridge module and the ADNS3080 (or other SPI-compatible sensor) module.<br />
+<br />
+<br />
+<br />
+<br />
+Thank you,<br />
+<br />
+Evolution Robotics (#9867)<br />
+<br />
+Answer 1: The flow sensor referenced is not voltage compatible with the Core Device Interface (it is a 3.3v sensor and the CDIM is 5v)<br />
+Answer 2: The SPI to I2C interface module would fall under &lt;RE17&gt; Additional Electronics and is not allowed.</div></div><hr />
+
  
 <div id="copyright">Powered by vBulletin&reg; Version 4.2.0 Copyright &copy; 2017 vBulletin Solutions, Inc. All rights reserved.</div>
 </div>
@@ -703,10 +840,10 @@ Answer: Yes, as long as the potentiometer is wired to a CDIM as allowed in &lt;R
 </head>
 <body>
 <div class="pagebody">
-<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=836acda1c2d429e564543fb3866b64ca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=836acda1c2d429e564543fb3866b64ca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-184.html?s=836acda1c2d429e564543fb3866b64ca">Robot Inspection and Build Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-205.html?s=836acda1c2d429e564543fb3866b64ca">Answers - Robot Electrical Parts and Materials Rules</a> &gt;  Driver Station - Answer Thread</div>
+<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=eab4e96bb680496e79ff69cf34fa1cca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=eab4e96bb680496e79ff69cf34fa1cca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-184.html?s=eab4e96bb680496e79ff69cf34fa1cca">Robot Inspection and Build Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-205.html?s=eab4e96bb680496e79ff69cf34fa1cca">Answers - Robot Electrical Parts and Materials Rules</a> &gt;  Driver Station - Answer Thread</div>
 <hr />
-<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6879.html?s=836acda1c2d429e564543fb3866b64ca&amp;pda=1" rel="nofollow">PDA</a></div>
-<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6879-Driver-Station-Answer-Thread&amp;s=836acda1c2d429e564543fb3866b64ca">Driver Station - Answer Thread</a></p>
+<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6879.html?s=eab4e96bb680496e79ff69cf34fa1cca&amp;pda=1" rel="nofollow">PDA</a></div>
+<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6879-Driver-Station-Answer-Thread&amp;s=eab4e96bb680496e79ff69cf34fa1cca">Driver Station - Answer Thread</a></p>
 <hr />
 <div class="floatcontainer">  </div><br />
 <div class="post"><div class="posttop"><div class="username">Administrator</div><div class="date">09-12-2016, 01:34 PM</div></div><div class="posttext">Answers to questions posted pertaining to the Drivers Station.</div></div><hr />

@@ -10,10 +10,10 @@
 </head>
 <body>
 <div class="pagebody">
-<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=836acda1c2d429e564543fb3866b64ca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=836acda1c2d429e564543fb3866b64ca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-188.html?s=836acda1c2d429e564543fb3866b64ca">Game Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-207.html?s=836acda1c2d429e564543fb3866b64ca">Answers - Game Rules</a> &gt;  Miscellaneous Game Questions - Answer Thread</div>
+<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=eab4e96bb680496e79ff69cf34fa1cca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=eab4e96bb680496e79ff69cf34fa1cca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-188.html?s=eab4e96bb680496e79ff69cf34fa1cca">Game Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-207.html?s=eab4e96bb680496e79ff69cf34fa1cca">Answers - Game Rules</a> &gt;  Miscellaneous Game Questions - Answer Thread</div>
 <hr />
-<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6943.html?s=836acda1c2d429e564543fb3866b64ca&amp;pda=1" rel="nofollow">PDA</a></div>
-<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6943-Miscellaneous-Game-Questions-Answer-Thread&amp;s=836acda1c2d429e564543fb3866b64ca">Miscellaneous Game Questions - Answer Thread</a></p>
+<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6943.html?s=eab4e96bb680496e79ff69cf34fa1cca&amp;pda=1" rel="nofollow">PDA</a></div>
+<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6943-Miscellaneous-Game-Questions-Answer-Thread&amp;s=eab4e96bb680496e79ff69cf34fa1cca">Miscellaneous Game Questions - Answer Thread</a></p>
 <hr />
 <div class="floatcontainer">  </div><br />
 <div class="post"><div class="posttop"><div class="username">Administrator</div><div class="date">09-22-2016, 11:04 AM</div></div><div class="posttext">Answers to questions posted pertaining to miscellaneous Game Questions.</div></div><hr />
@@ -537,6 +537,42 @@ When the robot is set on the field for game play and the robot is initialized, i
 <br />
 A: The Robot must remain within the 18&quot; x 18&quot; x 18&quot; configuration until the start of the match.  A Robot that extends beyond this configuration when Initialized is not legal.</div></div><hr />
 
+
+<div class="post"><div class="posttop"><div class="username">Wil Wheaton</div><div class="date">01-23-2017, 11:11 PM</div></div><div class="posttext">If my robot loses connection in a match, and the Field Technical Advisor can prove that the problem isn't my code, my wiring, my battery, my robot controller battery, or my drivers station battery, can I ask for a replay of the match, since the lost connection is proven to not be a problem with my robot?<br />
+<br />
+Answer: Per &lt;G25&gt; there are two conditions that must both be met for a match replay to be granted<br />
+<br />
+ A failure of a Game Element or verified Wi-Fi interference<br />
+ An impact that is likely to have affected which Alliance won the Match<br />
+ <br />
+<br />
+<br />
+The failure described does not satisfy condition #1 and does not warrant a match replay.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Professor Proton</div><div class="date">01-30-2017, 04:29 PM</div></div><div class="posttext">We have some questions about rule &lt;G8&gt; which says in part:<br />
+&quot;Robots that do not stop playing the game at the end of the Autonomous or Driver-Controlled Periods when competition personnel or timer software announce the end of a Match period receive a Minor Penalty and the actions of the Robot occurring after the end of a Match period do not count towards their Alliance’s Score. Referees have the option of issuing a Major Penalty in place of the Minor Penalty if the late stop results in a competitive advantage (other than Scoring) for the offending Alliance.&quot;<br />
+<br />
+Question 1: Does this rule mean that if a robot stops game play late and scores after the end of the match, they will be assessed only a minor penalty and the scoring will not count?<br />
+Question 2: Can you give some more specifics and/or examples of competitive advantages other than scoring? We are having difficulty coming up with any.<br />
+Answer 1: Yes.<br />
+<br />
+Answer 2: The general game rules (&lt;Gn&gt;) are written to be non-game specific so that they can be reused from season to season with few or no changes. For this season's game, there are not many non-Scoring Robot actions after the end of a period that produce a competitive advantage. For VELOCITY VORTEX, the act of Possessing additional Particles after the end of the Autonomous Period gives an Alliance a non-Scoring competitive advantage for the start of the Driver-Controlled Period.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Professor Proton</div><div class="date">01-30-2017, 04:32 PM</div></div><div class="posttext">We are using a flywheel to launch particles into the center vortex. A DC motor gradually builds up rotational inertia in the flywheel and the flywheel's inertia launches the particles.  <br />
+<br />
+The motor controller has the option of either floating/coasting the motor to a stop or suddenly braking the motor to a stop. Selecting the brake option means that calling SetPower(0.0) on the DC motor will force the DC motor to suddenly absorb the inertia stored up in the flywheel. To avoid this stress on the DC motor, we select the float option.  <br />
+<br />
+Question: Is there a penalty if a flywheel continues rotating after the end of a match as it coasts to a stop?<br />
+Answer: No.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Professor Proton</div><div class="date">01-31-2017, 07:00 PM</div></div><div class="posttext">Scenario: A red alliance robot goes behind the blue alliance cap ball while chasing red particles. The red alliance robot unintentionally picks up a blue particle that they did not see behind the cap ball in the process. Because the robot is beyond the view of the drivers (behind the cap ball), it takes 6 to 8 seconds for the team to realize that they picked up the blue particle and eject it.<br />
+<br />
+Question: How is rule &lt;GS10&gt; applied?<br />
+Answer: The Drive Team should, if possible, immediately stop violating rule &lt;GS10&gt; upon receiving a warning from a referee. If the Robot has not stopped Controlling the opposing Alliance's Particle after a five second period following a warning from a referee has passed, the escalation path should be followed and a Major Penalty assessed. An additional Minor Penalty should be assessed for each additional five second period that the violation continues.</div></div><hr />
+
  
 <div id="copyright">Powered by vBulletin&reg; Version 4.2.0 Copyright &copy; 2017 vBulletin Solutions, Inc. All rights reserved.</div>
 </div>
@@ -553,10 +589,10 @@ A: The Robot must remain within the 18&quot; x 18&quot; x 18&quot; configuration
 </head>
 <body>
 <div class="pagebody">
-<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=836acda1c2d429e564543fb3866b64ca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=836acda1c2d429e564543fb3866b64ca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-188.html?s=836acda1c2d429e564543fb3866b64ca">Game Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-207.html?s=836acda1c2d429e564543fb3866b64ca">Answers - Game Rules</a> &gt;  Playing Field - Answer Thread</div>
+<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=eab4e96bb680496e79ff69cf34fa1cca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=eab4e96bb680496e79ff69cf34fa1cca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-188.html?s=eab4e96bb680496e79ff69cf34fa1cca">Game Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-207.html?s=eab4e96bb680496e79ff69cf34fa1cca">Answers - Game Rules</a> &gt;  Playing Field - Answer Thread</div>
 <hr />
-<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6942.html?s=836acda1c2d429e564543fb3866b64ca&amp;pda=1" rel="nofollow">PDA</a></div>
-<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6942-Playing-Field-Answer-Thread&amp;s=836acda1c2d429e564543fb3866b64ca">Playing Field - Answer Thread</a></p>
+<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6942.html?s=eab4e96bb680496e79ff69cf34fa1cca&amp;pda=1" rel="nofollow">PDA</a></div>
+<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6942-Playing-Field-Answer-Thread&amp;s=eab4e96bb680496e79ff69cf34fa1cca">Playing Field - Answer Thread</a></p>
 <hr />
 <div class="floatcontainer">  </div><br />
 <div class="post"><div class="posttop"><div class="username">Administrator</div><div class="date">09-22-2016, 11:03 AM</div></div><div class="posttext">Answers to questions posted pertaining to the Playing Field.</div></div><hr />
@@ -577,6 +613,26 @@ Answer: Teams may use the Robot Controller Android device camera in conjunction 
 <br />
 The four images in Appendix B of the Game Manual Part 2 will be used at all competitions and they will always be in the same locations on the Playing Field. See the &quot;Field Setup and Configuration Guide&quot; for the locations of the Vision Targets.</div></div><hr />
 
+
+<div class="post"><div class="posttop"><div class="username">Agent Angela Page</div><div class="date">02-16-2017, 12:15 PM</div></div><div class="posttext">Here is the scenario leading up to our question: <br />
+<br />
+In one of our matches in autonomous a red alliance robot finished the auto program touching the beacon button with the beacon turned to blue. One the blue alliance one of their robots finished autonomous with their robot touching the beacon button as well and their beacon was turned to blue. As the autonomous timer hit zero a robot ran into the wall and then both of the beacons that were close to the robots on both alliances turned to red. <br />
+<br />
+The FTA thought maybe the beacons turned from blue to red because of static discharge sent through the beacons. The referee said the match should be scored as is since it should be scored once all game elements come to rest. It ended up being scored as it was with the beacons turned red and they believe the robot that hit the wall caused the beacons to turn since the robots were touching the beacons. <br />
+<br />
+The question is this:<br />
+<br />
+In what case is static discharge verifiable where those beacons would have scored as blue instead of red? Would this result in a rerun or is it scored as is since you can't verify 100% for sure static discharge?<br />
+<br />
+Hi Team 5501, <br />
+<br />
+It is difficult to make a determination on the scenario you described as we were not present at the event. Based on the scenario described, it sounds like the Head Referee made the correct call, when the 3rd robot hit the wall it caused the wall to flex, pulling the beacons away from the robots and then springing back. This would have caused a legitimate button press on both beacons and changed the color of the beacons.<br />
+<br />
+The Head Referee would base their response on what they observed on the field. If they feel this wasn’t caused by a failed field element, they will not rerun the match. See rule &lt;G25&gt;:<br />
+<br />
+&lt;G25&gt;	Match Replay – Matches are replayed at the discretion of the Head Referee only for a failure of a Game Element or verified Wi-Fi interference that was likely to have impacted which Alliance won the Match.<br />
+Unexpected Robot behavior in itself will not result in a Match replay. Team-induced failures, such as low battery conditions, processor sleep time-outs, Robot mechanical/electrical/software/communication failures, etc. are NOT valid justifications for a replaying of a Match.</div></div><hr />
+
  
 <div id="copyright">Powered by vBulletin&reg; Version 4.2.0 Copyright &copy; 2017 vBulletin Solutions, Inc. All rights reserved.</div>
 </div>
@@ -593,10 +649,10 @@ The four images in Appendix B of the Game Manual Part 2 will be used at all comp
 </head>
 <body>
 <div class="pagebody">
-<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=836acda1c2d429e564543fb3866b64ca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=836acda1c2d429e564543fb3866b64ca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-188.html?s=836acda1c2d429e564543fb3866b64ca">Game Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-207.html?s=836acda1c2d429e564543fb3866b64ca">Answers - Game Rules</a> &gt;  Pre-Match - Answer Thread</div>
+<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=eab4e96bb680496e79ff69cf34fa1cca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=eab4e96bb680496e79ff69cf34fa1cca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-188.html?s=eab4e96bb680496e79ff69cf34fa1cca">Game Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-207.html?s=eab4e96bb680496e79ff69cf34fa1cca">Answers - Game Rules</a> &gt;  Pre-Match - Answer Thread</div>
 <hr />
-<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6941.html?s=836acda1c2d429e564543fb3866b64ca&amp;pda=1" rel="nofollow">PDA</a></div>
-<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6941-Pre-Match-Answer-Thread&amp;s=836acda1c2d429e564543fb3866b64ca">Pre-Match - Answer Thread</a></p>
+<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6941.html?s=eab4e96bb680496e79ff69cf34fa1cca&amp;pda=1" rel="nofollow">PDA</a></div>
+<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6941-Pre-Match-Answer-Thread&amp;s=eab4e96bb680496e79ff69cf34fa1cca">Pre-Match - Answer Thread</a></p>
 <hr />
 <div class="floatcontainer">  </div><br />
 <div class="post"><div class="posttop"><div class="username">Administrator</div><div class="date">09-22-2016, 11:03 AM</div></div><div class="posttext">Answers to questions posted pertaining to Pre Match activities.</div></div><hr />
@@ -638,6 +694,14 @@ Answer: Yes.</div></div><hr />
 Question: Is this robot set up process allowed by rule G4?<br />
 Answer: The actions described in the post do not violate rule &lt;G4&gt;. Rule &lt;G2&gt; may come into play if the pre-Match set up process unnecessarily delays the beginning of a Match.</div></div><hr />
 
+
+<div class="post"><div class="posttop"><div class="username">Professor Proton</div><div class="date">02-01-2017, 05:25 PM</div></div><div class="posttext">Can teams use a tape measure to locate the starting point against the arena wall during pre-match setup?  My team members have been using tape measures lately to place their bot in the arena.<br />
+<br />
+Question: Does this violate &lt;G4&gt; or any other contest rules?<br />
+<br />
+Thanks<br />
+Answer: Using a handheld tape measure as an alignment or positioning aid during pre-Match Robot set up violates rule &lt;G4&gt;. A single degree of freedom tape measure mounted on the Robot may be used if the measuring tape does not extend outside the 45.7cm (18 inch) cube starting volume constraint during the entire set up process.</div></div><hr />
+
  
 <div id="copyright">Powered by vBulletin&reg; Version 4.2.0 Copyright &copy; 2017 vBulletin Solutions, Inc. All rights reserved.</div>
 </div>
@@ -654,10 +718,10 @@ Answer: The actions described in the post do not violate rule &lt;G4&gt;. Rule &
 </head>
 <body>
 <div class="pagebody">
-<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=836acda1c2d429e564543fb3866b64ca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=836acda1c2d429e564543fb3866b64ca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-188.html?s=836acda1c2d429e564543fb3866b64ca">Game Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-207.html?s=836acda1c2d429e564543fb3866b64ca">Answers - Game Rules</a> &gt;  Autonomous Period - Answer Thread</div>
+<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=eab4e96bb680496e79ff69cf34fa1cca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=eab4e96bb680496e79ff69cf34fa1cca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-188.html?s=eab4e96bb680496e79ff69cf34fa1cca">Game Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-207.html?s=eab4e96bb680496e79ff69cf34fa1cca">Answers - Game Rules</a> &gt;  Autonomous Period - Answer Thread</div>
 <hr />
-<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6940.html?s=836acda1c2d429e564543fb3866b64ca&amp;pda=1" rel="nofollow">PDA</a></div>
-<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6940-Autonomous-Period-Answer-Thread&amp;s=836acda1c2d429e564543fb3866b64ca">Autonomous Period - Answer Thread</a></p>
+<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6940.html?s=eab4e96bb680496e79ff69cf34fa1cca&amp;pda=1" rel="nofollow">PDA</a></div>
+<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6940-Autonomous-Period-Answer-Thread&amp;s=eab4e96bb680496e79ff69cf34fa1cca">Autonomous Period - Answer Thread</a></p>
 <hr />
 <div class="floatcontainer">  </div><br />
 <div class="post"><div class="posttop"><div class="username">Administrator</div><div class="date">09-22-2016, 11:02 AM</div></div><div class="posttext">Answers to questions posted pertaining to the Autonomous Period.</div></div><hr />
@@ -847,6 +911,48 @@ Answer 2: Yes, the action is allowed if the Blue Alliance Robot is not attemptin
 <br />
 Answer 3: The Red Alliance Robot's actions violate rule &lt;G16&gt; for Pinning if the referee determines that it is a deliberate strategy. The Red Alliance Robot having performed this maneuver during several preceding Matches will influence the referee's determination of the Robot's intended strategy for the current Match.</div></div><hr />
 
+
+<div class="post"><div class="posttop"><div class="username">Professor Proton</div><div class="date">01-24-2017, 04:17 PM</div></div><div class="posttext">I would like to get some clarification on what constitutes blocking of a beacon for a defensive autonomous routine.  Please note all of these scenarios take place after the 10 second mark.<br />
+<br />
+Question 1: If a red alliance robot on the red alliance side has fully entered the tile with the white line when a blue alliance robot enters the tile with the white line makes contact and pushes and prevents the red alliance from claiming the correct beacon color, is this considered blocking?<br />
+<br />
+Question 2: If the incorrect button in question 1 was pressed due to robot contact, provided nothing else occurs with the beacon, is the beacon claimed for the blue alliance?<br />
+<br />
+Question 3: If a red alliance robot on the red alliance side has not yet entered the tile with the white line when a blue alliance robot that is partially in the tile with the white line makes contact and pushes and prevents the red alliance robot from entering the tile with the white line, is this considered blocking?<br />
+<br />
+Question 4: If a red alliance robot on the red alliance side has partially entered the tile with the white line when a blue alliance robot is moving through the tile with the white line makes contact and pushes and prevents the red alliance robot from fully entering the tile with the white line, is this considered blocking?<br />
+A Robot cannot incur a &lt;G16&gt; Penalty during the Autonomous Period unless it is determined by a referee to be part of a deliberate strategy. The defensive Robot's behavior in previous Matches will influence the referee's determination of the Robot's intended strategy for the current Match. It is stated in the post that the Blue Alliance Robot is executing a &quot;defensive autonomous routine.&quot; Therefore, the following answers are based on the referee determining that the Blue Alliance Robot is intentionally playing defense.<br />
+<br />
+Answer 1: No.<br />
+<br />
+Answer 2: During the Autonomous Period, the answer depends on which Robot triggered the Beacon. A Red Alliance Beacon triggered by contact with a Red Alliance Robot is counted as Scored based on the illuminated color of the Beacon. A Red Alliance Beacon triggered by contact with a Blue Alliance Robot violates rule &lt;GS6&gt;.<br />
+<br />
+Answer 3: Yes.<br />
+<br />
+Answer 4: A Blue Alliance Robot entering the restricted Area around the Beacon before the Red Alliance Robot attempts to enter the restricted Area is Blocking if the Red Alliance Robot attempts to access the Beacon. A Blue Alliance Robot entering the restricted Area around the Beacon after the Red Alliance Robot enters the restricted Area is not Blocking.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Professor Proton</div><div class="date">01-25-2017, 04:20 PM</div></div><div class="posttext">Question: During Autonomous, the robot was stopped prior to the end of the 30 seconds.  Does the team receive a penalty or is the robot disabled for the driver controlled period?<br />
+Answer: The Robot may participate in the Driver-Controlled Period and multiple Penalties could come into play. Rule &lt;G26&gt; for egregious behavior is violated if the Drive Team stops their Robot during the Autonomous Period for strategic reasons. A rule &lt;G26&gt; violation will result in a Yellow Card and Major Penalty for the offending Team. Subsequent violations of rule &lt;G26&gt; will result in Team Disqualification from the tournament.<br />
+ <br />
+Section 1.5.2 in the Game Manual Part 2 states that &quot;Teams are not allowed to control Robot behavior with the Driver Station or any other actions during the Autonomous Period.&quot; Rule &lt;GS4&gt; is violated if the Team uses the Driver Station or any other actions to stop their Robot from playing the game during the Autonomous Period. If rule &lt;GS4&gt; is violated, a Minor Penalty will be assessed and the affected Robot is not eligible to Claim a Beacon in the Autonomous Period.<br />
+<br />
+Drive Teams may stop their Robot for safety reasons without Penalty. When possible, consult with a Field Technical Advisor or Referee before stopping a Robot for safety reasons during the Autonomous Period.<br />
+<br />
+No Penalty is assessed when the robot controller software without intervention by the Team, stops the Robot from playing the game early.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Professor Proton</div><div class="date">01-31-2017, 07:25 PM</div></div><div class="posttext">Scenario: A red alliance robot is pressing the beacon button during its autonomous run. During the first 10 seconds of the autonomous period, a blue alliance robot intentionally crosses into the red alliance's side of the playing field and interferes with the red alliance robot. The red alliance robot is not able to continue its autonomous routine to claim the second beacon and move the cap ball off the center vortex base as it has successfully done in previous matches. Are any rules violated by the blue alliance robot?<br />
+Answer: Yes, rule &lt;GS7&gt; is violated because the Blue Alliance Robot entered the opposing Alliance's Area of the Playing Field during the first ten seconds of the Autonomous Period. A Major Penalty should be assessed because the action by the Blue Alliance Robot is not Inadvertent and Inconsequential.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Professor Proton</div><div class="date">02-08-2017, 10:28 AM</div></div><div class="posttext">Question: If a robot scores a particle in the center vortex during the autonomous period but the particle falls back onto the robot and does not touch the floor, does the robot still score the 15 points since the particle traveled through the vortex?<br />
+Answer: Yes, the Particle counts as Scored if it was released into the goal and rolled through the Vortex. The Particle &quot;falling back onto the Robot&quot; after Scoring does not cancel out the points awarded for the legally Scored Particle. The Particle is not eligible to be Scored again until it contacts the Playing Field Floor.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Professor Proton</div><div class="date">02-13-2017, 04:58 PM</div></div><div class="posttext">Question: After the first 10 seconds of the Autonomous period, may RobotA repeatedly enter an opponent's tile with the white tape in front of a beacon, remain there for under 5 seconds, then leave the tile entirely for a second, and repeat the process over and over for the remainder of the Autonomous period, for the purpose of pushing or otherwise hindering opposing robots trying to push their beacon buttons, if there is no period of time when RobotA occupies the tile with the white tape for more than 5 consecutive seconds (as G16 says is necessary for Blocking penalties to apply)?<br />
+Answer: In this scenario, the Autonomous Period exception for enforcing rule &lt;G16&gt; does not apply because the Robot is using a deliberate strategy. The defensive Robot must move away at least three feet from the restricted Area around the Beacon after each Blocking event. Since the Team is intentionally violating or &quot;gaming&quot; a rule, they are likely to be warned by the referees about egregious behavior and the consequences or rule &lt;G26&gt;. In this scenario, the Team should expect the referees to rapidly escalate to applying &lt;G26&gt; consequences to the Team.</div></div><hr />
+
  
 <div id="copyright">Powered by vBulletin&reg; Version 4.2.0 Copyright &copy; 2017 vBulletin Solutions, Inc. All rights reserved.</div>
 </div>
@@ -855,7 +961,7 @@ Answer 3: The Red Alliance Robot's actions violate rule &lt;G16&gt; for Pinning 
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-	<meta name="keywords" content="alliances, access, vortex, scoring, center, control, elements, driver, period, advantage, robot, answer, opposing, legal, controlled, blocking, rules, design, briefly, robots, teams, drive, exception, intentional, misinterpreting, ruling, intent, nudge, tactical, committee, moved, ended, caught, appears, question, thread, momentary, feeling, wished, lifting, prior" />
+	<meta name="keywords" content="robot, beacon, button, defending, answer, question, blocking, period, controlled, midpoint, driver, horizontal, opponent, access, pushing, thread, nearest, shift, attempted, beacons, situated, penalty, incur, permitted, non-collision, scenario, violated, allowed, inconsequential, information, defensive, alliances, opposing, block, incurring, design, consequences, forcibly, defense, shield/cover/block, clarification, request, strategy, 18x18x18, robots, assume, simplicity, colors, switched, front" />
 	<meta name="description" content="Answers to questions posted pertaining to the Driver Controlled Period." />
 	
 	<title> Driver Controlled Period - Answer Thread [Archive]  - FTC Forum</title>
@@ -863,10 +969,10 @@ Answer 3: The Red Alliance Robot's actions violate rule &lt;G16&gt; for Pinning 
 </head>
 <body>
 <div class="pagebody">
-<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=836acda1c2d429e564543fb3866b64ca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=836acda1c2d429e564543fb3866b64ca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-188.html?s=836acda1c2d429e564543fb3866b64ca">Game Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-207.html?s=836acda1c2d429e564543fb3866b64ca">Answers - Game Rules</a> &gt;  Driver Controlled Period - Answer Thread</div>
+<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=eab4e96bb680496e79ff69cf34fa1cca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=eab4e96bb680496e79ff69cf34fa1cca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-188.html?s=eab4e96bb680496e79ff69cf34fa1cca">Game Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-207.html?s=eab4e96bb680496e79ff69cf34fa1cca">Answers - Game Rules</a> &gt;  Driver Controlled Period - Answer Thread</div>
 <hr />
-<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6939.html?s=836acda1c2d429e564543fb3866b64ca&amp;pda=1" rel="nofollow">PDA</a></div>
-<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6939-Driver-Controlled-Period-Answer-Thread&amp;s=836acda1c2d429e564543fb3866b64ca">Driver Controlled Period - Answer Thread</a></p>
+<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6939.html?s=eab4e96bb680496e79ff69cf34fa1cca&amp;pda=1" rel="nofollow">PDA</a></div>
+<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6939-Driver-Controlled-Period-Answer-Thread&amp;s=eab4e96bb680496e79ff69cf34fa1cca">Driver Controlled Period - Answer Thread</a></p>
 <hr />
 <div class="floatcontainer">  </div><br />
 <div class="post"><div class="posttop"><div class="username">Administrator</div><div class="date">09-22-2016, 11:01 AM</div></div><div class="posttext">Answers to questions posted pertaining to the Driver Controlled Period.</div></div><hr />
@@ -991,7 +1097,11 @@ Answer 1: The defending Robot may Block all the way to the horizontal midpoint o
 <br />
 Answer 2: The design of the opposing Alliance's Robot is inconsequential. Pushing a Robot is allowed if rule &lt;G16&gt; is not violated.<br />
 <br />
-Answer 3: The scenario described in the question is Blocking access to an Area and it is not allowed per rule &lt;G16&gt;. The defending Robot is actively defending a constrained area of the Playing Field; intentionally Blocking access to the Beacons. The active defense played by the defensive Robot eliminates all paths of travel between the opposing Alliance Robot and the Beacons.</div></div><hr />
+Answer 3: The scenario described in the question is not Blocking access because the defensive Robot is only Blocking access to one button on the Beacon. See Answer #1 for more information.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Professor Proton</div><div class="date">02-06-2017, 02:46 PM</div></div><div class="posttext">Question: If a robot on the red alliance sits in front of a beacon during the driver-controlled period, blocking both of the buttons on it, that has been changed to the color blue, could the robot potentially sit in front of this beacon the entire match and then at the last second change it to red? Would this incur a penalty if a blue alliance robot tried to access this beacon since it is already changed to blue and a blue alliance robot trying to access it would have no offensive play to the blue alliance since it is already their color?<br />
+Answer: The Red Alliance Robot is violating rule &lt;G16&gt; if a Blue Alliance Robot attempts to access the Beacon.</div></div><hr />
 
  
 <div id="copyright">Powered by vBulletin&reg; Version 4.2.0 Copyright &copy; 2017 vBulletin Solutions, Inc. All rights reserved.</div>
@@ -1009,10 +1119,10 @@ Answer 3: The scenario described in the question is Blocking access to an Area a
 </head>
 <body>
 <div class="pagebody">
-<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=836acda1c2d429e564543fb3866b64ca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=836acda1c2d429e564543fb3866b64ca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-188.html?s=836acda1c2d429e564543fb3866b64ca">Game Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-207.html?s=836acda1c2d429e564543fb3866b64ca">Answers - Game Rules</a> &gt;  End Game - Answer Thread</div>
+<div id="navbar"><a href="http://ftcforum.usfirst.org/archive/index.php?s=eab4e96bb680496e79ff69cf34fa1cca">FTC Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-182.html?s=eab4e96bb680496e79ff69cf34fa1cca">FIRST Tech Challenge - Velocity Vortex presented by Qualcomm - Game Q&amp;A Forum</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-188.html?s=eab4e96bb680496e79ff69cf34fa1cca">Game Rules</a> &gt; <a href="http://ftcforum.usfirst.org/archive/index.php/f-207.html?s=eab4e96bb680496e79ff69cf34fa1cca">Answers - Game Rules</a> &gt;  End Game - Answer Thread</div>
 <hr />
-<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6938.html?s=836acda1c2d429e564543fb3866b64ca&amp;pda=1" rel="nofollow">PDA</a></div>
-<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6938-End-Game-Answer-Thread&amp;s=836acda1c2d429e564543fb3866b64ca">End Game - Answer Thread</a></p>
+<div class="pda"><a href="http://ftcforum.usfirst.org/archive/index.php/t-6938.html?s=eab4e96bb680496e79ff69cf34fa1cca&amp;pda=1" rel="nofollow">PDA</a></div>
+<p class="largefont">View Full Version : <a href="http://ftcforum.usfirst.org/showthread.php?6938-End-Game-Answer-Thread&amp;s=eab4e96bb680496e79ff69cf34fa1cca">End Game - Answer Thread</a></p>
 <hr />
 <div class="floatcontainer">  </div><br />
 <div class="post"><div class="posttop"><div class="username">Administrator</div><div class="date">09-22-2016, 11:01 AM</div></div><div class="posttext">Answers to questions posted pertaining to End Game.</div></div><hr />
@@ -1249,6 +1359,20 @@ Question: If our fork lift is not touching the cap ball, is it okay that the for
 <br />
 Thank you.<br />
 Answer: The Robot's fork-lift mechanism remaining Inside the Center Vortex goal after the Cap Ball is Scored may violate rule &lt;G15&gt; for Robot entanglement with a Game Element. To determine if there is a rule violation, the referee will assess the impact of the entanglement on the other Robots and the degree of entanglement with the Center Vortex goal.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Professor Proton</div><div class="date">01-30-2017, 04:44 PM</div></div><div class="posttext">We have a question about how rule &lt;G8&gt; and its penalties apply specifically to scoring the cap ball at the end of the game.<br />
+<br />
+Suppose a robot has the cap ball sitting on top of their center vortex goal, but it is still touching it when the match ends. After the end of the match, the robot backs away so it is no longer touching the cap ball. <br />
+<br />
+Question: How is the cap ball scored? Would it be counted for 20 points for being above the cross bar but not capped, or none at all? And what penalties would be assessed for driving after the match ends? A major or a minor?<br />
+Answer: The Robot backing away and stopping contact with the Cap Ball after the Match ends is a change in the Scoring state of the Cap Ball and is not allowed by rule &lt;G8&gt;. The Alliance will be awarded 20 points for a Cap Ball at the High height. A Minor Penalty will be assessed if the Robot's actions do not result in a competitive advantage (other than Scoring), otherwise, a Major Penalty will be assessed.</div></div><hr />
+
+
+<div class="post"><div class="posttop"><div class="username">Professor Proton</div><div class="date">02-06-2017, 03:08 PM</div></div><div class="posttext">Scenario: A red alliance robot is placing the cap ball on the center vortex goal. The red alliance robot can lower its arms, but cannot release the cap ball. So, to receive a score for capping, the robot must back up away from the center vortex. A blue alliance robot stops about 6-8 inches behind the red alliance robot so that it is unable to completely back away from the center vortex and remains in contact with the ball when time expires. <br />
+<br />
+Question: Is this a penalty on the blue alliance robot? At no time does the blue alliance robot come in contact with the red alliance robot.<br />
+Answer: The Blue Alliance Robot is violating rule &lt;GS11&gt; for interfering with an opposing Alliance Robot that Possesses a lifted Cap Ball if the Blue Alliance Robot is not attempting to score its own Cap Ball in the Center Vortex goal. The Blue Alliance Robot is also violating rule &lt;G16&gt; for Trapping the Red Alliance Robot if the Trapped condition persists for more than five seconds.</div></div><hr />
 
  
 <div id="copyright">Powered by vBulletin&reg; Version 4.2.0 Copyright &copy; 2017 vBulletin Solutions, Inc. All rights reserved.</div>
