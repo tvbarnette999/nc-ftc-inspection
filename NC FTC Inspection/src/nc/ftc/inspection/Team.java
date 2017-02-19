@@ -80,6 +80,10 @@ public class Team implements Comparable<Team> {
 				t.hardware=Integer.parseInt(dat[3]);
 				t.software=Integer.parseInt(dat[4]);
 				t.field=Integer.parseInt(dat[5]);
+				if(t.passed(Server.CHECKIN) && t.passed(Server.CUBE) && t.passed(Server.HARDWARE) && t.passed(Server.SOFTWARE) && t.passed(Server.FIELD)){
+					t.ready=true;
+					System.out.println("READY");
+				}
 				return t;
 			}catch(Exception e){
 				e.printStackTrace();
